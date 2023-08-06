@@ -1,0 +1,27 @@
+{
+  "name": "gadz",
+  "version": "1.0.0",
+  "description": "A website for B2B to do Business.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dagreatcode/GADZ.git"
+  },
+  "keywords": [
+    "B2B",
+    "Trucking",
+    "Buy",
+    "Sell",
+    "Loads"
+  ],
+  "author": "Vincent Kendrick",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dagreatcode/GADZ/issues"
+  },
+  "homepage": "https://github.com/dagreatcode/GADZ#readme"
+}
