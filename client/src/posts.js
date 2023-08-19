@@ -9,7 +9,7 @@ export const PostList = () => (
             <TextField source="id" />
             <TextField source="title" />
             <DateField source="published_at" />
-            <TextField source="average_note" />
+            <TextField source="average_note" />     
             <TextField source="views" />
             <EditButton />
         </Datagrid>
