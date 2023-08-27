@@ -1,10 +1,14 @@
 # GADZ
 
+In order to follow all of the updates to this site, please visit https://github.com/dagreatcode/GADZ/wiki
+
 npx create-react-app pwa-react-typescript --template cra-template-pwa-typescript
 https://github.com/marmelab/react-admin
 sudo pkill -f node
 
 http://globalassetdispatching.com/
+
+![image](./assets/GADZWireframe.png)
 
 ## Description 
 
