@@ -58,8 +58,10 @@ app.get("/api/config", (req, res) => {
 });
 app.get("/apiFun", (req, res) => {
 	res.send("API FUN");
-	var adminUser = req.params.apiFun;
-	console.log(adminUser);
+	// var adminUser = req.params.apiFun;
+	// console.log(adminUser);
+	console.log("Have Fun");
+
 	res.end();
 });
 // Used as a wildcard if something goes wrong

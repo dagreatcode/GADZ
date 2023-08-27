@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./containers/Home/Home";
-// import NavBar from "./components/NavBar/NavBar";
+import NavBar from "./components/NavBar/NavBar";
 import NotFound from "./containers/NotFound/NotFound";
 import ContactUs from "./containers/ContactUs/ContactUs";
 import AboutUs from "./containers/AboutUs/AboutUs";
@@ -21,8 +21,7 @@ function App() {
 
   return (
     <Router>
-      {/* <NavBar /> */}
-         
+          <NavBar />
           <Routes>
             <Route path="/Services" element={<Services />} />
             <Route path="/AboutUs" element={<AboutUs />} />
