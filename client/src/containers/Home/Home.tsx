@@ -2,6 +2,7 @@ import React from 'react'
 import Video1 from '../../components/Banner/Banner'
 
 const Home = () => {
+
   return (
     <>
       <Video1 />
