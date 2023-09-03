@@ -14,15 +14,9 @@ import Services from "./containers/Services/Services";
 
 
 function App() {
-
-
-
-
-
   return (
     <Router>
       <NavBar />
-         
           <Routes>
             <Route path="/Services" element={<Services />} />
             <Route path="/AboutUs" element={<AboutUs />} />
@@ -30,7 +24,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-      
     </Router>
   );
 }
