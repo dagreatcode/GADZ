@@ -5,6 +5,13 @@ In order to follow all of the updates to this site, please visit https://github.
 npx create-react-app pwa-react-typescript --template cra-template-pwa-typescript
 https://github.com/marmelab/react-admin
 sudo pkill -f node
+npm install -g sequelize-cli
+npm install sequelize
+sequelize init:config & sequelize init:models
+ERD Enity relational diagram
+sudo su postgres
+https://pimylifeup.com/raspberry-pi-postgresql/
+https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
 
 http://globalassetdispatching.com/
 
