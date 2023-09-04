@@ -11,7 +11,7 @@ router.post("/api/user", (req, res) => {
 router.get("/api/allUsers", (req, res) => {
     // ALL the Things should be displayed
     // DB query
-    db.Thing.findAll().then((allUsers) => {
+    db.User.findAll().then((allUsers) => {
       res.json(allUsers);
     });
   });
