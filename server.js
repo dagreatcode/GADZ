@@ -61,7 +61,8 @@ var db = require("./models");
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
 // TODO: Add console app.
-
+const usersController = require("./controllers/UserAPIRoutes.js");
+app.use(usersController);
 // Test routes to see if ther server is talking to the client
 // =============================================================
 app.get("/api/config", (req, res) => {
