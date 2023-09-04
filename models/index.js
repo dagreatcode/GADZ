@@ -5,7 +5,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'production';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
@@ -15,12 +15,12 @@ if (config.use_env_variable) {
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
-try {
-	sequelize.authenticate();
-	console.log('Connection has been established successfully.');
-  } catch (error) {
-	console.error('Unable to connect to the database:', error);
-  }
+// try {
+// 	sequelize.authenticate();
+// 	console.log('Connection has been established successfully.');
+//   } catch (error) {
+// 	console.error('Unable to connect to the database:', error);
+//   }
 
 fs
   .readdirSync(__dirname)
