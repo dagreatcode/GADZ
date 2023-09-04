@@ -37,16 +37,19 @@
     "bcrypt": "^5.1.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "fs": "^0.0.1-security",
     "if-env": "^1.0.4",
     "inquirer": "^9.2.10",
     "jsonwebtoken": "^9.0.1",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.6.0",
     "path": "^0.12.7",
-    "sequelize": "^6.32.1"
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.32.1",
+    "sequelize-cockroachdb": "^6.0.5"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sequelize-cli": "^6.6.1"
   }
 }
