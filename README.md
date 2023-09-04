@@ -12,6 +12,7 @@ ERD Enity relational diagram
 sudo su postgres
 https://pimylifeup.com/raspberry-pi-postgresql/
 https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
+https://cockroachlabs.cloud/cluster/320f50d5-4817-4fcb-b79c-470fea12b02c/overview?cluster-type=serverless
 
 http://globalassetdispatching.com/
 
