@@ -9,18 +9,32 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-try {
-	sequelize.authenticate();
-	console.log('Connection has been established successfully.');
-  } catch (error) {
-	console.error('Unable to connect to the database:', error);
-  }
+const sequelize = new Sequelize(process.env.DATABASE_URL) // Example for postgres
+
+// let sequelize;
+// if (config.use_env_variable) {
+//   sequelize = new Sequelize(process.env[config.use_env_variable], config);
+// } else {
+//   sequelize = new Sequelize(config.database, config.username, config.password, config);
+// }
+
+// try {
+// 	await sequelize.authenticate();
+// 	console.log('Connection has been established successfully.');
+//   } catch (error) {
+// 	console.error('Unable to connect to the database:', error);
+//   }
+
+// (async () => {
+//   try {
+//     const [results, metadata] = await sequelize.query("SELECT NOW()");
+//     console.log(results);
+//   } catch (err) {
+//     console.error("error executing query:", err);
+//   } finally {
+//     await sequelize.close();
+//   }
+// })();
 
 fs
   .readdirSync(__dirname)
