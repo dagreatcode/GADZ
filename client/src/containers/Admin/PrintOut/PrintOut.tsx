@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const PrintOut = () => {
+const PrintOut = () => {
   return (
     <div>PrintOut</div>
   )
 }
+
+export default PrintOut

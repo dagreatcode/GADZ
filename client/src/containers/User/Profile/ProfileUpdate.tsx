@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const ProfileUpdate = () => {
+const ProfileUpdate = () => {
   return (
     <div>ProfileUpdate</div>
   )
 }
+
+export default ProfileUpdate

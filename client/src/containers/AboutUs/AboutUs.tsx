@@ -1,10 +1,19 @@
 import React from 'react'
 import Video1 from '../../components/Banner/Banner'
+import {Link} from 'react-router-dom'
 
 function AboutUs() {
   return (
     <>
-    <div>AboutUs</div>
+      <div>AboutUs</div>
+      <div>      
+        <div><Link to="/Bio">Biography</Link></div>
+        <div><Link to="/Consultation">Consultation</Link></div>
+      </div>
+      <div>      
+        <Link to="/DispatchAgreement">Dispatch Agreement</Link><br/>
+        <Link to="/RoadFreight">Road Freight</Link>
+      </div>
       <Video1 />
       {/* <iframe 
         width={1222} height={887}
@@ -14,7 +23,9 @@ function AboutUs() {
         allow="accelerometer; autoPlay=true; clipboard-write; encrypted-media; gyroscope; picture-in-picture full" 
         allowFullScreen
       ></iframe> */}
-    </>  )
+
+    </>  
+  )
 }
 
 export default AboutUs

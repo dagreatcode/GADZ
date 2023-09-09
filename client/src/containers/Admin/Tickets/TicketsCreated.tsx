@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const TicketsCreated = () => {
+const TicketsCreated = () => {
   return (
     <div>TicketsCreated</div>
   )
 }
+
+export default TicketsCreated

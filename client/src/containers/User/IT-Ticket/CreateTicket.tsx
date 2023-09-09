@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const CreateTicket = () => {
+const CreateTicket = () => {
   return (
     <div>CreateTicket</div>
   )
 }
+
+export default CreateTicket
