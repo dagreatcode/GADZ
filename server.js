@@ -47,23 +47,23 @@ app.get("/api/config", (req, res) => {
 	});
 });
 app.get("/apiFun", (req, res) => {
-	res.send("API FUN");
-	console.log("Have Fun");
-	res.end();
+  res.send("API FUN");
+  console.log("Have Fun");
+  res.end();
 });
 
 // Used as a wildcard if something goes wrong
 // =============================================================
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "./client/build/index.html"));
+  res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
 db.sequelize.sync().then(function() {
-	app.listen(PORT, function() {
+  app.listen(PORT, function() {
 	console.log(`🌎 App is running on http://localhost:${PORT}`);
-	});
   });
+});
   

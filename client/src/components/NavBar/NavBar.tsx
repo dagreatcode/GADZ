@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
+//TODO: Add Checkout Button to NavBar
+
 const NavBar = () => {
 	return (
 		<div>
