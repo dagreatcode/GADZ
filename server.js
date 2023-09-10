@@ -61,7 +61,7 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync({ force: true }).then(function() {
+db.sequelize.sync().then(function() {
   app.listen(PORT, function() {
 	console.log(`🌎 App is running on http://localhost:${PORT}`);
   });
