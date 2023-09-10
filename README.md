@@ -8,7 +8,7 @@ sudo pkill -f node
 npm install -g sequelize-cli
 npm install sequelize
 sequelize init:config & sequelize init:models
-ERD Enity relational diagram
+ERD Entity relational diagram
 sudo su postgres
 https://pimylifeup.com/raspberry-pi-postgresql/
 https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
