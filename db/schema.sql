@@ -1,9 +1,9 @@
 ### Schema
 
-DROP DATABASE defaultdb
+DROP DATABASE gadzconnect_db
 
-CREATE DATABASE defaultdb;
-USE defaultdb;
+CREATE DATABASE gadzconnect_db;
+USE gadzconnect_db;
 SELECT * FROM Users;
 CREATE TABLE Users
 (
@@ -17,6 +17,7 @@ CREATE TABLE Users
 	developer BOOLEAN DEFAULT false,
 	contractor BOOLEAN DEFAULT false,
 	company BOOLEAN DEFAULT false
+	-- CONSTRAINT loads_pkey PRIMARY KEY (id ASC)
     -- Foreign Key () REFERENCES ()
 	-- UNIQUE
 	-- PRIMARY KEY (id)
