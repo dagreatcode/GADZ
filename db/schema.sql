@@ -1,9 +1,9 @@
 ### Schema
 
-DROP DATABASE gadzconnect_db
+DROP DATABASE GADZ_DB;
 
-CREATE DATABASE gadzconnect_db;
-USE gadzconnect_db;
+CREATE DATABASE ;
+USE defaultdb;
 SELECT * FROM Users;
 CREATE TABLE Users
 (
