@@ -1,4 +1,4 @@
-GET https://www.gadzconnect.com/api/user/allUsers HTTP/1.1
+GET https://www.gadzconnect.com/api/admin/allAdmins HTTP/1.1
 
 ###
 
@@ -6,14 +6,14 @@ GET https://www.gadzconnect.com/api/user/view HTTP/1.1
 
 ###
 
-POST https://www.gadzconnect.com/api/user HTTP/1.1
+POST https://www.gadzconnect.com/api/admin HTTP/1.1
 content-type: application/json
 
 {
     "email": "vaughn@retroluxe.com",
     "password": "test123",
     "description": "developer",
-    "admin": "false",
+    "admin": "true",
     "developer": "false",
     "archived": "false",
     "contractor": "true",
