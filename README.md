@@ -78,7 +78,7 @@ If we are working on this project together, clone this project and ask for acces
 
 If you are working on this on your own, fork this project and continue to the next steps. 
 
-#### Please ses examples and screenshots below.
+#### Please see examples and screenshots below.
 ___
 
 Create a .env file in the root of the project
@@ -94,11 +94,12 @@ npm install -D
 npm run build && npm run start
 ```
 
-###### After installing these VS Code Extension, CHECK THE db FOLDER!!!
+###### After installing these VS Code Extension, CHECK The db Folder!!!
 Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
 
 Also Add VS Code Extension REST Client API
 
+CHECK THE db FOLDER for the dbDiagram as well.
 ## Tools
 
 render.com
