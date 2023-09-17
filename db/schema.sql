@@ -6,29 +6,29 @@ CREATE DATABASE defaultdb;
 USE defaultdb;
 SELECT * FROM "Users";
 SELECT * FROM User;
-CREATE TABLE Users
-(
-	id BIGSERIAL NOT NULL PRIMARY KEY,
-	email varchar(150) NOT NULL,
-	password varchar(255) NOT NULL,
-	description varchar (255), 
-	admin BOOLEAN DEFAULT false,
-	-- user BOOLEAN DEFAULT true
-    archived BOOLEAN DEFAULT false,
-	developer BOOLEAN DEFAULT false,
-	contractor BOOLEAN DEFAULT false,
-	company BOOLEAN DEFAULT false
-	-- CONSTRAINT loads_pkey PRIMARY KEY (id ASC)
-    -- Foreign Key () REFERENCES ()
-	-- UNIQUE
-	-- PRIMARY KEY (id)
-);
+-- CREATE TABLE Users
+-- (
+-- 	id BIGSERIAL NOT NULL PRIMARY KEY,
+-- 	email varchar(150) NOT NULL,
+-- 	password varchar(255) NOT NULL,
+-- 	description varchar (255), 
+-- 	admin BOOLEAN DEFAULT false,
+-- 	-- user BOOLEAN DEFAULT true
+--     archived BOOLEAN DEFAULT false,
+-- 	developer BOOLEAN DEFAULT false,
+-- 	contractor BOOLEAN DEFAULT false,
+-- 	company BOOLEAN DEFAULT false
+-- 	-- CONSTRAINT loads_pkey PRIMARY KEY (id ASC)
+--     -- Foreign Key () REFERENCES ()
+-- 	-- UNIQUE
+-- 	-- PRIMARY KEY (id)
+-- );
 
-COMMENT ON TABLE Users IS 'developers as well';
-COMMENT ON COLUMN Users.admin IS 'Super User';
+COMMENT ON TABLE "Users" IS 'developers as well';
+COMMENT ON COLUMN "Users".admin IS 'Super User';
 
-SELECT * FROM UsersProfile;
-CREATE TABLE UsersProfile
+SELECT * FROM "UsersProfile";
+CREATE TABLE "UsersProfile"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	name varchar(255) NOT NULL,
@@ -42,8 +42,8 @@ CREATE TABLE UsersProfile
 	-- PRIMARY KEY (id)
 );
 
-SELECT * FROM ContractorUsersProfile;
-CREATE TABLE ContractorUsersProfile
+SELECT * FROM "ContractorUsersProfile";
+CREATE TABLE "ContractorUsersProfile"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	name varchar(255) NOT NULL,
@@ -71,8 +71,8 @@ CREATE TABLE ContractorUsersProfile
 	-- PRIMARY KEY (id)
 );
 
-SELECT * FROM CompanyUsersProfile;
-CREATE TABLE CompanyUsersProfile
+SELECT * FROM "CompanyUsersProfile";
+CREATE TABLE "CompanyUsersProfile"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	name varchar(255) NOT NULL,
@@ -92,8 +92,8 @@ CREATE TABLE CompanyUsersProfile
 	-- PRIMARY KEY (id)
 );
 
-SELECT * FROM loads;
-CREATE TABLE loads
+SELECT * FROM "load";
+CREATE TABLE "load"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	ownerContactInfo varchar(255) NOT NULL,
