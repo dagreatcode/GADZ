@@ -55,6 +55,21 @@ If your README is very long, add a table of contents to make it easy for users t
 
 What are the steps required to install your project? Provide a step-by-step description of how to get the development environment running.
 
+## To Dos
+
+Test Driven Error driven Data Driven...
+[]Deploy and deploy often.
+[]Set test for front and backend of the project.
+[]Make db rules
+[]Create diagram.io
+[]Make github rules
+[]CI/CD with cypress
+[]Server and Routes Test by Mocha & Chai
+[]Setup Redux
+[]Wireframe
+[]Features
+[]Create Frontend trailed by Jest testing..
+[]Set up Redis for caching data.
 
 ## Usage 
 
