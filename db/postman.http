@@ -1,16 +1,16 @@
-GET https://www.gadzconnect.com/api/admin/allAdmins HTTP/1.1
+GET http://localhost:3001/api/user/allUsers HTTP/1.1
 
 ###
 
-GET https://www.gadzconnect.com/api/user/view HTTP/1.1
+GET http://localhost:3001/api/user/allUsers HTTP/1.1
 
 ###
 
-POST https://www.gadzconnect.com/api/admin HTTP/1.1
+POST http://localhost:3001/api/user HTTP/1.1
 content-type: application/json
 
 {
-    "email": "vaughn@retroluxe.com",
+    "email": "hbjbj@bhjbjbjbjb.com",
     "password": "test123",
     "description": "developer",
     "admin": "true",

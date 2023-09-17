@@ -104,6 +104,10 @@ Badges aren't _necessary_, per se, but they demonstrate street cred. Badges let 
 
 ## Contributing
 
+Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
+
+Also Add VS Code Extension REST Client API
+
 If you created an application or package and would like other developers to contribute it, you will want to add guidelines for how to do so. The [Contributor Covenant](https://www.contributor-covenant.org/) is an industry standard, but you can always write your own.
 
 ## Tests
