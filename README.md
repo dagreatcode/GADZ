@@ -103,6 +103,7 @@ Badges aren't _necessary_, per se, but they demonstrate street cred. Badges let 
 
 
 ## Contributing
+##### CHECK THE db FOLDER!!!
 
 Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
 
