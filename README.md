@@ -78,19 +78,26 @@ If we are working on this project together, clone this project and ask for acces
 
 If you are working on this on your own, fork this project and continue to the next steps. 
 
+#### Please ses examples and screenshots below.
+___
+
 Create a .env file in the root of the project
 add  
 ```
 DATABASE_URL="postgresql://<user>:<password>@<host>:<port><database>?sslmode=verify-full" 
 ```
 
-Open terminal in code editor and run
+Open terminal in code editor and run 
 ```
 npm install
 npm install -D
 npm run build && npm run start
 ```
-Provide instructions and examples for use. Include screenshots as needed. 
+
+###### After installing these VS Code Extension, CHECK THE db FOLDER!!!
+Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
+
+Also Add VS Code Extension REST Client API
 
 ## Tools
 
@@ -171,11 +178,6 @@ Badges aren't _necessary_, per se, but they demonstrate street cred. Badges let 
 
 
 ## Contributing
-##### CHECK THE db FOLDER!!!
-
-Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
-
-Also Add VS Code Extension REST Client API
 
 If you created an application or package and would like other developers to contribute it, you will want to add guidelines for how to do so. The [Contributor Covenant](https://www.contributor-covenant.org/) is an industry standard, but you can always write your own.
 
