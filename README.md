@@ -73,6 +73,22 @@ Test Driven Error driven Data Driven...
 
 ## Usage 
 
+If we are working on this project together, clone this project and ask for access. 
+
+If you are working on this on your own, fork this project and continue to the next steps. 
+
+Create a .env file in the root of the project
+add  
+```
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port><database>?sslmode=verify-full" 
+```
+
+Open terminal in code editor and run
+```
+npm install
+npm install -D
+npm run build && npm run start
+```
 Provide instructions and examples for use. Include screenshots as needed. 
 
 ## Tools
