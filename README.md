@@ -22,11 +22,12 @@ http://globalassetdispatching.com/
 
 
 ## Description 
+
 #### WireFrame Diagram
-
-This is a quick Diagram of the Web App.
-
 ![image](./assets/GADZWireframe.png)
+
+#### Database Diagram
+![image](./db/daDiagram.drawio.png)
 
 Your GitHub profile is an extremely important aspect of your public identity as a developer. A well-crafted one allows you to show off your work to other developers as well as potential employers. An important component of your GitHub profile—and one that many new developers often overlook—is the README.md file.
 
