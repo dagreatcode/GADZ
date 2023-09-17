@@ -60,6 +60,42 @@ What are the steps required to install your project? Provide a step-by-step desc
 
 Provide instructions and examples for use. Include screenshots as needed. 
 
+## Tools
+
+render.com
+linode.com
+AWS or AZURE
+
+React Client view TypeScript ReactTypes
+
+Bootstrap for CSS Frontend look.
+
+Express RESTful API Routes/handlebars-Node Server Side TypeScript Sequelize CLI
+
+planetscale.com SQL MySQL TimeScale n CockRoachDB Cloud PostgreSQL
+
+Clerk.com User Auth JWT Bcrypt
+
+Cloudanry.com Uploaded images and files
+
+Redis caching
+
+Redux State Management react-thunk plugin
+
+CI/CD GitHub Action Cypress Testing
+
+Mocha&Chi Server Testing
+
+Jest Client testing
+
+Axios Front n Back
+
+React-Router-Dom Client nav routes to pages
+
+lint prittier
+
+SEO
+
 
 ## Credits
 
