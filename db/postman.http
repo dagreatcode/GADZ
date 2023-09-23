@@ -1,20 +1,25 @@
-GET https://www.gadzconnect.com/api/user/allUsers HTTP/1.1
+
+//**Getting info from the your localhost Database.**//
+// Funny how this works. 
+GET http://localhost:3001/api/user/allUsers HTTP/1.1
 
 ###
 
-GET https://www.gadzconnect.com/api/user/view HTTP/1.1
+//**Getting info from the production Database.**//
+GET https://www.GADZConnect.com/api/user/allUsers HTTP/1.1
 
 ###
 
-POST https://www.gadzconnect.com/api/user HTTP/1.1
+//**Sending info to the production Database.**//
+POST https://www.GADZConnect.com/api/user HTTP/1.1
 content-type: application/json
 
 {
-    "email": "vaughn@retroluxe.com",
+    "email": "vincent@kendrick.com",
     "password": "test123",
     "description": "developer",
-    "admin": "false",
-    "developer": "false",
+    "admin": "true",
+    "developer": "true",
     "archived": "false",
     "contractor": "true",
     "company": "false"

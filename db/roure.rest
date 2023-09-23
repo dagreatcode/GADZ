@@ -1,0 +1,59 @@
+GET http://localhost:3001/blogPost/getPosts
+
+
+###
+
+GET https://www.gadzconnect.com/blogPost/getPosts
+
+6417b5b4f0a517eff08d5bdd
+###
+
+DELETE https://www.gadzconnect.com/blogPost/post/641f822ae95eeb526a283d19
+
+# POST  http://localhost:3001/blogPost
+# Content-Type: application/json
+
+# {
+#     "image": "ygjhgjjh",
+#     "title": "hgkjgkjgkj",
+#     "post": "jgjkgkj"
+# }
+
+###
+
+
+DELETE http://localhost:3001/blogPost/delete/642612ddbfd0db65e0b80fd3
+   
+
+
+
+###
+
+GET http://localhost:3001/blogPost/post/64358a72a884c4bb2b29af53
+
+
+###
+
+
+PUT  http://localhost:3001/blogPost/post/64358a72a884c4bb2b29af53
+Content-Type: application/json
+
+{
+    "title": "Updated Completed",
+    "post": "PuT TeSt"
+}
+
+###
+
+
+GET http://localhost:3001/blogPost/search/testing
+
+###
+
+PUT http://localhost:3001/blogPost/update/64276d39e08fce8e50cb8055
+Content-Type: application/json
+
+{
+    "title": "Updated Completed",
+    "post": "PuT TeSt"
+}
