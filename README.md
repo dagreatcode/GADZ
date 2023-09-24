@@ -85,7 +85,7 @@ ___
 Create a .env file in the root of the project
 add  
 ```
-DATABASE_URL="postgresql://<user>:<password>@<host>:<port><database>?sslmode=verify-full" 
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=verify-full" 
 ```
 
 Open terminal in code editor and run 
