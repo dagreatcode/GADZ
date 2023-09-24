@@ -24,10 +24,10 @@ export function getArticles() {
 export function getArticlesById() {
   return function (dispatch) {
     return axios
-      .get("/blogPost/getPosts")
+      .get("https://jsonplaceholder.typicode.com/posts")
       .then((response) => {
-        // const filteredPosts = response.data.filter(post => post.userId === 2)
-        dispatch({ type: GET_MY_ARTICLES, payload: response.data });
+        const filteredPosts = response.data.filter(post => post.userId === 2)
+        dispatch({ type: GET_MY_ARTICLES, payload: filteredPosts });
       })
       .catch((err) => {
         console.log(err.message);
@@ -39,10 +39,10 @@ export function getArticlesById() {
 // export function getArticlesById() {
 //   return function (dispatch) {
 //     return axios
-//       .get("https://jsonplaceholder.typicode.com/posts")
+//       .get("/blogPost/getPosts")
 //       .then((response) => {
-//         const filteredPosts = response.data.filter(post => post.userId === 2)
-//         dispatch({ type: GET_MY_ARTICLES, payload: filteredPosts });
+//         // const filteredPosts = response.data.filter(post => post.userId === 2)
+//         dispatch({ type: GET_MY_ARTICLES, payload: response.data });
 //       })
 //       .catch((err) => {
 //         console.log(err.message);
@@ -50,5 +50,3 @@ export function getArticlesById() {
 //       });
 //   };
 // }
-
-
