@@ -5,7 +5,9 @@ import {Link} from 'react-router-dom'
 function AboutUs() {
   return (
     <>
-      <div>AboutUs</div>
+        <div className="container" style={{textAlign: "center"}}>
+    <div className="row jumbotron">
+    <div className="display-4" style={{padding: "40px"}}>About Us</div>
       <div>      
         <div><Link to="/Bio">Biography</Link></div>
         <div><Link to="/Consultation">Consultation</Link></div>
@@ -23,7 +25,8 @@ function AboutUs() {
         allow="accelerometer; autoPlay=true; clipboard-write; encrypted-media; gyroscope; picture-in-picture full" 
         allowFullScreen
       ></iframe> */}
-
+      </div>
+      </div>
     </>  
   )
 }

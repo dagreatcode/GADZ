@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LiveChat = () => {
+const LiveChat: any = () => {
   return (
     <>
       <h1>LiveChat</h1>
