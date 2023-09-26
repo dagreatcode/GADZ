@@ -6,7 +6,7 @@ import {
   // Navigate,
 } from "react-router-dom";
 // import { useDispatch, useSelector } from "react-redux";
-// import { getArticles, getArticlesById } from "./redux/actions/index";
+// import { getComments } from "./redux/actions/index";
 import Home from "./containers/Home/Home";
 import NavBar from "./components/NavBar/NavBar";
 import NotFound from "./containers/NotFound/NotFound";
@@ -33,11 +33,9 @@ import UserDash from "./containers/User/UserDash/Dash";
 import AdminAllUsers from "./containers/Admin/Users/AllUsers";
 import AdminUserProfile from "./containers/Admin/Users/UserProfile/UserProfile"
 
-
-
 function App() {
 
-  //   // const posts = useSelector((state) => state.articles);
+  // // const comments = useSelector((state) => state.comments);
   // // const myPosts = useSelector((state) => state.myArticles);
   // const error = useSelector((state) => state.error);
   // const loading = useSelector((state) => state.loading);
@@ -45,14 +43,14 @@ function App() {
   // const dispatch = useDispatch();
 
   // useEffect(() => {
-  //   dispatch(getArticles());
-  //   // return () => {};
+  //   dispatch(getComments());
+  //   return () => {};
   // }, [dispatch]);
 
-  // useEffect(() => {
-  //   dispatch(getArticlesById());
-  //   // return () => {};
-  // }, [dispatch]);
+  // // useEffect(() => {
+  // //   dispatch(getArticlesById());
+  // //   // return () => {};
+  // // }, [dispatch]);
 
   // if (error) {
   //   return <h1>{error}</h1>;
@@ -88,7 +86,8 @@ function App() {
         <Route path="/CreateTicket" element={<CreateTicket />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/UserDash" element={<UserDash />} />
-        <Route path="/" element={<Home />} />            <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<Home />} />            
+        <Route path="*" element={<NotFound />} />
        </Routes>
     </Router>
   );

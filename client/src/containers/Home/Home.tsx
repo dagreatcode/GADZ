@@ -1,19 +1,22 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
-import LiveChat from '../../components/LiveChat/LiveChat'
+import LiveChat from '../../components/LiveChat/LiveChat';
+import Comments from '../../components/Comments/Comments';
 // import { useSelector } from 'react-redux';
 
 const Home = () => {
-  // const myPosts = useSelector((state) => state.myArticles);
+  // const comments = useSelector((state) => state.comments);
   return (
-    <>
+    <div className="container">
+    <div className="row">
       <div>Home</div>
       <Link to="/Admin">Admin Pages After login</Link><br/>
       <Link to="/User">User Pages After Login</Link>
       <LiveChat />
-      {/* <Posts posts={myPosts} title="🥳New Post Every Week✒️" /> */}
-    </>
-  )
+      {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
+    </div>
+    </div>
+  );
 }
 
 export default Home
