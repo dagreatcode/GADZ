@@ -121,7 +121,7 @@ Cloudanry.com Uploaded images and files
 
 Redis caching
 
-Redux State Management react-thunk plugin
+Redux State Management react-thunk plugin https://redux.js.org/tutorials/typescript-quick-start
 
 CI/CD GitHub Action Cypress Testing
 
