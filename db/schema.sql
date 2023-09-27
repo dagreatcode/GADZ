@@ -47,21 +47,33 @@ CREATE TABLE "ContractorUsersProfile"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	name varchar(255) NOT NULL,
+	contactDetails varchar(255) NOT NULL,
+	locations varchar(255) NOT NULL,
+	briefBio varchar(255) NOT NULL,
 	trucking varchar(255) NOT NULL,
 	freightForwarding varchar(255) NOT NULL,
 	courierServices varchar(255) NOT NULL,
 	warehousing varchar(255) NOT NULL,
 	coverageArea varchar(255) NOT NULL,
 	licenses varchar(255) NOT NULL,
+	qualifications varchar(255) NOT NULL,
 	experienceLevel varchar(255) NOT NULL,
 	endorsements varchar(255) NOT NULL,
+	specializations varchar(255) NOT NULL,
 	specificSkills varchar(255) NOT NULL,
 	certifications varchar(255) NOT NULL,
 	myRoutesOperated varchar(255) NOT NULL,
 	myPickupLocations varchar(255) NOT NULL,
 	myDeliveryLocations varchar(255) NOT NULL,
 	availability varchar(255) NOT NULL,
+	equipment varchar(255) NOT NULL,
+	vehiclesAndResources varchar(255) NOT NULL,
+-- This could include the number and type of trucks or vehicles they own or operate.
+	paymentTerms varchar(255) NOT NULL,
 	schedule varchar(255) NOT NULL,
+	reviews varchar(255) NOT NULL,
+	insuranceCoverage varchar(255) NOT NULL,
+	transportationCompliance varchar(255) NOT NULL,
 	generalFreight BOOLEAN DEFAULT false,
 	perishableGoods BOOLEAN DEFAULT false,
 	hazardousMaterials BOOLEAN DEFAULT false,
@@ -83,6 +95,8 @@ CREATE TABLE "CompanyUsersProfile"
 	incentives varchar(255) NOT NULL,
 	trucksAvailable varchar(255) NOT NULL,
 	typeOfTrucks varchar(255) NOT NULL,
+	typeOfShip varchar(255) NOT NULL,
+	typeOfFreight varchar(255) NOT NULL,
 	truckCapacity varchar(255) NOT NULL,
 	equipmentOffered varchar(255) NOT NULL,
 	certificationsNeeded varchar(255) NOT NULL,
@@ -92,8 +106,8 @@ CREATE TABLE "CompanyUsersProfile"
 	-- PRIMARY KEY (id)
 );
 
-SELECT * FROM "load";
-CREATE TABLE "load"
+SELECT * FROM "Load";
+CREATE TABLE "Load"
 (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	ownerContactInfo varchar(255) NOT NULL,
@@ -120,6 +134,125 @@ CREATE TABLE "load"
     hazardousMaterials BOOLEAN DEFAULT false,
     specialPermits BOOLEAN DEFAULT false,
     available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "CarrierProfile"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	shipmentDetails varchar(255) NOT NULL,
+	typeOfCargo varchar(255) NOT NULL,
+	quantity varchar(255) NOT NULL,
+	weight varchar(255) NOT NULL,
+	dimensions varchar(255) NOT NULL,
+	handlingRequirements varchar(255) NOT NULL,
+	pickUpLocationOrigin varchar(255) NOT NULL,
+    buyerDestinationPickup varchar(255) NOT NULL,
+	transportationMode varchar(255) NOT NULL,
+	-- Trucking, air, freight, ocean freight, rail, or a combination of multiple modes (intermodal)
+	transportationWindow varchar(255) NOT NULL,
+	carriersRequirements varchar(255) NOT NULL,
+	license varchar(255) NOT NULL,
+    insurance varchar(255) NOT NULL,
+	experienceLevel varchar(255) NOT NULL,
+	equipmentCapabilities varchar(255) NOT NULL,
+	specializedServices varchar(255) NOT NULL,
+	temperatureControlledTransportation varchar(255) NOT NULL,
+	hazmatHandling varchar(255) NOT NULL,
+	preferredPaymentTerms varchar(255) NOT NULL,
+	transportationServiceCharge varchar(255) NOT NULL,
+    relevantUniqueConsiderations varchar(255) NOT NULL,
+	clearanceForInternational BOOLEAN DEFAULT false,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "BrokerProfile"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "TruckingCompanies"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "WarehouseOwner"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "Driver"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "OwnerOperator"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "Buyer"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
+	-- Foreign Key () REFERENCES ()
+	-- PRIMARY KEY (id)
+);
+
+CREATE TABLE "Seller"
+(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+    phoneNumber varchar(255) NOT NULL,
+	dateOfBirth DATE NOT NULL,
+	available BOOLEAN DEFAULT true
 	-- Foreign Key () REFERENCES ()
 	-- PRIMARY KEY (id)
 );
