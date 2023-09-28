@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import Bio from './Bio';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import Bio from "./Bio";
 
-test('renders Home', () => {
+test("renders Home", () => {
   render(<Bio />);
   const linkElement = screen.getByText(/Bio/i);
   expect(linkElement).toBeInTheDocument();

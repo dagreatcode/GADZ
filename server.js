@@ -24,7 +24,7 @@ app.use(express.json());
 // Serve up static assets (usually on heroku/render)
 // =============================================================
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static("client/build"));
+  app.use(express.static("client/build"));
 }
 app.use(express.static("images"));
 
@@ -45,9 +45,9 @@ app.use("/api/admin", AdminController);
 // Test routes to see if ther server is talking to the client
 // =============================================================
 app.get("/api/config", (req, res) => {
-	res.json({
-		success: true,
-	});
+  res.json({
+    success: true,
+  });
 });
 app.get("/apiFun", (req, res) => {
   res.send("API FUN");
@@ -64,9 +64,8 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync().then(function() {
-  app.listen(PORT, function() {
-	console.log(`🌎 App is running on http://localhost:${PORT}`);
+db.sequelize.sync().then(function () {
+  app.listen(PORT, function () {
+    console.log(`🌎 App is running on http://localhost:${PORT}`);
   });
 });
-  

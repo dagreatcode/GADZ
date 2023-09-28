@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Dash = () => {
-  return (
-    <div>Dash</div>
-  )
-}
+  return <div>Dash</div>;
+};
 
-export default Dash
+export default Dash;
