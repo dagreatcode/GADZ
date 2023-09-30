@@ -15,7 +15,7 @@
     "build": "npm install && cd client && npm install && npm run build",
     "build2": "cd client && npm run build",
     "heroku-postbuild": "npm run build",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js,.jsx"
   },
   "repository": {
     "type": "git",

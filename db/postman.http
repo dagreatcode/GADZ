@@ -11,12 +11,12 @@ GET https://www.GADZConnect.com/api/user/allUsers HTTP/1.1
 ###
 
 //**Sending info to the production Database.**//
-POST https://localhost:3001/api/user HTTP/1.1
+POST http://localhost:3001/api/admin HTTP/1.1
 content-type: application/json
 
 {
     "email": "vincent@kendrick.com",
-    "password": "test123",
+    "password": "test1234",
     "description": "developer",
     "admin": "true",
     "developer": "true",

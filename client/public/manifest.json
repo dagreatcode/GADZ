@@ -21,5 +21,33 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "screenshots": [
+		{
+			"src": "/screenshot1-540x720.png",
+			"type": "image/png",
+			"sizes": "540x720"
+		},
+		{
+			"src": "/screenshot2-540x720.jpg",
+			"type": "image/jpg",
+			"sizes": "540x720"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Covid",
+			"short_name": "Covid To Date",
+			"description": "Up to date Stats and Covid-19 News",
+			"url": "/Covid",
+			"icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+		},
+		{
+			"name": "Places",
+			"short_name": "Places To Go.",
+			"description": "Places to go near you...",
+			"url": "/WhereToGo",
+			"icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+		}
+	]
 }

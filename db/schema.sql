@@ -8,6 +8,8 @@ USE defaultdb;
 
 SELECT * FROM "Users";
 
+SELECT * FROM "Admins";
+
 SELECT * FROM User;
 
 -- CREATE TABLE Users
