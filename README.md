@@ -70,10 +70,10 @@ Test Driven Error driven Data Driven...
     [ ] Make github rules
     [ ] CI/CD with cypress
     [ ] Server and Routes Test by Mocha & Chai
-    [ ] Setup Redux
+    [X] Setup Redux
     [ ] Wireframe
     [ ] Features
-    [ ] Create Frontend trailed by Jest testing..
+    [X] Create Frontend trailed by Jest testing..
     [ ] Set up Redis for caching data.
 
 ## Usage 
