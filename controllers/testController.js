@@ -30,6 +30,7 @@ module.exports = {
         });
       });
   },
+  // Do Not Use. Company wants to Archive User/ update to Inactivate
   delete: function (req, res) {
     const id = req.params.id;
     db.User.destroy({
