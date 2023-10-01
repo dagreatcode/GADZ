@@ -1,7 +1,7 @@
 
 //**Getting info from the your localhost Database.**//
 // Funny how this works. 
-GET http://localhost:3001/api/tests   HTTP/1.1
+GET http://localhost:3001/api/tests HTTP/1.1
 
 ###
 
