@@ -24,6 +24,7 @@ router.get("/allUsers", (req, res) => {
       console.log(allUsers);
     });
   });
+  
   // router.get("/api/render", (req, res) => {
   //   // ALL the Things should be displayed
   //   // DB query
