@@ -10,7 +10,7 @@ const path = require("path");
 const UserController = require("./controllers/UserAPIRoutes.js");
 const AdminController = require("./controllers/AdminController.js");
 // const inquirer = require("inquirer"); // Create Console App
-
+const routes = require("./routes");
 // Set server PORT
 // =============================================================
 const PORT = process.env.PORT || 3001;
@@ -23,9 +23,8 @@ app.use(express.json());
 
 // Serve up static assets (usually on heroku/render)
 // =============================================================
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static("client/build"));
-}
+app.use(express.static("client/build"));
+
 app.use(express.static("images"));
 
 // Connect to SQL Database
@@ -36,7 +35,7 @@ var db = require("./models");
 // =============================================================
 app.use("/api/user", UserController);
 app.use("/api/admin", AdminController);
-
+app.use(routes);
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
 

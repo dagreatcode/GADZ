@@ -1,9 +1,52 @@
 
 //**Getting info from the your localhost Database.**//
 // Funny how this works. 
-GET http://localhost:3001/api/user/allUsers HTTP/1.1
+GET http://localhost:3001/api/tests   HTTP/1.1
 
 ###
+
+POST http://localhost:3001/api/tests/ HTTP/1.1
+content-type: application/json
+
+{
+    "email": "vincent@kendrick.com",
+    "password": "test123456",
+    "description": "developer",
+    "admin": "true",
+    "developer": "true",
+    "archived": "false",
+    "contractor": "true",
+    "company": "false"
+}
+
+###
+
+PUT http://localhost:3001/api/tests/1 HTTP/1.1
+Content-Type: application/json
+
+
+{
+   "id": "1",    
+   "email": "vincent@kendricks.com",
+    "description": "developer",
+    "admin": "true",
+    "developer": "true",
+    "archived": "false",
+    "contractor": "true",
+    "company": "false"
+
+}
+
+###
+
+DELETE http://localhost:3001/api/tests/3 HTTP/1.1
+# content-type: application/json
+
+# {
+#    "id": "3"
+# }
+                 
+###  
 
 //**Getting info from the production Database.**//
 GET https://www.GADZConnect.com/api/user/allUsers HTTP/1.1
@@ -24,3 +67,6 @@ content-type: application/json
     "contractor": "true",
     "company": "false"
 }
+
+###
+                                                          
