@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 
-router.post("/", (req, res) => {
+router.post("/create", (req, res) => {
   db.User.create(req.body).then((newUser) => {
     res.json(newUser);
   });

@@ -49,12 +49,14 @@ DELETE http://localhost:3001/api/tests/3 HTTP/1.1
 ###  
 
 //**Getting info from the production Database.**//
-GET https://www.GADZConnect.com/api/user/allUsers HTTP/1.1
+GET https://www.GADZConnect.com/api/tests/900654918216548353 HTTP/1.1
 
+###
+GET https://www.GADZConnect.com/api/user/view HTTP/1.1
 ###
 
 //**Sending info to the production Database.**//
-POST https://www.GADZConnect.com/api/user HTTP/1.1
+POST https://www.GADZConnect.com/api/user/create HTTP/1.1
 content-type: application/json
 
 {
