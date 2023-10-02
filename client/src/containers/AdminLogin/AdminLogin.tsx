@@ -1,13 +1,13 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 
-function ContactUs() {
+const AdminLogin = () => {
   return (
-    <>
-      <div className="container" style={{ textAlign: "center" }}>
-        <div className="row jumbotron">
+    <div className="container" style={{ textAlign: "center" }}>
+      <div className="row jumbotron">
+        <form>
           <div className="display-4" style={{ padding: "40px" }}>
-            ContactUs
+            Login
           </div>
           <div className="mb-3">
             <label htmlFor="exampleFormControlInput1" className="form-label">
@@ -21,21 +21,21 @@ function ContactUs() {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="exampleFormControlTextarea1" className="form-label">
-              Example textarea
+            <label htmlFor="exampleFormControlInput1" className="form-label">
+              Password
             </label>
-            <textarea
+            <input
+              type="password"
               className="form-control"
-              placeholder="Enter About your description"
-              id="exampleFormControlTextarea1"
-              rows={3}
-            ></textarea>
+              id="exampleFormControlInput1"
+              placeholder="name@example.com"
+            />
           </div>
-          <Button style={{ width: "100px", margin: "0 auto" }}>Send</Button>
-        </div>
+          <Button style={{ width: "100px", margin: "auto" }}>Go</Button>
+        </form>
       </div>
-    </>
+    </div>
   );
-}
+};
 
-export default ContactUs;
+export default AdminLogin;

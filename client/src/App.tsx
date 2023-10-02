@@ -13,6 +13,7 @@ import NotFound from "./containers/NotFound/NotFound";
 import ContactUs from "./containers/ContactUs/ContactUs";
 import AboutUs from "./containers/AboutUs/AboutUs";
 import Login from "./containers/Login/Login";
+import AdminLogin from "./containers/AdminLogin/AdminLogin";
 import Bio from "./containers/AboutUs/globalassetdispatching/Biography/Bio";
 import Consultation from "./containers/AboutUs/globalassetdispatching/ConsultationForm/Consultation";
 import DispatchAgreement from "./containers/AboutUs/globalassetdispatching/DispatchAgreement/DispatchAgreement";
@@ -68,6 +69,7 @@ function App() {
         <Route path="/Services" element={<Services />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/AdminLogin" element={<AdminLogin />} />
         <Route path="/Bio" element={<Bio />} />
         <Route path="/Consultation" element={<Consultation />} />
         <Route path="/DispatchAgreement" element={<DispatchAgreement />} />
