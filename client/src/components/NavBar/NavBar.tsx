@@ -9,17 +9,17 @@ const NavBar = () => {
 			<nav className="navbar navbar-expand-lg navbar-light bg-light">
 				<div className="container-fluid">
 					<Link to="/" className="navbar-brand">
-						Let's Go
+						{/* GADZ Connet */}
 						{/* <img width="130px" height="70px"src="{% static "series/images/logo.png"%}" style="position:relative;top:-10px">
           <img width="130px" height="70px"src="{% static "series/images/logo.png"%}" />
           <img width="130px" height="70px"src="{% static "series/images/logo.png"%}"/> */}
 						{/* <!-- Logo Image --> */}
-						{/* <img
+						<img
               src="./favicon-32x32.png"
               width="45"
               alt="Stay Safe Logo"
-              class="d-inline-block align-middle mr-2"
-            /> */}
+              className="d-inline-block align-middle mr-2"
+            />
 						{/* <!-- Logo Text --> */}
 						{/* <span class="text-uppercase font-weight-bold">Travel Safe</span> */}
 					</Link>

@@ -44,9 +44,7 @@ app.use(routes);
 // Test routes to see if ther server is talking to the client
 // =============================================================
 app.get("/api/config", (req, res) => {
-	res.json({
-		success: true,
-	});
+  res.json({ success: true });
 });
 app.get("/apiFun", (req, res) => {
   res.send("API FUN");
@@ -63,9 +61,8 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync().then(function() {
-  app.listen(PORT, function() {
-	console.log(`🌎 App is running on http://localhost:${PORT}`);
+db.sequelize.sync().then(function () {
+  app.listen(PORT, function () {
+    console.log(`🌎 App is running on http://localhost:${PORT}`);
   });
 });
-  
