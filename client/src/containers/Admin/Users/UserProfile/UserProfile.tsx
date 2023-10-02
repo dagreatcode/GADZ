@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "react-bootstrap/Button"
 
 const UserProfile = () => {
   return (
@@ -214,9 +215,9 @@ const UserProfile = () => {
                 Check me out
               </label>
             </div>
-            <button type="submit" className="btn btn-primary">
+            <Button type="submit" className="btn btn-primary">
               Submit
-            </button>
+            </Button>
           </form>
         </div>
       </div>
