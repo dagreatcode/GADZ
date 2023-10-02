@@ -9,27 +9,16 @@ router.post("/", (req, res) => {
 });
 
 router.get("/allAdmins", (req, res) => {
-    // ALL the Things should be displayed
-    // DB query
-    db.Admin.findAll().then((allAdmins) => {
-      res.json(allAdmins);
-    });
+  db.Admin.findAll().then((allAdmins) => {
+    res.json(allAdmins);
   });
+});
 
-  router.get("/viewAdmin", (req, res) => {
-    db.Admin.findAll().then((allAdmins) => {
-      res.send(allAdmins);
-  //     var adminAdmin = req.params.apiFun;
-	// console.log(adminAdmin);
-      console.log(allAdmins);
-    });
+router.get("/viewAdmin", (req, res) => {
+  db.Admin.findAll().then((allAdmins) => {
+    res.send(allAdmins);
+    console.log(allAdmins);
   });
-  // router.get("/api/render", (req, res) => {
-  //   // ALL the Things should be displayed
-  //   // DB query
-  //   db.Admin.findAll().then((allAdmins) => {
-  //     res.render("/Home");
-  //   });
-  // });
+});
 
 module.exports = router;
