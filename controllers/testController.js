@@ -25,9 +25,7 @@ module.exports = {
     })
       .then((dbModel) => res.json(dbModel))
       .catch((err) => {
-        res.status(500).send({
-          message: "Error updating User with id=" + id,
-        });
+        res.status(500).json(err);
       });
   },
   // Do Not Use. Company wants to Archive User/ update to Inactivate
