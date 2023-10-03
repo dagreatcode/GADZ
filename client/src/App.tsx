@@ -33,10 +33,9 @@ import CreateTicket from "./containers/User/IT-Ticket/CreateTicket";
 import Profile from "./containers/User/Profile/ProfileUpdate";
 import UserDash from "./containers/User/UserDash/Dash";
 import AdminAllUsers from "./containers/Admin/Users/AllUsers";
-import AdminUserProfile from "./containers/Admin/Users/UserProfile/UserProfile"
+import AdminUserProfile from "./containers/Admin/Users/UserProfile/UserProfile";
 
 function App() {
-
   // // const comments = useSelector((state) => state.comments);
   // // const myPosts = useSelector((state) => state.myArticles);
   // const error = useSelector((state) => state.error);
@@ -64,7 +63,7 @@ function App() {
 
   return (
     <Router>
-      <NavBar /> 
+      <NavBar />
       <Routes>
         <Route path="/Services" element={<Services />} />
         <Route path="/AboutUs" element={<AboutUs />} />
@@ -90,9 +89,9 @@ function App() {
         <Route path="/CreateTicket" element={<CreateTicket />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/UserDash" element={<UserDash />} />
-        <Route path="/" element={<Home />} />            
+        <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
-       </Routes>
+      </Routes>
     </Router>
   );
 }
