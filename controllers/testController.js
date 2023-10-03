@@ -11,7 +11,7 @@ module.exports = {
   findOne: function (req, res) {
     db.User.findByPk(req.params.id)
       .then((dbModel) => res.json(dbModel))
-      .catch((err) => res.status(404).json(err));
+      .catch((err) => res.status (404).json(err));
   },
   create: function (req, res) {
     db.User.create(req.body)
