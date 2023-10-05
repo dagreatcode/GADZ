@@ -121,7 +121,10 @@ const Footer = () => {
           className="text-center p-4"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.025)" }}
         >
-          {"© 2021 Copyright by: GADZConnect and "}
+          {
+            "© 2021 Copyright Global Asset Dispatching, LLC All Rights Reserved. n\
+             All other registered trademarks herein are the property of their respective owners. and "
+          }
           <Link className="text-reset fw-bold" to="http://vincentkendrick.com/">
             {"Powered By"}
           </Link>
