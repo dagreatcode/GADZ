@@ -13,11 +13,13 @@ function AboutUs() {
           <table className="data">
             <tr>
               <td>
-                <Link to="/Bio">Biography</Link>
+                <Link to="/Bio">{"Biography"}</Link>
               </td>
               <td>
-                <Link to="/Consultation">Consultation</Link>
-              </td>
+                <Link to="/Consultation">{"Consultation"}</Link>
+              </td>          
+            </tr>
+            <tr>
               <td>
                 <Link to="/DispatchAgreement">Dispatch Agreement</Link>
               </td>
@@ -27,7 +29,6 @@ function AboutUs() {
             </tr>
           </table>
           <Video1 />
-          <div></div>
         </div>
       </div>
     </>
