@@ -28,7 +28,7 @@ function AboutUs() {
               </td>
             </tr>
           </table>
-          <Video1 />
+          <Video1 /> 
         </div>
       </div>
     </>
