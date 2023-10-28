@@ -1,5 +1,6 @@
 import React from "react";
 import Video1 from "../../components/Banner/Banner";
+import Carousel from "../../components/Carousel/Carousel";
 import { Link } from "react-router-dom";
 
 function AboutUs() {
@@ -29,6 +30,7 @@ function AboutUs() {
             </tr>
           </table>
           <Video1 /> 
+          <Carousel />
         </div>
       </div>
     </>

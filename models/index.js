@@ -20,7 +20,7 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env.DATABASE_URL);
+  sequelize = new Sequelize(process.env.DATABASE_URL); // Example for postgres
   (async () => {
     try {
       await sequelize.authenticate();

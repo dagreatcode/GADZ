@@ -7,8 +7,8 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const UserController = require("./controllers/UserAPIRoutes.js");
-const AdminController = require("./controllers/AdminController.js");
+const userController = require("./controllers/userAPIRoutes.js");
+const adminController = require("./controllers/adminController.js");
 // const inquirer = require("inquirer"); // Create Console App
 const routes = require("./routes");
 // Set server PORT
@@ -33,8 +33,8 @@ var db = require("./models");
 
 // // Outside Routes
 // =============================================================
-app.use("/api/user", UserController);
-app.use("/api/admin", AdminController);
+app.use("/api/user", userController);
+app.use("/api/admin", adminController);
 app.use(routes);
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
