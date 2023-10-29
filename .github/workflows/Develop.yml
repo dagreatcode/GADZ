@@ -26,6 +26,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+      env:
+        # Prevent running out of memory by setting RAM to 4GB.
+        # https://github.com/ScaCap/action-surefire-report/issues/17#issuecomment-677015255
+        NODE_OPTIONS: '--max-old-space-size=4096'
     - run: npm ci
     - run: npm run build --if-present
     - run: npm run lint

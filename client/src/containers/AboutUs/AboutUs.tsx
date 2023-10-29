@@ -1,6 +1,7 @@
 import React from "react";
 import Video1 from "../../components/Banner/Banner";
-import Carousel from "../../components/Carousel/Carousel";
+import Carousel from "../../components/Carousel/ServicesCarousel";
+import Maps from "../../components/Maps/Maps";
 import { Link } from "react-router-dom";
 
 function AboutUs() {
@@ -18,7 +19,7 @@ function AboutUs() {
               </td>
               <td>
                 <Link to="/Consultation">{"Consultation"}</Link>
-              </td>          
+              </td>
             </tr>
             <tr>
               <td>
@@ -29,8 +30,9 @@ function AboutUs() {
               </td>
             </tr>
           </table>
-          <Video1 /> 
+          <Video1 />
           <Carousel />
+          <Maps />
         </div>
       </div>
     </>

@@ -13,6 +13,9 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import {CacheableResponsePlugin} from 'workbox-cacheable-response';
+import {RangeRequestsPlugin} from 'workbox-range-requests';
+import {generateSW} from 'workbox-build';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -24,6 +27,27 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 
+generateSW({
+  swDest: '/',
+  maximumFileSizeToCacheInBytes: 5000000, // <---- increasing the file size to cached 5mb
+});
+
+// self.addEventListener("install", (event) => {
+//   event.waitUntil(
+//     addResourcesToCache([
+//       "/",
+//       "/index.html",
+//       "/style.css",
+//       "/app.js",
+//       "/image-list.js",
+//       "/star-wars-logo.jpg",
+//       "/static/media/Earth.1795651353f36bde5c3b.mp4 ",
+//       "/gallery/myLittleVader.jpg",
+//       "/gallery/snowTroopers.jpg",
+//       // maximumFileSizeToCacheInBytes: 17 * 1024 * 1024, // For large bundles
+//     ]),
+//   );
+// });
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
@@ -67,6 +91,25 @@ registerRoute(
       new ExpirationPlugin({ maxEntries: 50 }),
     ],
   })
+);
+
+
+
+registerRoute(
+  ({request}) => {
+    const {destination} = request;
+
+    return destination === 'video' || destination === 'audio'
+  },
+  new StaleWhileRevalidate({
+    cacheName: 'your-cache-name-here',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [200]
+      }),
+      new RangeRequestsPlugin(),
+    ],
+  }),
 );
 
 // This allows the web app to trigger skipWaiting via
