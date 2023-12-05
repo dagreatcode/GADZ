@@ -24,13 +24,9 @@ function Banner() {
         <h1>GLOBAL ASSET DISPATCHING WE FOCUS ON MAXIMIZING YOUR PROFIT </h1>
       </video>
       {/* <video autoPlay muted controls src='./Earth.mp4' /> */}
-      {/* <br/>
-      <br/>
-      <br/>
-      <br/>
-      <br/> */}
+   
 
-      <h1 className="jumbotron display-3" style={{margin: "50px"}}>Our Services</h1>
+      <h1 className="jumbotron display-3" style={{padding: "100px"}}>Our Services</h1>
       
       <Carousel autoPlay infiniteLoop interval="6000">
         <div>
@@ -76,6 +72,26 @@ function Banner() {
           </p>
         </div>
       </Carousel>
+
+      <div>Maps</div>
+      <iframe
+        title="myFrame"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613507864!3d-6.194741395493371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sPT%20Kulkul%20Teknologi%20Internasional!5e0!3m2!1sen!2sid!4v1601138221085!5m2!1sen!2sid"
+        // frameBorder="0"
+        width="90%"
+        height="600"
+        style={{
+          padding: "0",
+          border: "0",
+          margin: "auto",
+          allowFullScreen: "",
+          ariaHidden: "false",
+          tabIndex: "0",
+          display: "flex",
+          justifyContent: "center",
+          textAlign: "center",
+        }}
+      />
     </>
   );
 }
