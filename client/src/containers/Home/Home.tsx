@@ -10,19 +10,19 @@ const Home = () => {
     <div className="container" style={{ textAlign: "center" }}>
       <div className="row jumbotron">
         <div className="display-4" style={{ padding: "40px" }}>
-          Welcon To GADZConnect!
+          Welcome To GADZConnect!
         </div>
         {/* <Link to="/Admin">Admin Pages After login</Link><br/>
       <Link to="/User">User Pages After Login</Link> */}
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src="https://placehold.co/600x400/gray/white" alt="" />
+        <div>It's A New World</div>
         <div className="container" style={{textAlign: "center"}}>
           <div className="row" >
-            <div className="col-sm-6">
-              <img src="https://placehold.co/500x500/gray/white" alt="" />
-            </div>
-            <div className="col-sm-6">
+            <div className="col-md-12">
+              <img src="https://placehold.co/600x400/gray/white" alt="" />
+         
               <h1 className="jumbotron display-4">What We Offer?</h1>
             </div>
           </div>
@@ -31,7 +31,7 @@ const Home = () => {
               <h1 className="jumbotron display-4">We are Global</h1>
             </div>
             <div className="col-md-6">
-              <img src="https://placehold.co/500x500/gray/white" alt="" />
+              <img src="https://placehold.co/600x400/gray/white" alt="" />
             </div>
           </div>
         </div>
