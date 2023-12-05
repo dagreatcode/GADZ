@@ -7,6 +7,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 function Banner() {
   return (
     <>
+    <h1 className="jumbotron display-3">Time fly's when you are having fun</h1>
       {/* <iframe 
         style={{border:"1", margin:"50px"}}
         width={1222} height={887}
@@ -18,6 +19,7 @@ function Banner() {
       ></iframe> */}
       <video autoPlay loop muted>
         <source src={Video1} type="video/mp4" />
+        <h1>GLOBAL ASSET DISPATCHING WE FOCUS ON MAXIMIZING YOUR PROFIT </h1>
       </video>
       {/* <video autoPlay muted controls src='./Earth.mp4' /> */}
 
@@ -36,7 +38,7 @@ function Banner() {
         </div>
       </Carousel> */}
 
-      <h1>Our Services</h1>
+      <h1 className="jumbotron display-3">Our Services</h1>
       <div
         id="carouselExampleAutoplaying"
         className="carousel slide carousel-fade"
