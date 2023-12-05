@@ -23,17 +23,12 @@ function AboutUs() {
             About Us
           </div>
           <div>
-            <div>
-              <Link to="/Bio">Biography</Link>
-            </div>
-            <div>
-              <Link to="/Consultation">Consultation</Link>
-            </div>
-          </div>
-          <div>
-            <Link to="/DispatchAgreement">Dispatch Agreement</Link>
-            <br />
-            <Link to="/RoadFreight">Road Freight</Link>
+            <nav>
+              <Link to="/Bio">Biography</Link> {"| "} 
+              <Link to="/Consultation">Consultation</Link> {"| "}
+              <Link to="/DispatchAgreement">Dispatch Agreement</Link> {"| "}
+              <Link to="/RoadFreight">Road Freight</Link>
+            </nav>
           </div>
           <Video1 />
           {/* <iframe 
