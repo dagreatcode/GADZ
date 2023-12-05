@@ -1,7 +1,7 @@
 import React from "react";
 import Video1 from "./Earth.mp4";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { Carousel } from "react-responsive-carousel";
+// import { Carousel } from "react-responsive-carousel";
 // import image1 from "https://placehold.co/600x400"
 
 function Banner() {
