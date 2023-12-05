@@ -19,6 +19,9 @@ https://www.cockroachlabs.com/docs/stable/connect-to-the-database?filters=javasc
 https://cockroachlabs.cloud/cluster/320f50d5-4817-4fcb-b79c-470fea12b02c/overview?cluster-type=serverless
 
 http://globalassetdispatching.com/
+https://www.facebook.com/global.asset.dispatching.service
+https://www.instagram.com/Global_assetleader/
+http://twitter.com/
 
 
 ## Description 
