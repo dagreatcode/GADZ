@@ -14,7 +14,7 @@ function AboutUs() {
           role="button"
           aria-disabled="true"
         >
-          <h1 style={{ fontSize: "50px" }}>972-597-8040</h1>
+          <h1 style={{ fontSize: "25px" }}>972-597-8040</h1>
         </a>
       </div>
       <div className="container" style={{ textAlign: "center" }}>
