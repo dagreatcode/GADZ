@@ -18,7 +18,7 @@ const Home = () => {
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src="https://placehold.co/600x400/gray/white" alt="" />
         <div>It's A New World</div>
-        <div className="container" style={{textAlign: "center"}}>
+        <div style={{textAlign: "center"}}>
           <div className="row" >
             <div className="col-md-12">
               <img src="https://placehold.co/600x400/gray/white" alt="" />
