@@ -10,7 +10,7 @@ const Footer = () => {
             <span>Get connected with us on social networks:</span>
           </div>
           <div>
-            <Link to="" className="me-4 link-secondary">
+            <Link to="https://www.facebook.com/global.asset.dispatching.service" className="me-4 link-secondary">
               <i className="fab fa-facebook-f"></i>
             </Link>
             <Link to="" className="me-4 link-secondary">
@@ -19,7 +19,7 @@ const Footer = () => {
             <Link to="" className="me-4 link-secondary">
               <i className="fab fa-google"></i>
             </Link>
-            <Link to="" className="me-4 link-secondary">
+            <Link to="https://www.instagram.com/Global_assetleader/" className="me-4 link-secondary">
               <i className="fab fa-instagram"></i>
             </Link>
             <Link to="" className="me-4 link-secondary">
