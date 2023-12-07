@@ -3,6 +3,9 @@ import React from "react";
 // import LiveChat from '../../components/LiveChat/LiveChat';
 // import Comments from '../../components/Comments/Comments';
 // import { useSelector } from 'react-redux';
+import Truck from "./images/truck.png";
+import Logistics from "./images/logistics.png";
+import realMeetsBW from "./images/realMeetsBW.jpeg"
 
 const Home = () => {
   // const comments = useSelector((state) => state.comments);
@@ -16,7 +19,7 @@ const Home = () => {
       <Link to="/User">User Pages After Login</Link> */}
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
-        <img src="https://placehold.co/600x400/gray/white" alt="" />
+        <img src={Truck} alt="Big Truck" />
         <div>It's A New World</div>
         <div style={{textAlign: "center"}}>
           <div className="row" >
@@ -31,7 +34,7 @@ const Home = () => {
               <h1 className="jumbotron display-4">We are Global</h1>
             </div>
             <div className="col-md-6">
-              <img src="https://placehold.co/600x400/gray/white" alt="" />
+              <img src={Logistics} alt="Logistics" />
             </div>
           </div>
         </div>
