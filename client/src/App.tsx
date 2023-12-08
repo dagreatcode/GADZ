@@ -9,6 +9,7 @@ import {
 // import { getComments } from "./redux/actions/index";
 import Home from "./containers/Home/Home";
 import NavBar from "./components/NavBar/NavBar";
+import Footer from "./components/Footer/Footer";
 import NotFound from "./containers/NotFound/NotFound";
 import ContactUs from "./containers/ContactUs/ContactUs";
 import AboutUs from "./containers/AboutUs/AboutUs";
@@ -92,6 +93,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </Router>
   );
 }
