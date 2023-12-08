@@ -5,7 +5,7 @@ import React from "react";
 // import { useSelector } from 'react-redux';
 import Truck from "./images/truck.png";
 import Logistics from "./images/logistics.png";
-import realMeetsBW from "./images/realMeetsBW.jpeg"
+// import realMeetsBW from "./images/realMeetsBW.jpeg"
 
 const Home = () => {
   // const comments = useSelector((state) => state.comments);
