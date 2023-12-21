@@ -21,20 +21,20 @@ const Home = () => {
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src={Truck} alt="Big Truck" />
         <div>It's A New World</div>
-        <div style={{textAlign: "center"}}>
-          <div className="row" >
+        <div style={{ textAlign: "center" }}>
+          <div className="row">
             <div className="col-md-12">
-              <img src="https://placehold.co/600x400/gray/white" alt="" />
-         
+              <img src="https://placehold.co/600x400/gray/white" style={{width:"100%"}} alt="" />
+
               <h1 className="jumbotron display-4">What We Offer?</h1>
             </div>
           </div>
-          <div className="row" >
-          <div className="col-md-6">
+          <div className="row">
+            <div className="col-md-6">
               <h1 className="jumbotron display-4">We are Global</h1>
             </div>
             <div className="col-md-6">
-              <img src={Logistics} alt="Logistics" />
+              <img src={Logistics} style={{width:"100%"}} alt="Logistics" />
             </div>
           </div>
         </div>

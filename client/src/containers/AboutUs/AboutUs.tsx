@@ -24,7 +24,7 @@ function AboutUs() {
           </div>
           <div>
             <nav>
-              <Link to="/Bio">Biography</Link> {"| "} 
+              <Link to="/Bio">Biography</Link> {"| "}
               <Link to="/Consultation">Consultation</Link> {"| "}
               <Link to="/DispatchAgreement">Dispatch Agreement</Link> {"| "}
               <Link to="/RoadFreight">Road Freight</Link>
