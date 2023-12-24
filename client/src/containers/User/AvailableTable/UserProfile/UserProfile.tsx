@@ -5,7 +5,17 @@ const UserProfile = () => {
   return (
     <>
       <div>UserProfile</div>
-      <Link to="/MessageUser">Message user</Link><br/>
+      {/* 
+      * First an Last Name
+      * Customer since
+      * Type of Owner
+      * Available Status
+      * All Services Available
+      * Add Business Button to save
+      * Locations      
+      * * Message Customer
+      */}
+       <Link to="/MessageUser">Message user</Link><br/>
     </>
   )
 }
