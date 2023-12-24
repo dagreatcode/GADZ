@@ -1,12 +1,12 @@
 import React from "react";
-import Image1 from "./images/realMeets.jpeg";
+import Image1 from "./images/realMeetsBW.jpeg";
 
-const Consultation = () => {
+const DispatchAgreement = () => {
   return (
     <div className="container" style={{ textAlign: "center" }}>
       <div className="row jumbotron">
         <div className="display-4" style={{ padding: "40px" }}>
-          Consultation
+          DispatchAgreement
         </div>
         <img src={Image1} style={{ width: "100%" }} alt="talks" />
       </div>
@@ -14,4 +14,4 @@ const Consultation = () => {
   );
 };
 
-export default Consultation;
+export default DispatchAgreement;

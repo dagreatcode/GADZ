@@ -17,14 +17,14 @@ function AboutUs() {
           <h1 style={{ fontSize: "25px" }}>972-597-8040</h1>
         </a>
       </div>
-      <div className="container" style={{ textAlign: "center" }}>
+      <div className="container2" style={{ textAlign: "center" }}>
         <div className="row jumbotron">
           <div className="display-4" style={{ padding: "40px" }}>
             About Us
           </div>
           <div>
             <nav>
-              <Link to="/Bio">Biography</Link> {"| "} 
+              <Link to="/Bio">Biography</Link> {"| "}
               <Link to="/Consultation">Consultation</Link> {"| "}
               <Link to="/DispatchAgreement">Dispatch Agreement</Link> {"| "}
               <Link to="/RoadFreight">Road Freight</Link>
