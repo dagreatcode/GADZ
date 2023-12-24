@@ -22,11 +22,11 @@ function ContactUs() {
           </div>
           <div className="mb-3">
             <label htmlFor="exampleFormControlTextarea1" className="form-label">
-              Example textarea
+              Enter your message
             </label>
             <textarea
               className="form-control"
-              placeholder="Enter About your description"
+              placeholder="Tell us what you need."
               id="exampleFormControlTextarea1"
               rows={3}
             ></textarea>
