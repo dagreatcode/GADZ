@@ -24,7 +24,11 @@ const Home = () => {
         <div style={{ textAlign: "center" }}>
           <div className="row">
             <div className="col-md-12">
-              <img src="https://placehold.co/600x400/gray/white" style={{width:"100%"}} alt="" />
+              <img
+                src="https://placehold.co/600x400/gray/white"
+                style={{ width: "100%" }}
+                alt=""
+              />
 
               <h1 className="jumbotron display-4">What We Offer?</h1>
             </div>
@@ -34,7 +38,7 @@ const Home = () => {
               <h1 className="jumbotron display-4">We are Global</h1>
             </div>
             <div className="col-md-6">
-              <img src={Logistics} style={{width:"100%"}} alt="Logistics" />
+              <img src={Logistics} style={{ width: "100%" }} alt="Logistics" />
             </div>
           </div>
         </div>
