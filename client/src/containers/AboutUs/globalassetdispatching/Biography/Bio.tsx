@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Image1 from "./images/Connect.jpeg"
 
 const Bio = () => {
   return (
@@ -29,6 +30,7 @@ const Bio = () => {
               <Link to="/RoadFreight">Road Freight</Link>
             </nav>
           </div>
+          <img src={Image1} alt="connecting dots" />
         </div>
       </div>
     </>
