@@ -26,7 +26,7 @@ const Home = () => {
         <div style={{ textAlign: "center" }}>
           <div className="row">
             <div className="col-md-12">
-            <img src={Town} alt="Big Town top view" />
+            <img src={Town} style={{ width: "100%", height: "75%" }} alt="Big Town top view" />
 
               {/* <img
                 src="https://placehold.co/600x400/gray/white"
