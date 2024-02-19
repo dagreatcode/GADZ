@@ -1,6 +1,7 @@
 import React from "react";
 import Video1 from "../../components/Banner/Banner";
 import { Link } from "react-router-dom";
+import Image1 from "./images/Semi-Truck.jpeg";
 
 function AboutUs() {
   return (
@@ -29,6 +30,7 @@ function AboutUs() {
               <Link to="/DispatchAgreement">Dispatch Agreement</Link> {"| "}
               <Link to="/RoadFreight">Road Freight</Link>
             </nav>
+            <img src={Image1} style={{ width: "100%" }} alt="Big Green Truck" />
           </div>
           <Video1 />
           {/* <iframe 
