@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from "react-router-dom";
+import Image1 from "./images/shipping.jpeg"
+import Image2 from "./images/Semi-Truck-Photo-3707432807.jpeg"
 
 const RoadFreight = () => {
   return (
@@ -30,7 +32,8 @@ const RoadFreight = () => {
             <Link to="/RoadFreight">Road Freight</Link>
           </nav>
         </div>
-        {/* <img src={Image1} style={{ width: "100%" }} alt="talks" /> */}
+        <img src={Image2} style={{ width: "100%" }} alt="talks" />
+        <img src={Image1} style={{ width: "100%" }} alt="talks" />
       </div>
     </div>
   </>

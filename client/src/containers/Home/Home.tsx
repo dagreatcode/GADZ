@@ -5,6 +5,8 @@ import React from "react";
 // import { useSelector } from 'react-redux';
 import Truck from "./images/truck.png";
 import Logistics from "./images/logistics.png";
+import Town from "./images/town.jpeg";
+
 // import realMeetsBW from "./images/realMeetsBW.jpeg"
 
 const Home = () => {
@@ -24,11 +26,13 @@ const Home = () => {
         <div style={{ textAlign: "center" }}>
           <div className="row">
             <div className="col-md-12">
-              <img
+            <img src={Town} style={{ width: "100%", height: "75%" }} alt="Big Town top view" />
+
+              {/* <img
                 src="https://placehold.co/600x400/gray/white"
                 style={{ width: "100%" }}
                 alt=""
-              />
+              /> */}
 
               <h1 className="jumbotron display-4">What We Offer?</h1>
             </div>

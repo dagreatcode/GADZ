@@ -16,7 +16,7 @@ const Login = () => {
           <label htmlFor="exampleFormControlInput1" className="form-label">Password</label>
           <input type="password" className="form-control" id="exampleFormControlInput1" placeholder="name@example.com" />
         </div>
-        <Button style={{width: "100px", margin: "auto"}}>Go</Button>
+        <Button style={{width: "100px", margin: "auto"}}>Connect</Button>
       </form>
       </div>
       <div className="row">
