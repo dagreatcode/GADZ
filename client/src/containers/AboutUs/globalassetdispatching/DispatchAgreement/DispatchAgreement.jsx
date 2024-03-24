@@ -19,6 +19,7 @@ const DispatchAgreement = () => {
       </div>
 
       <div className="container2" style={{ textAlign: "center" }}>
+      <Link to="/Agreement">Our Agreement With You </Link>
         <div className="row jumbotron">
           <div className="display-4" style={{ padding: "40px" }}>
             DispatchAgreement
@@ -33,6 +34,7 @@ const DispatchAgreement = () => {
           </div>
           <img src={Image1} style={{ width: "100%" }} alt="talks" />
         </div>
+        <Link to="/Agreement">Let's Agree</Link>
       </div>
     </>
   );
