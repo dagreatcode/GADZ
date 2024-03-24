@@ -124,12 +124,7 @@ function Agreement() {
         getCanvas(), getTrimmedCanvas(), and getSignaturePad() are new. */}
         {/* getTrimmedCanvas(): canvas, creates a copy of the canvas and returns a trimmed version of it, with all whitespace removed.
         getSignaturePad(): SignaturePad, returns the underlying SignaturePad reference. */}
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
-        />
+      <input type="text" name="name" required />
         <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
@@ -157,12 +152,7 @@ function Agreement() {
         <br /> <br />
         <label htmlFor="agree">Company (CARRIER)</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
-        />{" "}
+        <input type="text" name="name" required />{" "}
         <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
