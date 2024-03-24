@@ -18,11 +18,17 @@ function Agreement() {
       {/* Create a PDF to send to the admin email after customer fills it out */}
       <div>Agreement</div>
       <form
+        method="POST"
+        encType="multipart/form-data"
         className="agreement"
-        action="/sendAgreement"
-        method="post"
+        action="/declare backend route/"
         onSubmit={handleSubmit}
       >
+        <br />
+        Email Address:
+        <br />
+        <input type="email" name="email" required />
+        <br />
         <br />
         This Dispatcher-Carrier Agreement (hereinafter "Agreement' is made and
         entered on <input type="date" name="dob" /> (the "effective date") by
@@ -68,23 +74,37 @@ function Agreement() {
         CARRIER desires to retain DISPATCHER by executing a Limited, Power of
         Attorney to find, negotiate, and procure freight for and dispatch
         CARRIER's equipment at a flat rate of{" "}
-        <input type="text" name="name" required />% of the gross of each load.
-        Additional billing services may be procured at a rate of $
-        <input type="text" name="name" required /> per invoice. All DISPATCHER
-        fees must be paid after each load has been booked and accepted by the
-        CARRIER. CARRIER must, prior to the implementation, of this agreement
-        furnish to DISPATCHER the following: <br />
+        <input type="number" id="quantity" name="quantity" required />% of the
+        gross of each load. Additional billing services may be procured at a
+        rate of $
+        <input type="number" id="quantity" name="quantity" required /> per
+        invoice. All DISPATCHER fees must be paid after each load has been
+        booked and accepted by the CARRIER. CARRIER must, prior to the
+        implementation, of this agreement furnish to DISPATCHER the following:{" "}
+        <br />
         <br />
         1. A signed Limited Power of Attorney form (optional) <br />
         <br />
         2. Copy of CARRIER's Motor Carrier Authority <br />
         <br />
-        3. This AGREEMENT form is completed dated and signed<br />
+        3. This AGREEMENT form is completed dated and signed
+        <br />
         <br />
         4. Copy of Insurance Certificates, listing DISPATCHER as a certificate
         holder. **DISPATCHER requires at least $1,000,000 liability insurance
         and at least $100;000 cargo coverage. **Power-only carriers must also
-        have $40,000 non-owned trailer or interchange insurance.
+        have $40,000 non-owned trailer or interchange insurance. <br />
+        <br />
+        5. A signed W-9 <br />
+        <br />
+        6. Company Profile Sheet (including a list if three established
+        references) <br />
+        <br />
+        7. Cell phone or contact phone number and name of main company contact
+        <br />
+        <br />
+        <br />
+        <br />
         <br />
         {/* <br />
         Email Address:
@@ -98,16 +118,66 @@ function Agreement() {
         </select>
         <br /> 
         <input type="checkbox" id="agree" name="agree" required /><br/>*/}
-                <label htmlFor="agree">Please Sign Below</label>
-
-        <br/>
-      
+        <label htmlFor="agree">Company (DISPATCH)</label>
+        <br />
+        {/* The API methods are mostly just wrappers around signature_pad's API. on() and off() will, in addition, bind/unbind the window resize event handler. 
+        getCanvas(), getTrimmedCanvas(), and getSignaturePad() are new. */}
+        {/* getTrimmedCanvas(): canvas, creates a copy of the canvas and returns a trimmed version of it, with all whitespace removed.
+        getSignaturePad(): SignaturePad, returns the underlying SignaturePad reference. */}
+      <input type="text" name="name" required />
+        <br />
+        <label htmlFor="agree">Authorized Signature</label>
+        <br />
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor= 'rgba(5,5,5,5)' 
-          penColor="white"
+          // backgroundColor="rgba(5,5,5,5)"
+          backgroundColor="gray"
+          penColor="black"
           canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
         />
+        <br />
+        <label htmlFor="agree">Printed Name/Title</label>
+        <br />
+        <SignatureCanvas
+          // style={{border:"black solid", backgroundColor:"white"}}
+          backgroundColor="gray"
+          penColor="black"
+          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+        />{" "}
+        <br />
+        <label htmlFor="agree">Date</label>
+        <br />
+        <input type="date" name="dob" /> <br />
+        <br />
+        <br /> <br />
+        <label htmlFor="agree">Company (CARRIER)</label>
+        <br />
+        <input type="text" name="name" required />{" "}
+        <br />
+        <label htmlFor="agree">Authorized Signature</label>
+        <br />
+        <SignatureCanvas
+          // style={{border:"black solid", backgroundColor:"white"}}
+          backgroundColor="gray"
+          penColor="black"
+          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+        />{" "}
+        <br />
+        <label htmlFor="agree">Printed Name/Title</label>
+        <br />
+        <SignatureCanvas
+          // style={{border:"black solid", backgroundColor:"white"}}
+          backgroundColor="gray"
+          penColor="black"
+          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+        />
+        <br />
+        <label htmlFor="agree">Date</label>
+        <br />
+        <input type="date" name="dob" /> <br />
+        <br />
+        <br />
+        {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
         <input type="submit" value="Submit" />
       </form>
