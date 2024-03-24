@@ -35,6 +35,8 @@ import Profile from "./containers/User/Profile/ProfileUpdate";
 import UserDash from "./containers/User/UserDash/Dash";
 import AdminAllUsers from "./containers/Admin/Users/AllUsers";
 import AdminUserProfile from "./containers/Admin/Users/UserProfile/UserProfile";
+import Agreement from "./containers/AboutUs/globalassetdispatching/DispatchAgreement/Agreement/Agreement";
+
 
 function App() {
   // // const comments = useSelector((state) => state.comments);
@@ -73,6 +75,7 @@ function App() {
         <Route path="/Bio" element={<Bio />} />
         <Route path="/Consultation" element={<Consultation />} />
         <Route path="/DispatchAgreement" element={<DispatchAgreement />} />
+        <Route path="/Agreement" element={<Agreement />} />
         <Route path="/RoadFreight" element={<RoadFreight />} />
         <Route path="/Admin" element={<Admin />} />
         <Route path="/AdminAllUsers" element={<AdminAllUsers />} />
