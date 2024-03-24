@@ -93,12 +93,12 @@ function Agreement() {
         4. Copy of Insurance Certificates, listing DISPATCHER as a certificate
         holder. **DISPATCHER requires at least $1,000,000 liability insurance
         and at least $100;000 cargo coverage. **Power-only carriers must also
-        have $40,000 non-owned trailer or interchange insurance.
+        have $40,000 non-owned trailer or interchange insurance. <br />
         <br />
-        5. A signed W-9
+        5. A signed W-9 <br />
         <br />
         6. Company Profile Sheet (including a list if three established
-        references)
+        references) <br />
         <br />
         7. Cell phone or contact phone number and name of main company contact
         <br />
