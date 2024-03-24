@@ -79,8 +79,9 @@ function Agreement() {
         <br />
         2. Copy of CARRIER's Motor Carrier Authority <br />
         <br />
-        3. This AGREEMENT form is completed dated and signed
-        (B1IRtR8Qoy×W1/517042be3a60eb f47041cbb282104SPATCHER as a certificate
+        3. This AGREEMENT form is completed dated and signed<br />
+        <br />
+        4. Copy of Insurance Certificates, listing DISPATCHER as a certificate
         holder. **DISPATCHER requires at least $1,000,000 liability insurance
         and at least $100;000 cargo coverage. **Power-only carriers must also
         have $40,000 non-owned trailer or interchange insurance.
@@ -95,14 +96,16 @@ function Agreement() {
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        <br /> */}
-        <input type="checkbox" id="agree" name="agree" required /><br/>
-        <label htmlFor="agree">Please Sign Below</label>
-        <br />
-        <label htmlFor="agree">Sign</label><br/>
-        Please Sign Above:
+        <br /> 
+        <input type="checkbox" id="agree" name="agree" required /><br/>*/}
+                <label htmlFor="agree">Please Sign Below</label>
+
+        <br/>
+      
         <SignatureCanvas
-          penColor="green"
+          // style={{border:"black solid", backgroundColor:"white"}}
+          backgroundColor= 'rgba(5,5,5,5)' 
+          penColor="white"
           canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
         />
         <br />
