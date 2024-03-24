@@ -33,16 +33,20 @@ function Agreement() {
         This Dispatcher-Carrier Agreement (hereinafter "Agreement' is made and
         entered on <input type="date" name="dob" /> (the "effective date") by
         and between Berhenny Dean Co, a New Jersey limited liability Company,
-        and, a Registered Motor Carrier with its principal office at
-        ("Carrier"): collectively referred to as the "Parties". WHEREAS,
-        DISPATCHER is an Independent Contractor conducting Load Tendering
-        Transitions between Freight Shippers or Freight Holders, and Carriers
-        authorized by the Federal Motor Carrier Safety Administration ("FMCS")
-        to operate as a Registered Property Carriers Pursuant to Licenses
-        issued. DISPATCHER is not a broker nor acting as a broker to the
-        CARRIER. WHEREAS, CARRIER, an independent contractor, is licensed by the
-        FMCS to operate as a for-hire motor carrier pursuant bauthority issued
-        in Number MC- <input type="text" name="name" required />
+        and, a Registered Motor Carrier with its principal office at{" "}
+        <input type="text" name="name" required />
+        ("Carrier"): collectively referred to as the "Parties". <br />
+        <br />
+        WHEREAS, DISPATCHER is an Independent Contractor conducting Load
+        Tendering Transitions between Freight Shippers or Freight Holders, and
+        Carriers authorized by the Federal Motor Carrier Safety Administration
+        ("FMCS") to operate as a Registered Property Carriers Pursuant to
+        Licenses issued. DISPATCHER is not a broker nor acting as a broker to
+        the CARRIER. <br />
+        <br />
+        WHEREAS, CARRIER, an independent contractor, is licensed by the FMCS to
+        operate as a for-hire motor carrier pursuant bauthority issued in Number
+        MC- <input type="text" name="name" required />
         <br />
         <br />
         WHEREAS, the transportation service provided by CARRIER for Freight
@@ -124,7 +128,7 @@ function Agreement() {
         getCanvas(), getTrimmedCanvas(), and getSignaturePad() are new. */}
         {/* getTrimmedCanvas(): canvas, creates a copy of the canvas and returns a trimmed version of it, with all whitespace removed.
         getSignaturePad(): SignaturePad, returns the underlying SignaturePad reference. */}
-      <input type="text" name="name" required />
+        <input type="text" name="name" required />
         <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
@@ -152,8 +156,7 @@ function Agreement() {
         <br /> <br />
         <label htmlFor="agree">Company (CARRIER)</label>
         <br />
-        <input type="text" name="name" required />{" "}
-        <br />
+        <input type="text" name="name" required /> <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
         <SignatureCanvas
