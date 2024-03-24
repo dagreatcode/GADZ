@@ -92,20 +92,26 @@ function Agreement() {
               following: <br />
               <br />
               <ol>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
+                <li>A signed Limited Power of Attorney form (optional)</li>
+                <li>Copy of CARRIER's Motor Carrier Authority</li>
+                <li>This AGREEMENT form is completed dated and signed</li>
+                <li>Copy of Insurance Certificates, listing DISPATCHER as a
+              certificate holder. **DISPATCHER requires at least $1,000,000
+              liability insurance and at least $100;000 cargo coverage.
+              **Power-only carriers must also have $40,000 non-owned trailer or
+              interchange insurance.</li>
+                <li>A signed W-9 </li>
+                <li>Company Profile Sheet (including a list if three established
+              references)</li>
+                <li>Cell phone or contact phone number and name of main company
+              contact</li>
               </ol>
               {/* ol
           li
           li
           li
         /ol */}
-              1. A signed Limited Power of Attorney form (optional) <br />
+              {/* 1. A signed Limited Power of Attorney form (optional) <br />
               <br />
               2. Copy of CARRIER's Motor Carrier Authority <br />
               <br />
@@ -126,7 +132,7 @@ function Agreement() {
               7. Cell phone or contact phone number and name of main company
               contact
               <br />
-              <br />
+              <br /> */}
               <br />
               <br />
               <br />
