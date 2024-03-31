@@ -36,6 +36,8 @@ const PostForm = () => {
 
   return (
     <>
+    {/* FIXME */}
+    {/* redirect to home page or the next agreement */}
       <form onSubmit={(e) => submit(e)}>
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
