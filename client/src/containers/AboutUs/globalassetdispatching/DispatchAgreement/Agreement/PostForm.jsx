@@ -36,52 +36,6 @@ const PostForm = () => {
 
   return (
     <>
-      {/* <form onSubmit={(e) => submit(e)}>
-        <input
-          onChange={(e) => handle(e)}
-          id="email"
-          value={data.email}
-          placeholder="email"
-          type="email"
-        ></input>
-        <input
-          onChange={(e) => handle(e)}
-          id="date"
-          value={data.date}
-          placeholder="date"
-          type="date"
-        ></input>
-        <input
-          onChange={(e) => handle(e)}
-          id="description"
-          value={data.description}
-          placeholder="description"
-          type="text"
-        ></input>
-        <input
-          onChange={(e) => handle(e)}
-          id="numberMC"
-          value={data.numberMC}
-          placeholder="numberMC"
-          type="number"
-        ></input>
-        <input
-          onChange={(e) => handle(e)}
-          id="invoiceRate"
-          value={data.invoiceRate}
-          placeholder="invoiceRate"
-          type="number"
-        ></input>
-        <input
-          onChange={(e) => handle(e)}
-          id="company"
-          value={data.company}
-          placeholder="company"
-          type="text"
-        ></input>
-        <button>Submit</button>
-      </form> */}
-
       <form onSubmit={(e) => submit(e)}>
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
@@ -306,13 +260,17 @@ const PostForm = () => {
         <br />
         <label htmlFor="agree">Date</label>
         <br />
-        {/* <input type="date" name="dob" /> <br /> */}
-        <br />
+        <input
+          onChange={(e) => handle(e)}
+          id="date"
+          value={data.date}
+          placeholder="date"
+          type="date"
+        ></input>        <br />
         <br />
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
-        {/* <input type="submit" value="Submit" /> */}
-        <button>Submit</button>
+        <input type="submit" value="Submit" />
       </form>
     </>
   );
