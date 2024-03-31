@@ -3,6 +3,18 @@ GET http://localhost:3001/blogPost/getPosts
 
 ###
 
+GET http://localhost:3001/api/agreement/view
+
+# ### 
+# POST http://localhost:3001/api/agreement/create
+# Content-Type: application/json
+
+# {
+#     "date": "02/28/2024",
+# }
+
+###
+
 GET https://www.gadzconnect.com/blogPost/getPosts
 
 6417b5b4f0a517eff08d5bdd
