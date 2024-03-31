@@ -1,18 +1,37 @@
 import React, { useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
+// import { Link } from "react-router-dom";
+import axios from "axios"; 
+
+import PostForm from "./PostForm";
 
 function Agreement() {
-  const [errors, setErrors] = useState<{ test1: string; test2: string }>({
-    test1: "",
-    test2: "",
+  const [agreementState, setAgreementState] = useState<{ date: any }>({
+    date: "",
+    // post: post,
+    // newImage: image,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("提交成功");
-    setErrors({ test1: "", test2: "" });
-    console.log(errors);
+    axios
+      .post(`/api/agreement/create`, {date: agreementState.date})
+      .then((response) => {
+        console.log(response.data);
+        // setJwt(response.data.data);
+        setAgreementState({ date: "" });
+        console.log("hello");
+        // // navigate("/");
+        // history.push("/");
+        // window.location = "/home";
+        // this.props.history.push("/home");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
   return (
     <>
       <div className="container">
@@ -33,11 +52,18 @@ function Agreement() {
               <input type="email" name="email" required />
               <br />
               <br />
-              This Dispatcher-Carrier Agreement (hereinafter "Agreement' is made
-              and entered on <input type="date" name="dob" /> (the "effective
-              date") by and between Berhenny Dean Co, a New Jersey limited
-              liability Company, and, a Registered Motor Carrier with its
-              principal office at <input type="text" name="name" required />
+              This Dispatcher-Carrier Agreement hereinafter "Agreement' is made
+              and entered on{" "}
+              <input
+                type="text"
+                name="dateSigned"
+                className="form-control"
+                id="date"
+              />{" "}
+              (the "effective date") by and between Berhenny Dean Co, a New
+              Jersey limited liability Company, and, a Registered Motor Carrier
+              with its principal office at{" "}
+              <input type="text" name="name" required />
               ("Carrier"): collectively referred to as the "Parties". <br />
               <br />
               WHEREAS, DISPATCHER is an Independent Contractor conducting Load
@@ -48,7 +74,7 @@ function Agreement() {
               nor acting as a broker to the CARRIER. <br />
               <br />
               WHEREAS, CARRIER, an independent contractor, is licensed by the
-              FMCS to operate as a for-hire motor carrier pursuant bauthority
+              FMCS to operate as a for-hire motor carrier pursuant authority
               issued in Number MC- <input type="text" name="name" required />
               <br />
               <br />
@@ -71,7 +97,7 @@ function Agreement() {
               DISPATCHER is NOT responsible for the following: billing issues,
               load problems, advances (all advances will have to be handled
               directly between CARRIER and shipper/broker), handling and storage
-              of paperwork (all documents will be sent to CARRIER, (at Carrier's
+              of paperwork all documents will be sent to CARRIER, (at Carrier's
               expense), and DOT compliance issues; <br />
               <br />
               NOW, THEREFORE, for and in consideration of the mutual covenants
@@ -95,44 +121,23 @@ function Agreement() {
                 <li>A signed Limited Power of Attorney form (optional)</li>
                 <li>Copy of CARRIER's Motor Carrier Authority</li>
                 <li>This AGREEMENT form is completed dated and signed</li>
-                <li>Copy of Insurance Certificates, listing DISPATCHER as a
-              certificate holder. **DISPATCHER requires at least $1,000,000
-              liability insurance and at least $100;000 cargo coverage.
-              **Power-only carriers must also have $40,000 non-owned trailer or
-              interchange insurance.</li>
+                <li>
+                  Copy of Insurance Certificates, listing DISPATCHER as a
+                  certificate holder. **DISPATCHER requires at least $1,000,000
+                  liability insurance and at least $100;000 cargo coverage.
+                  **Power-only carriers must also have $40,000 non-owned trailer
+                  or interchange insurance.
+                </li>
                 <li>A signed W-9 </li>
-                <li>Company Profile Sheet (including a list if three established
-              references)</li>
-                <li>Cell phone or contact phone number and name of main company
-              contact</li>
+                <li>
+                  Company Profile Sheet (including a list if three established
+                  references)
+                </li>
+                <li>
+                  Cell phone or contact phone number and name of main company
+                  contact
+                </li>
               </ol>
-              {/* ol
-          li
-          li
-          li
-        /ol */}
-              {/* 1. A signed Limited Power of Attorney form (optional) <br />
-              <br />
-              2. Copy of CARRIER's Motor Carrier Authority <br />
-              <br />
-              3. This AGREEMENT form is completed dated and signed
-              <br />
-              <br />
-              4. Copy of Insurance Certificates, listing DISPATCHER as a
-              certificate holder. **DISPATCHER requires at least $1,000,000
-              liability insurance and at least $100;000 cargo coverage.
-              **Power-only carriers must also have $40,000 non-owned trailer or
-              interchange insurance. <br />
-              <br />
-              5. A signed W-9 <br />
-              <br />
-              6. Company Profile Sheet (including a list if three established
-              references) <br />
-              <br />
-              7. Cell phone or contact phone number and name of main company
-              contact
-              <br />
-              <br /> */}
               <br />
               <br />
               <br />
@@ -226,6 +231,7 @@ function Agreement() {
               <br />
               <input type="submit" value="Submit" />
             </form>
+            < PostForm/>
           </div>
         </div>
       </div>
