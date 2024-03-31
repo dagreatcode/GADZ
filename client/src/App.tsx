@@ -20,6 +20,7 @@ import Consultation from "./containers/AboutUs/globalassetdispatching/Consultati
 import DispatchAgreement from "./containers/AboutUs/globalassetdispatching/DispatchAgreement/DispatchAgreement";
 import RoadFreight from "./containers/AboutUs/globalassetdispatching/RoadFreight/RoadFreight";
 import Admin from "./containers/Admin/Admin";
+import Agreements from "./containers/Admin/Agreements/Agreements";
 import B2BMessages from "./containers/Admin/B2BMessages/B2BMessages";
 import Dash from "./containers/Admin/Dash/Dash";
 import PrintOut from "./containers/Admin/PrintOut/PrintOut";
@@ -78,6 +79,7 @@ function App() {
         <Route path="/Agreement" element={<Agreement />} />
         <Route path="/RoadFreight" element={<RoadFreight />} />
         <Route path="/Admin" element={<Admin />} />
+        <Route path="/Agreements" element={<Agreements />} />
         <Route path="/AdminAllUsers" element={<AdminAllUsers />} />
         <Route path="/AdminUserProfile" element={<AdminUserProfile />} />
         <Route path="/B2BMessages" element={<B2BMessages />} />

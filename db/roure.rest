@@ -15,9 +15,12 @@ GET http://localhost:3001/api/agreement/view
 
 ###
 
+GET https://www.gadzconnect.com/api/agreement/view
+
+###
 GET https://www.gadzconnect.com/blogPost/getPosts
 
-6417b5b4f0a517eff08d5bdd
+# 6417b5b4f0a517eff08d5bdd
 ###
 
 DELETE https://www.gadzconnect.com/blogPost/post/641f822ae95eeb526a283d19
