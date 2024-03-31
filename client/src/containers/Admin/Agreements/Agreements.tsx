@@ -1,16 +1,19 @@
 // import { Axios } from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect} from "react";
 // import PropTypes from 'prop-types'
 
 const Agreements = () => {
 //   const url = "/api/agreement/create"
-  const [agreement, setAgreement] = React.useState(false);
+  const [agreement, setAgreement] = React.useState([]);
+//   const [agreeData, setData] = useState([]);
 
   useEffect(()=>{
     fetch("/api/agreement/view").then(res => res.json()).then((data) => {
       console.log('Data is returned', data);
+    //   setAgreement(true);
       setAgreement(data);
-      console.log(data)
+    //   setData(data)
+      console.log(data[0].date)
     })
     // setAgreement(true);
   }, [])
@@ -34,9 +37,38 @@ const Agreements = () => {
 
   return agreement ? (
     <div className="container">
-     
-      Show Agreements
-
+     <h1>
+      Show Agreements  
+      <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Number MC</th>
+            <th>Invoice Rate</th>
+        </tr>
+        </thead>
+        <tbody>
+            {agreement.map((r:any, i:any)=>(
+                <tr key={i}>
+                    <td>{r.id}</td> 
+                    <td>{r.email}</td> 
+                    <td>{r.date}</td> 
+                    <td>{r.description}</td> 
+                    <td>{r.numberMC}</td> 
+                    <td>{r.invoiceRate}</td> 
+                    <br/>
+                    {/* <td>{r}</td> */}
+                </tr>   
+            ))}
+        </tbody>
+      </table>
+      {`${agreement[0]} `}
+      {/* {agreement[0]}  */}
+      {/* {agreeData.map((agree:any)=>(<p>{agree}</p>))} */}
+     </h1>
     </div>
   ) : (
     <> 
