@@ -17,7 +17,7 @@ const PostForm = () => {
     e.preventDefault(e);
     const body = { ...data };
     console.log("data", data.email);
-    console.log("My e.target", e.target.email.value)
+    console.log("My e.target", e.target.email.value);
     Axios.post(url, body)
       .then((res) => {
         // setData({ ...data, [e.target.name]: e.target.value });
@@ -85,7 +85,8 @@ const PostForm = () => {
 };
 
 // PostForm.propTypes = {
-
+// id: PropTypes.string.isRequired,
+// onChange: PropTypes.func.isRequired,
 // }
 
 export default PostForm;
