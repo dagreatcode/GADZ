@@ -1,39 +1,40 @@
 // import { Axios } from "axios";
-import React, { useEffect} from "react";
+import React, { useEffect, useState} from "react";
 // import PropTypes from 'prop-types'
 
 const Agreements = () => {
 //   const url = "/api/agreement/create"
-  const [agreement, setAgreement] = React.useState([]);
-//   const [agreeData, setData] = useState([]);
+  const [agreement, setAgreement] = React.useState(false);
+  const [agreeData, setData] = useState([]);
 
   useEffect(()=>{
     fetch("/api/agreement/view").then(res => res.json()).then((data) => {
       console.log('Data is returned', data);
     //   setAgreement(true);
-      setAgreement(data);
+      setAgreement(true);
+      setData(data);
     //   setData(data)
-      console.log(data[0].date)
+    //   console.log(data[0].date)
     })
     // setAgreement(true);
   }, [])
 
-//   useEffect(() => {
-//     if (localStorage.getItem("agree") === "true") {
-//       setAgreement(true);
-//       console.log(true)
-//     } else {
-//       setAgreement(false);
-//       console.log(false)
-//     }
-//   }, []);
+  useEffect(() => {
+    if (localStorage.getItem("agree") === "true") {
+      setAgreement(true);
+      console.log(true)
+    } else {
+      setAgreement(false);
+      console.log(false)
+    }
+  }, []);
 
-//   const handleSubmit = (e: any) => {
-//     e.preventDefault();
-//     localStorage.setItem("agree", "true");
-//     setAgreement(true);
-//     console.log("agreed")
-//   };
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    localStorage.setItem("agree", "true");
+    setAgreement(true);
+    console.log("agreed")
+  };
 
   return agreement ? (
     <div className="container">
@@ -51,7 +52,7 @@ const Agreements = () => {
         </tr>
         </thead>
         <tbody>
-            {agreement.map((r:any, i:any)=>(
+            {agreeData.map((r:any, i:any)=>(
                 <tr key={i}>
                     <td>{r.id}</td> 
                     <td>{r.email}</td> 
@@ -65,14 +66,12 @@ const Agreements = () => {
             ))}
         </tbody>
       </table>
-      {`${agreement[0]} `}
-      {/* {agreement[0]}  */}
       {/* {agreeData.map((agree:any)=>(<p>{agree}</p>))} */}
      </h1>
     </div>
   ) : (
     <> 
-      {/* <button onClick={(e) => handleSubmit(e)} >Agree Here</button> */}
+      <button onClick={(e) => handleSubmit(e)} >Agree Here</button>
       No Agreements to show
     </>
   );
