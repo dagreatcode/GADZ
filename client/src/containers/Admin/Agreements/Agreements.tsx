@@ -49,7 +49,10 @@ const Agreements = () => {
             <th>Date Agreed</th>
             <th>Description</th>
             <th>Number MC</th>
+            <th>Freight Rate</th>
             <th>Invoice Rate</th>
+            <th>Company</th>
+            <th>Signature</th>
           </tr>
         </thead>
         <tbody>
@@ -60,7 +63,10 @@ const Agreements = () => {
               <td>{r.date}</td> 
               <td>{r.description}</td>
               <td>{r.numberMC}</td>
+              <td>{r.freightRate}</td>
               <td>{r.invoiceRate}</td>
+              <td>{r.company}</td>
+              <td>{r.signature}</td>
               <br />
               {/* <td>{r}</td> */}
             </tr>

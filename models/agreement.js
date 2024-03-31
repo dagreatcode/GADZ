@@ -4,9 +4,10 @@ module.exports = function (sequelize, DataTypes) {
     date: DataTypes.STRING,
     description: DataTypes.STRING,
     numberMC: DataTypes.STRING,
+    freightRate: DataTypes.STRING,
     invoiceRate: DataTypes.INTEGER,
-    // company: DataTypes.STRING,
-    // signature: DataTypes.STRING,
+    company: DataTypes.STRING,
+    signature: DataTypes.STRING,
   });
   return Agreement;
 };
