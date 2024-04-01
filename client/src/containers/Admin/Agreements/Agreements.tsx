@@ -44,23 +44,34 @@ const Agreements = () => {
       <table>
         <thead>
           <tr>
+            <th></th>
             {/* <th>ID</th> */}
             <th>Email</th>
             <th>Date Agreed</th>
             <th>Description</th>
             <th>Number MC</th>
+            <th>Freight Rate</th>
             <th>Invoice Rate</th>
+            <th>Company</th>
+            <th>Signature</th>
           </tr>
         </thead>
         <tbody>
           {agreeData.map((r: any, i: any) => (
             <tr key={i}>
+              <td>
+                {" "}
+                <input type="submit" value="View" />
+              </td>
               {/* <td>{r.id}</td> */}
               <td>{r.email}</td>
-              <td>{r.date}</td> 
+              <td>{r.date}</td>
               <td>{r.description}</td>
               <td>{r.numberMC}</td>
+              <td>{r.freightRate}</td>
               <td>{r.invoiceRate}</td>
+              <td>{r.company}</td>
+              <td>{r.signature}</td>
               <br />
               {/* <td>{r}</td> */}
             </tr>
