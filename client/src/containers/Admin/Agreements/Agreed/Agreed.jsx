@@ -4,33 +4,36 @@ import axios from "axios";
 // import PropTypes from 'prop-types'
 
 const Agreed = () => {
-  const [tour, setTour] = useState({});
+  const [tour, setTour] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
     if (id) {
       axios
         .get(`/api/agreement/agreed/${id}`)
-        .then((res) => setTour(res.data))
+        .then((res) => {
+          setTour(res.data)
+          console.log(res.data.date)
+        })
         .catch((err) => console.log(err));
     } else {
       window.location.replace("/agreements");
     }
   }, [id]);
 
-  console.log(tour);
+  console.log("Data is Working", tour);
   return (
     <>
         <h1>An agreement will show here soon. Stay tuned!</h1>
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
         <br />
-        Email Address: {}
-        <br />
+        Email Address: {id}
+        <br /> 
         <br />
         <br />
         This Dispatcher-Carrier Agreement hereinafter "Agreement' is made and
-        entered on (the "effective date") by and between Berhenny Dean Co, a New
+        entered on {tour.date}(the "effective date") by and between Berhenny Dean Co, a New
         Jersey limited liability Company, and, a Registered Motor Carrier with
         its principal office at
         {"Description"}
@@ -46,7 +49,7 @@ const Agreed = () => {
         WHEREAS, CARRIER, an independent contractor, is licensed by the FMCS to
         operate as a for-hire motor carrier pursuant authority issued in Number
         MC-
-        {" NumberMC "}
+        {tour.numberMC}
         <br />
         <br />
         WHEREAS, the transportation service provided by CARRIER for Freight
@@ -77,9 +80,9 @@ const Agreed = () => {
         <br />
         CARRIER desires to retain DISPATCHER by executing a Limited, Power of
         Attorney to find, negotiate, and procure freight for and dispatch
-        CARRIER's equipment at a flat rate of {" freightRate "}
+        CARRIER's equipment at a flat rate of {tour.freightRate}
         the gross of each load. Additional billing services may be procured at a
-        rate of ${" invoiceRate "}
+        rate of ${tour.invoiceRate}
         invoice. All DISPATCHER fees must be paid after each load has been
         booked and accepted by the CARRIER. CARRIER must, prior to the
         implementation, of this agreement furnish to DISPATCHER the following:{" "}
@@ -139,12 +142,12 @@ const Agreed = () => {
         <br />
         <label htmlFor="agree">Date</label>
         <br />
-        <input type="date" name="dob" /> <br />
+        {tour.date} <br />
         <br />
         <br /> <br />
         <label htmlFor="agree">Company (CARRIER)</label>
         <br />
-        {" Company "}
+        {tour.company}
         <label htmlFor="agree">Authorized Signature</label>
         <br />
         {"Sig Image"}
@@ -155,7 +158,7 @@ const Agreed = () => {
         <br />
         <label htmlFor="agree">Date</label>
         <br />
-        {"date"} <br />
+        {tour.date} <br />
         <br />
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
