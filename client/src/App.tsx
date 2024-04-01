@@ -78,7 +78,7 @@ function App() {
         <Route path="/Consultation" element={<Consultation />} />
         <Route path="/DispatchAgreement" element={<DispatchAgreement />} />
         <Route path="/Agreement" element={<Agreement />} />
-        <Route path="/Agreed" element={<Agreed />} />
+        <Route path="/Agreed/:id" element={<Agreed />} />
         <Route path="/RoadFreight" element={<RoadFreight />} />
         <Route path="/Admin" element={<Admin />} />
         <Route path="/Agreements" element={<Agreements />} />
