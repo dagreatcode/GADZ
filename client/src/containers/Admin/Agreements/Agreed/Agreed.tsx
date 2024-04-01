@@ -11,24 +11,21 @@ const Agreed = () => {
     if (id) {
       axios
         .get(`/api/agreement/agreed/${id}`)
-        .then((res) => {
-          console.log(res);
-          setTour(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        .then((res) => setTour(res.data))
+        .catch((err) => console.log(err));
+    } else {
+      window.location.replace("/agreements");
     }
   }, [id]);
+
   console.log(tour);
   return (
     <>
-      <form>
         <h1>An agreement will show here soon. Stay tuned!</h1>
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
         <br />
-        Email Address:
+        Email Address: {}
         <br />
         <br />
         <br />
@@ -163,7 +160,6 @@ const Agreed = () => {
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
         {"Next or GoBack"}
-      </form>
     </>
   );
 };
