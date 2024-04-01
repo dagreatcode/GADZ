@@ -1,7 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 // import PropTypes from 'prop-types'
 
 const Agreed = () => {
+  const [tour, setTour] = useState({});
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`/api/agreement/agreed/${id}`)
+        .then((res) => {
+          console.log(res);
+          setTour(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [id]);
+  console.log(tour);
   return (
     <>
       <form>
@@ -128,7 +147,7 @@ const Agreed = () => {
         <br /> <br />
         <label htmlFor="agree">Company (CARRIER)</label>
         <br />
-       {" Company "}
+        {" Company "}
         <label htmlFor="agree">Authorized Signature</label>
         <br />
         {"Sig Image"}

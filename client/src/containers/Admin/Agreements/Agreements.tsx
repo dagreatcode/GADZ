@@ -41,10 +41,10 @@ const Agreements = () => {
 
   const handleID = (e:any )=>{
     console.log("Do Something")
-    // const id = e.target.value;
-    console.log(e.target.value)
+    const id = e.target.value;
+    // console.log(id)
     // axios.get(`/api/agreement/agreed/:${id}`)
-     window.location.href=`/agreed`;
+    window.location.href=`http://localhost:3001/api/agreement/agreed/${id}`;
   }
 
   return agreement ? (
