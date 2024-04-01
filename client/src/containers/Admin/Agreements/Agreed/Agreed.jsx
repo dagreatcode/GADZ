@@ -26,9 +26,9 @@ const Agreed = () => {
     <>
         <h1>An agreement will show here soon. Stay tuned!</h1>
         {/* Create a PDF to send to the admin email after customer fills it out */}
-        <div>Agreement</div>
+        <div>Agreement: {id}</div>
         <br />
-        Email Address: {id}
+        Email Address: {tour.email}
         <br /> 
         <br />
         <br />
