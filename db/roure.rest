@@ -5,6 +5,10 @@ GET http://localhost:3001/blogPost/getPosts
 
 GET http://localhost:3001/api/agreement/view
 
+###
+
+GET http://localhost:3001/api/agreement/agreed/956346501311791105
+
 # ### 
 # POST http://localhost:3001/api/agreement/create
 # Content-Type: application/json
