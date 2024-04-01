@@ -1,6 +1,7 @@
 // import { Axios } from "axios";
 import React, { useEffect, useState } from "react";
 // import PropTypes from 'prop-types'
+// import axios from "axios";
 
 const Agreements = () => {
   //   const url = "/api/agreement/create"
@@ -38,6 +39,14 @@ const Agreements = () => {
     console.log("agreed");
   };
 
+  const handleID = (e:any )=>{
+    console.log("Do Something")
+    // const id = e.target.value;
+    console.log(e.target.value)
+    // axios.get(`/api/agreement/agreed/:${id}`)
+     window.location.href=`/agreed`;
+  }
+
   return agreement ? (
     <div className="container">
       <h1>Show Agreements</h1>
@@ -61,7 +70,7 @@ const Agreements = () => {
             <tr key={i}>
               <td>
                 {" "}
-                <input type="submit" value="View" />
+                <input onClick={handleID} type="submit" value={`${r.id}`} />
               </td>
               {/* <td>{r.id}</td> */}
               <td>{r.email}</td>
@@ -72,7 +81,6 @@ const Agreements = () => {
               <td>{r.invoiceRate}</td>
               <td>{r.company}</td>
               <td>{r.signature}</td>
-              <br />
               {/* <td>{r}</td> */}
             </tr>
           ))}
