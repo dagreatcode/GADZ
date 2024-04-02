@@ -3,6 +3,15 @@ import React, { useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
 
+// ------Upload Sigature -------//
+// import { config, uploader } from 'cloudinary';
+// const cloudinaryConfig = () => config({
+// cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // GADZConnect
+// api_key: process.env.CLOUDINARY_API_KEY, // 158133983776827
+// api_secret: process.env.CLOUDINARY_API_SECRET, // 158133983776827
+// });
+// export { cloudinaryConfig, uploader };
+
 const PostForm = () => {
   const url = "/api/agreement/create";
   const [data, setData] = useState({
@@ -12,7 +21,7 @@ const PostForm = () => {
     numberMC: 0,
     invoiceRate: 0,
     company: "",
-    signature: ""
+    signature: "",
   });
 
   function submit(e) {
@@ -37,8 +46,8 @@ const PostForm = () => {
 
   return (
     <>
-    {/* FIXME */}
-    {/* redirect to home page or the next agreement */}
+      {/* FIXME */}
+      {/* redirect to home page or the next agreement */}
       <form action="/" onSubmit={(e) => submit(e)}>
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
@@ -186,40 +195,17 @@ const PostForm = () => {
         {/* getTrimmedCanvas(): canvas, creates a copy of the canvas and returns a trimmed version of it, with all whitespace removed.
         getSignaturePad(): SignaturePad, returns the underlying SignaturePad reference. */}
         <br />
-        <input
-          onChange={(e) => handle(e)}
-          id="company"
-          value={data.company}
-          placeholder="company"
-          type="text"
-        ></input>
+        <h1>GADZConnect LLC.</h1>
         <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          // backgroundColor="rgba(5,5,5,5)"
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            className: "sigCanvas",
-          }}
-        />
+        ___________________________
+        <br />
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            className: "sigCanvas",
-          }}
-        />{" "}
+        ___________________________
+        <br />
         <br />
         <label htmlFor="agree">Date</label>
         <br />
@@ -235,6 +221,8 @@ const PostForm = () => {
           placeholder="company"
           type="text"
         ></input>{" "}
+        <br />
+        <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
         <SignatureCanvas
@@ -244,7 +232,8 @@ const PostForm = () => {
           canvasProps={{
             width: 500,
             height: 200,
-            className: "sigCanvas",
+            id: "signature",
+            className: "signature",
           }}
         />{" "}
         <br />
@@ -257,9 +246,10 @@ const PostForm = () => {
           canvasProps={{
             width: 500,
             height: 200,
-            className: "sigCanvas",
+            id:"sigCanvasPrint",
+            className: "sigCanvasPrint",
           }}
-        />
+        />{" "}
         <br />
         <label htmlFor="agree">Date</label>
         <br />
@@ -269,7 +259,8 @@ const PostForm = () => {
           value={data.date}
           placeholder="date"
           type="date"
-        ></input>        <br />
+        ></input>{" "}
+        <br />
         <br />
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
