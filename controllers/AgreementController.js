@@ -10,6 +10,7 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+console.log("hello", cloudinary.config);
 
 const upload = require("../config/multer");
 // const path = require("path");
@@ -66,14 +67,28 @@ router.post("/create", (req, res) => {
 // });
 
 // const image = "../images/0605.jpeg";
-router.post("/uploadTest", upload.single("signature"), (req, res) => {
+router.post("/uploadTest", upload.single("signature"), async (req, res) => {
   try {
     // FIXME: cloudinary.uploader.(upload) TODO:Cannot read properties of undefined (reading upload)
-    cloudinary.uploader.upload(req.file.path);
-    console.log("Hit");
+    const up = cloudinary.uploader.upload(req.file.path);
+    console.log(up);
+    // console.log(cloudinary.uploader.upload(req.file.path).api_secret);
+    // const b64 = Buffer.from(req.file.buffer).toString("base64");
+    // let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    // const cldRes = await handleUpload(dataURI);
+    // console.log(dataUri);
+    // res.json(cldRes);
     res.status(200).json({
       message: `Image uploaded successfully!`,
-      data: req.file.path,
+      data: {
+        path: req.file.path,
+        filename: req.file.filename,
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        destination: req.file.destination,
+        size: req.file.size,
+      },
     });
   } catch (err) {
     return res.status(500).json({ err });
