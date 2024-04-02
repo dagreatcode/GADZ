@@ -70,8 +70,8 @@ router.post("/create", (req, res) => {
 router.post("/uploadTest", upload.single("signature"), async (req, res) => {
   try {
     // FIXME: cloudinary.uploader.(upload) TODO:Cannot read properties of undefined (reading upload)
-    const up = cloudinary.uploader.upload(req.file.path);
-    console.log(up);
+    const up = await cloudinary.uploader.upload(req.file.path)
+    console.log(up.secure_url);
     // console.log(cloudinary.uploader.upload(req.file.path).api_secret);
     // const b64 = Buffer.from(req.file.buffer).toString("base64");
     // let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
