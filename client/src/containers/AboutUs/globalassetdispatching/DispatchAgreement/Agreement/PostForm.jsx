@@ -44,6 +44,10 @@ const PostForm = () => {
   const clear = (e) => {
     sigPad.current.clear();
   };
+  const save = (e) => {
+    sigPad.current.toDataURL("image/png");
+    // setData({signature: sigPad});
+  };
 
   function submit(e) {
     e.preventDefault(e);
@@ -68,6 +72,7 @@ const PostForm = () => {
   return (
     <>
     <button onClick={clear}>Clear</button>
+    <button onClick={save}>Save</button>
       {/* FIXME */}
       {/* redirect to home page or the next agreement */}
       <form
