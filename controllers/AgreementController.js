@@ -71,7 +71,18 @@ router.post("/uploadTest", upload.single("signature"), async (req, res) => {
   try {
     // FIXME: cloudinary.uploader.(upload) TODO:Cannot read properties of undefined (reading upload)
     const up = await cloudinary.uploader.upload(req.file.path);
-    console.log(up.secure_url);
+    console.log("cloud location", up.secure_url);
+    const down = await db.Agreement.create({
+      email: req.body.email,
+      date: req.body.date,
+      description: req.body.description,
+      numberMC: req.body.numberMC,
+      freightRate: req.body.freightRate,
+      invoiceRate: req.body.invoiceRate,
+      company: req.body.company,
+      signature: up.secure_url,
+    });
+    console.log("Good Data", down);
     // console.log(cloudinary.uploader.upload(req.file.path).api_secret);
     // const b64 = Buffer.from(req.file.buffer).toString("base64");
     // let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
@@ -90,6 +101,7 @@ router.post("/uploadTest", upload.single("signature"), async (req, res) => {
         size: req.file.size,
       },
     });
+    // res.json({ down });
   } catch (err) {
     return res.status(500).json({ err });
     console.error(err);

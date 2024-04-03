@@ -13,7 +13,7 @@ import Axios from "axios";
 // export { cloudinaryConfig, uploader };
 
 const PostForm = () => {
-  const url = "/api/agreement/create";
+  const url = "/api/agreement/uploadTest";
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -23,6 +23,10 @@ const PostForm = () => {
     company: "",
     signature: "",
   });
+  const onFileChange = (e) => {
+    setData.signature(e.target.files[0]);
+    console.log(e.target.file);
+  };
 
   function submit(e) {
     e.preventDefault(e);
@@ -48,7 +52,12 @@ const PostForm = () => {
     <>
       {/* FIXME */}
       {/* redirect to home page or the next agreement */}
-      <form action="/" onSubmit={(e) => submit(e)}>
+      <form
+        method="POST"
+        action="/"
+        encType="multipart/form-data"
+        onSubmit={(e) => submit(e)}
+      >
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
         <br />
@@ -227,29 +236,29 @@ const PostForm = () => {
         <br />
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
+          onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
+          id="signature"
+          type="file"
+          name="signature"
+          accept=".jpg, .png, .jpeg"
           canvasProps={{
             width: 500,
             height: 200,
-            id: "signature",
             className: "signature",
           }}
         />{" "}
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            id:"sigCanvasPrint",
-            className: "sigCanvasPrint",
-          }}
-        />{" "}
+        <input
+          onChange={(e) => handle(e)}
+          id="print"
+          value={data.print}
+          placeholder="print"
+          type="text"
+        ></input>{" "}
         <br />
         <label htmlFor="agree">Date</label>
         <br />
