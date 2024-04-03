@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 // import PropTypes from 'prop-types'
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
+// import { useRef } from 'react'
 
 // ------Upload Sigature -------//
 // import { config, uploader } from 'cloudinary';
@@ -12,8 +13,20 @@ import Axios from "axios";
 // });
 // export { cloudinaryConfig, uploader };
 
+  //__________________Signature______________
+  // import { useRef } from 'react'
+  // const signature = useRef()
+  // const [imageURL, setImageURL] = useState(null)
+  // const URLs = signature;
+  //   setImageURL(URLs);
+  //   console.log(imageURL);
+  // ref={signature}
+  //___________________________________
+
 const PostForm = () => {
-  const url = "/api/agreement/uploadTest";
+  let sigPad = useRef({});
+  const url = "/api/agreement/create";
+  // const [sign, setSign] =  useState();
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -23,9 +36,13 @@ const PostForm = () => {
     company: "",
     signature: "",
   });
+  // console.log(sign.getTrimmed().toDataURL("image/png"))
   const onFileChange = (e) => {
     setData.signature(e.target.files[0]);
     console.log(e.target.file);
+  };
+  const clear = (e) => {
+    sigPad.current.clear();
   };
 
   function submit(e) {
@@ -50,6 +67,7 @@ const PostForm = () => {
 
   return (
     <>
+    <button onClick={clear}>Clear</button>
       {/* FIXME */}
       {/* redirect to home page or the next agreement */}
       <form
@@ -236,13 +254,10 @@ const PostForm = () => {
         <br />
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
+          ref={sigPad}
           onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
-          id="signature"
-          type="file"
-          name="signature"
-          accept=".jpg, .png, .jpeg"
           canvasProps={{
             width: 500,
             height: 200,
