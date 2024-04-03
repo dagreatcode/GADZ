@@ -45,8 +45,9 @@ const PostForm = () => {
     sigPad.current.clear();
   };
   const save = (e) => {
-    sigPad.current.toDataURL("image/png");
+    const sign = sigPad.current.toDataURL("image/png");
     // setData({signature: sigPad});
+    console.log(sign)
   };
 
   function submit(e) {
