@@ -26,7 +26,7 @@ import Axios from "axios";
 const PostForm = () => {
   let sigPad = useRef({});
   const url = "/api/agreement/create";
-  // const [sign, setSign] =  useState();
+  const [sign, setSign] =  useState();
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -37,17 +37,19 @@ const PostForm = () => {
     signature: "",
   });
   // console.log(sign.getTrimmed().toDataURL("image/png"))
-  const onFileChange = (e) => {
-    setData.signature(e.target.files[0]);
-    console.log(e.target.file);
-  };
+  // const onFileChange = (e) => {
+  //   setData.signature(e.target.files[0]);
+  //   console.log(e.target.file);
+  // };
   const clear = (e) => {
     sigPad.current.clear();
   };
   const save = (e) => {
-    const sign = sigPad.current.toDataURL("image/png");
-    // setData({signature: sigPad});
-    console.log(sign)
+    const signature = sigPad.current.toDataURL("image/png");
+    setSign({signature});
+    // data["numberMC"]=Number(document.getElementById('num').value);
+    // console.log("signInfo", signInfo)
+    console.log("sign", sign)
   };
 
   function submit(e) {
@@ -261,7 +263,7 @@ const PostForm = () => {
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
           ref={sigPad}
-          onChange={onFileChange}
+          // onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
           canvasProps={{

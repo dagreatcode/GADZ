@@ -108,6 +108,47 @@ router.post("/uploadTest", upload.single("signature"), async (req, res) => {
   }
 });
 
+router.post("/uploadTest2", upload.single("signature"), async (req, res) => {
+  try {
+    // FIXME: cloudinary.uploader.(upload) TODO:Cannot read properties of undefined (reading upload)
+    const up = await cloudinary.uploader.upload(req.file.path);
+    console.log("cloud location", up.secure_url);
+    const down = await db.Agreement.create({
+      email: req.body.email,
+      date: req.body.date,
+      description: req.body.description,
+      numberMC: req.body.numberMC,
+      freightRate: req.body.freightRate,
+      invoiceRate: req.body.invoiceRate,
+      company: req.body.company,
+      signature: up.secure_url,
+    });
+    console.log("Good Data", down);
+    // console.log(cloudinary.uploader.upload(req.file.path).api_secret);
+    // const b64 = Buffer.from(req.file.buffer).toString("base64");
+    // let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    // const cldRes = await handleUpload(dataURI);
+    // console.log(dataUri);
+    // res.json(cldRes);
+    res.status(200).json({
+      message: `Image uploaded successfully!`,
+      data: {
+        path: req.file.path,
+        filename: req.file.filename,
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        destination: req.file.destination,
+        size: req.file.size,
+      },
+    });
+    // res.json({ down });
+  } catch (err) {
+    return res.status(500).json({ err });
+    console.error(err);
+  }
+});
+
 router.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file) return res.sendStatus(400); // If there's no image, respond with bad request error
 
