@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 // import PropTypes from 'prop-types'
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
 
 const PostForm = () => {
-  const url = "/api/agreement/create";
+  let sigPad = useRef({});
+  const url = "/api/agreement/need2work";
+  const [signature, setSign] = useState();
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -12,34 +14,57 @@ const PostForm = () => {
     numberMC: 0,
     invoiceRate: 0,
     company: "",
-    signature: ""
+    signature: "",
   });
+
+  const clear = (e) => {
+    sigPad.current.clear();
+  };
+  const save = (e) => {
+    setSign(sigPad.current.getTrimmedCanvas().toDataURL("image/png"));
+    // data["numberMC"]=Number
+    console.log("signature", signature);
+  };
+
+  // Test
+  const obj = [data, sigPad, { signature }];
+  // const obj = [{data}, {signature}]
+  console.log(obj);
 
   function submit(e) {
     e.preventDefault(e);
-    const body = { ...data };
+    const body = { data, signature };
     console.log("data", data.email);
     console.log("My e.target", e.target.email.value);
+    console.log(sigPad);
+    console.log(signature);
     Axios.post(url, body)
       .then((res) => {
-        // setData({ ...data, [e.target.name]: e.target.value });
-        console.log("My Data: ", res);
+        setData({ ...data, [e.target.name]: e.target.value });
+        console.log("My Data from Res: ", res);
+        window.location.replace("/AboutUs");
       })
       .catch((err) => console.log(err));
   }
+
   function handle(e) {
     const newData = { ...data };
     newData[e.target.id] = e.target.value;
     setData(newData);
-    console.log(`data: ${JSON.stringify(data)}`);
+    console.log(`data from handle: ${JSON.stringify(data)}`);
     console.log(newData);
   }
 
   return (
     <>
-    {/* FIXME */}
-    {/* redirect to home page or the next agreement */}
-      <form action="/" onSubmit={(e) => submit(e)}>
+      {/* FIXME */}
+      {/* redirect to home page or the next agreement */}
+      <form
+        method="POST"
+        action="/Home/"
+        encType="multipart/form-data"
+        onSubmit={(e) => submit(e)}
+      >
         {/* Create a PDF to send to the admin email after customer fills it out */}
         <div>Agreement</div>
         <br />
@@ -167,18 +192,6 @@ const PostForm = () => {
         <br />
         <br />
         <br />
-        {/* <br />
-        Email Address:
-        <br />
-        <input type="email" name="email" required />
-        <br />
-        <select name="gender">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        <br /> 
-        <input type="checkbox" id="agree" name="agree" required /><br/>*/}
         <label htmlFor="agree">Company (DISPATCH)</label>
         <br />
         {/* The API methods are mostly just wrappers around signature_pad's API. on() and off() will, in addition, bind/unbind the window resize event handler. 
@@ -186,40 +199,17 @@ const PostForm = () => {
         {/* getTrimmedCanvas(): canvas, creates a copy of the canvas and returns a trimmed version of it, with all whitespace removed.
         getSignaturePad(): SignaturePad, returns the underlying SignaturePad reference. */}
         <br />
-        <input
-          onChange={(e) => handle(e)}
-          id="company"
-          value={data.company}
-          placeholder="company"
-          type="text"
-        ></input>
+        <h1>GADZConnect LLC.</h1>
         <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          // backgroundColor="rgba(5,5,5,5)"
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            className: "sigCanvas",
-          }}
-        />
+        ___________________________
+        <br />
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            className: "sigCanvas",
-          }}
-        />{" "}
+        ___________________________
+        <br />
         <br />
         <label htmlFor="agree">Date</label>
         <br />
@@ -235,31 +225,35 @@ const PostForm = () => {
           placeholder="company"
           type="text"
         ></input>{" "}
+        <br />
+        <br />
         <label htmlFor="agree">Authorized Signature</label>
         <br />
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
+          ref={sigPad}
+          name="signature"
+          type="file"
           backgroundColor="gray"
           penColor="black"
+          value={signature}
+          id="signature"
           canvasProps={{
             width: 500,
             height: 200,
-            className: "sigCanvas",
+            className: "signature",
           }}
         />{" "}
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
-        <SignatureCanvas
-          // style={{border:"black solid", backgroundColor:"white"}}
-          backgroundColor="gray"
-          penColor="black"
-          canvasProps={{
-            width: 500,
-            height: 200,
-            className: "sigCanvas",
-          }}
-        />
+        <input
+          onChange={(e) => handle(e)}
+          id="print"
+          value={data.print}
+          placeholder="print"
+          type="text"
+        ></input>{" "}
         <br />
         <label htmlFor="agree">Date</label>
         <br />
@@ -269,12 +263,17 @@ const PostForm = () => {
           value={data.date}
           placeholder="date"
           type="date"
-        ></input>        <br />
+        ></input>{" "}
+        <br />
         <br />
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
-        <input type="submit" value="Submit" />
+        {/* Please Hide this until the customer click save below. */}
+        <input hidden={false} type="submit" value="Submit" />{" "}
+        {"Please Click Save to save signature Before Submitting this form"}
       </form>
+      <button onClick={clear}>Clear</button>
+      <button onClick={save}>Save</button>
     </>
   );
 };
