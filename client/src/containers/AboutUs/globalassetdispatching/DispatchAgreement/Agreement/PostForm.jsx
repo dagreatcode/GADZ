@@ -273,7 +273,8 @@ const PostForm = () => {
         {"Please Click Save to save signature Before Submitting this form"}
       </form>
       <button onClick={clear}>Clear</button>
-      <button onClick={save}>Save</button>
+      <button onClick={save}>Save</button>Click Me Twice(One Sec Between) then
+      click SAVE. I will Fix this later.
     </>
   );
 };

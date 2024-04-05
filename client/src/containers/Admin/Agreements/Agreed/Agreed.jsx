@@ -150,7 +150,7 @@ const Agreed = () => {
         {tour.company}
         <label htmlFor="agree">Authorized Signature</label>
         <br />
-        {"Sig Image"}
+        {tour.signature}
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
