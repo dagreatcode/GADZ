@@ -69,8 +69,8 @@ router.post("/create", (req, res) => {
 
 router.post("/need2work", upload.single("signature"), async (req, res) => {
   try {
-    const data = req.body.data;
-    const signature = req.body.signature;
+    const data = await req.body.data;
+    const signature = await req.body.signature;
     // console.log("req.data:", data);
     // console.log("req.signature:", signature);
     if (!data || !signature) throw new Error("Missing required fields.");
