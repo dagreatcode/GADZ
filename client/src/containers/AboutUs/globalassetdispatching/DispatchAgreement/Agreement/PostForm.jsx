@@ -6,7 +6,7 @@ import Axios from "axios";
 const PostForm = () => {
   let sigPad = useRef({});
   const url = "/api/agreement/need2work";
-  const [signature, setSign] =  useState();
+  const [signature, setSign] = useState();
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -15,44 +15,37 @@ const PostForm = () => {
     invoiceRate: 0,
     company: "",
     signature: "",
-  }) 
-  // console.log(sign.getTrimmed().toDataURL("image/png"))
-  // const onFileChange = (e) => {
-  //   setData.signature(e.target.files[0]);
-  //   console.log(e.target.file);
-  // };
+  });
+
   const clear = (e) => {
     sigPad.current.clear();
   };
   const save = (e) => {
     setSign(sigPad.current.getTrimmedCanvas().toDataURL("image/png"));
     // data["numberMC"]=Number
-    console.log("signature", signature)
+    console.log("signature", signature);
   };
 
   // Test
-  const obj = [data, sigPad, {signature}]
+  const obj = [data, sigPad, { signature }];
   // const obj = [{data}, {signature}]
-  console.log(obj)
-  
-  // FIXME: FIND OUT WHAT IS GOING ON. Put signature and data in the same body={}
+  console.log(obj);
+
   function submit(e) {
     e.preventDefault(e);
-    const body = { data,  signature };
-    // const body = { obj }; 
+    const body = { data, signature };
     console.log("data", data.email);
     console.log("My e.target", e.target.email.value);
-    console.log(sigPad)
-    console.log(signature)
-    // Axios.post(url, {body})
+    console.log(sigPad);
+    console.log(signature);
     Axios.post(url, body)
-
       .then((res) => {
         setData({ ...data, [e.target.name]: e.target.value });
         console.log("My Data from Res: ", res);
       })
       .catch((err) => console.log(err));
   }
+
   function handle(e) {
     const newData = { ...data };
     newData[e.target.id] = e.target.value;
@@ -198,18 +191,6 @@ const PostForm = () => {
         <br />
         <br />
         <br />
-        {/* <br />
-        Email Address:
-        <br />
-        <input type="email" name="email" required />
-        <br />
-        <select name="gender">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        <br /> 
-        <input type="checkbox" id="agree" name="agree" required /><br/>*/}
         <label htmlFor="agree">Company (DISPATCH)</label>
         <br />
         {/* The API methods are mostly just wrappers around signature_pad's API. on() and off() will, in addition, bind/unbind the window resize event handler. 
@@ -252,7 +233,6 @@ const PostForm = () => {
           ref={sigPad}
           name="signature"
           type="file"
-          // onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
           value={signature}
