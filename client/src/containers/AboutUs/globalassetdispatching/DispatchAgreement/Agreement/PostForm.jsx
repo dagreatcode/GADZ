@@ -268,7 +268,9 @@ const PostForm = () => {
         <br />
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
-        <input type="submit" value="Submit" />
+        {/* Please Hide this until the customer click save below. */}
+        <input hidden={false} type="submit" value="Submit" />{" "}
+        {"Please Click Save to save signature Before Submitting this form"}
       </form>
       <button onClick={clear}>Clear</button>
       <button onClick={save}>Save</button>
