@@ -5,7 +5,7 @@ import Axios from "axios";
 
 const PostForm = () => {
   let sigPad = useRef({});
-  const url = "/api/agreement/create";
+  const url = "/api/agreement/need2work";
   const [signature, setSign] =  useState();
   const [data, setData] = useState({
     email: "",
@@ -32,11 +32,14 @@ const PostForm = () => {
 
   // Test
   const obj = [data, sigPad, {signature}]
+  // const obj = [{data}, {signature}]
   console.log(obj)
   
+  // FIXME: FIND OUT WHAT IS GOING ON. Put signature and data in the same body={}
   function submit(e) {
     e.preventDefault(e);
-    const body = { ...data };
+    const body = { data,  signature };
+    // const body = { obj }; 
     console.log("data", data.email);
     console.log("My e.target", e.target.email.value);
     console.log(sigPad)
@@ -248,6 +251,7 @@ const PostForm = () => {
           // style={{border:"black solid", backgroundColor:"white"}}
           ref={sigPad}
           name="signature"
+          type="file"
           // onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
