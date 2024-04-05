@@ -123,7 +123,21 @@ router.post("/need2work", upload.single("signature"), async (req, res) => {
     if (!data || !signature) throw new Error("Missing required fields.");
     const up = await cloudinary.uploader.upload(signature);
     console.log(up);
-
+    const down = await db.Agreement.create({
+      email: data.email,
+      date: data.date,
+      description: data.description,
+      numberMC: data.numberMC,
+      freightRate: data.freightRate,
+      invoiceRate: data.invoiceRate,
+      company: data.company,
+      signature: up.secure_url,
+    });
+    // res.json({ down });
+    res.status(200).json({
+      message: `Image uploaded successfully!`,
+      data: req.file,
+    });
     // const body = req.body.signature;
     // const up = await cloudinary.uploader.upload(body);
     // console.log(up);
