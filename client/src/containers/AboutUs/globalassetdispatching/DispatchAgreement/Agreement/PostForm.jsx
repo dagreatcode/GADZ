@@ -61,7 +61,7 @@ const PostForm = () => {
       {/* redirect to home page or the next agreement */}
       <form
         method="POST"
-        action="/Home/"
+        action="/api/agreement/need2work"
         encType="multipart/form-data"
         onSubmit={(e) => submit(e)}
       >

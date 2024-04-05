@@ -21,7 +21,6 @@ const Agreed = () => {
     }
   }, [id]);
 
-  console.log("Data is Working", tour);
   return (
     <>
         <h1>An agreement will show here soon. Stay tuned!</h1>
@@ -150,7 +149,7 @@ const Agreed = () => {
         {tour.company}
         <label htmlFor="agree">Authorized Signature</label>
         <br />
-        {tour.signature}
+        <img src={tour.signature} alt="Girl in a jacket" width="500" height="600"></img>
         <br />
         <label htmlFor="agree">Printed Name/Title</label>
         <br />
