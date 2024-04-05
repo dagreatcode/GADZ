@@ -2,31 +2,11 @@ import React, { useState, useRef } from "react";
 // import PropTypes from 'prop-types'
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
-// import { useRef } from 'react'
-
-// ------Upload Sigature -------//
-// import { config, uploader } from 'cloudinary';
-// const cloudinaryConfig = () => config({
-// cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // GADZConnect
-// api_key: process.env.CLOUDINARY_API_KEY, // 158133983776827
-// api_secret: process.env.CLOUDINARY_API_SECRET, // 158133983776827
-// });
-// export { cloudinaryConfig, uploader };
-
-  //__________________Signature______________
-  // import { useRef } from 'react'
-  // const signature = useRef()
-  // const [imageURL, setImageURL] = useState(null)
-  // const URLs = signature;
-  //   setImageURL(URLs);
-  //   console.log(imageURL);
-  // ref={signature}
-  //___________________________________
 
 const PostForm = () => {
   let sigPad = useRef({});
   const url = "/api/agreement/create";
-  const [sign, setSign] =  useState();
+  const [signature, setSign] =  useState();
   const [data, setData] = useState({
     email: "",
     description: "",
@@ -35,7 +15,7 @@ const PostForm = () => {
     invoiceRate: 0,
     company: "",
     signature: "",
-  });
+  }) 
   // console.log(sign.getTrimmed().toDataURL("image/png"))
   // const onFileChange = (e) => {
   //   setData.signature(e.target.files[0]);
@@ -45,22 +25,28 @@ const PostForm = () => {
     sigPad.current.clear();
   };
   const save = (e) => {
-    const signature = sigPad.current.toDataURL("image/png");
-    setSign({signature});
-    // data["numberMC"]=Number(document.getElementById('num').value);
-    // console.log("signInfo", signInfo)
-    console.log("sign", sign)
+    setSign(sigPad.current.getTrimmedCanvas().toDataURL("image/png"));
+    // data["numberMC"]=Number
+    console.log("signature", signature)
   };
 
+  // Test
+  const obj = [data, sigPad, {signature}]
+  console.log(obj)
+  
   function submit(e) {
     e.preventDefault(e);
     const body = { ...data };
     console.log("data", data.email);
     console.log("My e.target", e.target.email.value);
+    console.log(sigPad)
+    console.log(signature)
+    // Axios.post(url, {body})
     Axios.post(url, body)
+
       .then((res) => {
-        // setData({ ...data, [e.target.name]: e.target.value });
-        console.log("My Data: ", res);
+        setData({ ...data, [e.target.name]: e.target.value });
+        console.log("My Data from Res: ", res);
       })
       .catch((err) => console.log(err));
   }
@@ -68,14 +54,12 @@ const PostForm = () => {
     const newData = { ...data };
     newData[e.target.id] = e.target.value;
     setData(newData);
-    console.log(`data: ${JSON.stringify(data)}`);
+    console.log(`data from handle: ${JSON.stringify(data)}`);
     console.log(newData);
   }
 
   return (
     <>
-    <button onClick={clear}>Clear</button>
-    <button onClick={save}>Save</button>
       {/* FIXME */}
       {/* redirect to home page or the next agreement */}
       <form
@@ -263,9 +247,12 @@ const PostForm = () => {
         <SignatureCanvas
           // style={{border:"black solid", backgroundColor:"white"}}
           ref={sigPad}
+          name="signature"
           // onChange={onFileChange}
           backgroundColor="gray"
           penColor="black"
+          value={signature}
+          id="signature"
           canvasProps={{
             width: 500,
             height: 200,
@@ -298,6 +285,8 @@ const PostForm = () => {
         <br />
         <input type="submit" value="Submit" />
       </form>
+      <button onClick={clear}>Clear</button>
+      <button onClick={save}>Save</button>
     </>
   );
 };
