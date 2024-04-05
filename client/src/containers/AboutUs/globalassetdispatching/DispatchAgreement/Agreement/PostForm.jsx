@@ -3,6 +3,7 @@ import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
 
+
 const PostForm = () => {
   let sigPad = useRef({});
   const url = "/api/agreement/need2work";
@@ -16,6 +17,8 @@ const PostForm = () => {
     company: "",
     signature: "",
   });
+  const [showResults, setShowResults] = React.useState(false)
+  const onClick = () => setShowResults(true)
 
   const clear = (e) => {
     sigPad.current.clear();
@@ -269,11 +272,17 @@ const PostForm = () => {
         {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
         <br />
         {/* Please Hide this until the customer click save below. */}
-        <input hidden={false} type="submit" value="Submit" />{" "}
+        {/* <input hidden={false} type="submit" value="Submit" />{" "} */}
         {"Please Click Save to save signature Before Submitting this form"}
+
+        {/* The Test */}
+        <div>
+        {/* <input type="submit" value="Save Signature" onClick={onClick} /> */}
+        { showResults ? <button hidden={false} type="submit" value="Submit">Submit</button> : null }
+        </div>
       </form>
       <button onClick={clear}>Clear</button>
-      <button onClick={save}>Save</button>Click Me Twice(One Sec Between) then
+      <div onClick={save}><input type="submit" value="Save" onClick={onClick} /></div>Click Me Twice(One Sec Between) then
       click SAVE. I will Fix this later.
     </>
   );
