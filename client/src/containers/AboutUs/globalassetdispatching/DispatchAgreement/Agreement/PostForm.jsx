@@ -42,6 +42,7 @@ const PostForm = () => {
       .then((res) => {
         setData({ ...data, [e.target.name]: e.target.value });
         console.log("My Data from Res: ", res);
+        window.location.replace("/AboutUs");
       })
       .catch((err) => console.log(err));
   }
@@ -60,7 +61,7 @@ const PostForm = () => {
       {/* redirect to home page or the next agreement */}
       <form
         method="POST"
-        action="/"
+        action="/Home/"
         encType="multipart/form-data"
         onSubmit={(e) => submit(e)}
       >
