@@ -283,8 +283,7 @@ const PostForm = () => {
       </form>
       {/* Fix the value if there is a problem */}
       <button value={sigPad} onClick={clear}>Clear</button>
-      <div onClick={save}><input type="submit" value="Save" onClick={onClick} /></div>Click Me Twice(One Sec Between) then
-      click SAVE. I will Fix this later.
+      <div onClick={save}><input type="submit" value="Save" onClick={onClick} /></div>
     </>
   );
 };
