@@ -33,7 +33,7 @@ const Consultation = () => {
           <img src={Image1} style={{ width: "100%" }} alt="talks" />
 <div>
   <h1>Consultation interest</h1>
-  <p>Call us on a free consultation. See below..</p>
+  <p>Call us for a free consultation. See below..</p>
   <ol>
     <li>Services Offered</li>
     <li>Customer Service Issues</li>
