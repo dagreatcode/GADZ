@@ -38,6 +38,7 @@ app.use("/api/agreement", AgreementController);
 app.use("/api/user", UserController);
 app.use("/api/admin", AdminController);
 app.use(routes);
+app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
 
