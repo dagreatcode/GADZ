@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Image1 from "./images/Connect.jpeg"
+import Image1 from "./images/Connect.jpeg";
 
 const Bio = () => {
   return (
@@ -31,6 +31,53 @@ const Bio = () => {
             </nav>
           </div>
           <img src={Image1} alt="connecting dots" />
+        </div>
+        <hr />
+        <div id="biogrid" className="row">
+          <div className="col-md-6 col-xs-12">
+            <strong> From globalassetdispatching</strong>
+            <br />
+            <br />
+            “I embrace being an asset in everything I do. My journey in life has
+            installed a great belief in trusting the process. Life
+            accomplishmemts will grant you the pleasure of what it looks like to
+            be creative, resilient and significant”! Who Is Shamira Carter? Born
+            in Philadephia, PA My career path has built the foundation of my
+            lif. I consider myself an asset in everything I do. Every since I
+            was a child, I always felt i can do anything that comes to mind.
+            This allowed me to become boldly successful in climbing the latter
+            across corporations I have worked for in the past. That mindset of
+            becoming one of the best provided me the luxury of traveling abroad,
+            applying the ability to scale up operations as a asset leader. My
+            desire is to partner with businesses seeking to put a root cause to
+            their challeges and produce a solution that fits! CONTACT Career
+            Early work Early in 2009 I started my corporate career in the
+            records management, digital imaging, document perservation industry
+            and operational development industry.
+          </div>
+          <div className="col-md-6 col-xs-12">
+            <strong>To gadzconnect</strong>
+            <br />
+            <br />
+Eagerly learning those
+            coporations from the ground up allowed me to develop the operational
+            structure. My ability to observe process, determine a problem,
+            analize a rootcause resolution into the opertation of great value to
+            one's business objective. My gift of leadership has granted me
+            leverage in helping people and operations grow in meeting its
+            highest potential by implementing my exceptional customer servicer
+            experienc, business consulting and people leader skills. Gracefully,
+            I have been able to install this ability in everything I do and now
+            I desire to provide this service in a partnerships from my business
+            to your business! Breakthrough My breakthrough into this journey
+            began in early 2020. I decided to take the leap of faith by
+            implanting myself into the world of enterprenuership. My passion of
+            being an asset of my own business and partnering with like minded
+            people to build a healthy and wealthy business to business
+            collaboration. Leading With Integrity! Our core values: 1. Trust 2.
+            Resilence 3. Transparency 4. Reliable Leading With Integrity! Our
+            core values: 1. Trust 2. Resilence 3. Transparency 4. Reliable
+          </div>
         </div>
       </div>
     </>
