@@ -9,7 +9,7 @@ const Agreements = () => {
   const [agreeData, setData] = useState([]);
 
   useEffect(() => {
-    let letsClean = async () =>
+    // let letsClean = async () =>
       fetch("/api/agreement/view")
         .then((res) => res.json())
         .then((data) => {
@@ -21,11 +21,11 @@ const Agreements = () => {
           //   console.log(data[0].date)
         })
         .catch((err) => err);
-    return () => {
-      letsClean();
-    };
+    // return () => {
+    //   letsClean();
+    // };
     // setAgreement(true);
-  }, [setAgreement]);
+  }, []);
 
   useEffect(() => {
     const letsClean = () => {
