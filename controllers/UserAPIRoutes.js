@@ -64,8 +64,8 @@ router.post("/login", (req, res) => {
     });
   } else {
     // .compare(email, user.password)
-    db.User.findOne({ email: email }).then((foundUser) => {
-      // console.log("foundU Data", user.email);
+    db.User.findOne({ where: { email: email } }).then((foundUser) => {
+      // console.log("foundU Data", foundUser.email);
       if (!foundUser) {
         return res.status(401).json({
           error: true,
@@ -107,19 +107,6 @@ router.get("/view", (req, res) => {
     console.log(allUsers);
   });
 });
-
-// router.get("/login4", (req, res) => {
-//   db.Blog.find({
-//     include: [db.User],
-//   })
-//     .then((blogData) => {
-//       const blogs = blogData.map((blog) => blog.get({ plain: true }));
-//       res.render("login", { blogs: blogs });
-//     })
-//     .catch((err) => {
-//       res.status(400).json(err);
-//     });
-// });
 
 router.post("/login2", (req, res) => {
   const data = req.body;
