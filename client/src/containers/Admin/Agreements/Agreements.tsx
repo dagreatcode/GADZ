@@ -27,7 +27,7 @@ const Agreements = () => {
       letsClean();
     };
     // setAgreement(true);
-  }, [setData, setAgreement]);
+  }, [setData]);
 
   useEffect(() => {
     const letsClean = () => {
