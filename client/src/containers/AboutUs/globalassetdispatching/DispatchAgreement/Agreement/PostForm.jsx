@@ -26,25 +26,25 @@ const PostForm = () => {
   const save = (e) => {
     setSign(sigPad.current.getTrimmedCanvas().toDataURL("image/png"));
     // data["numberMC"]=Number
-    console.log("signature", signature);
+    // console.log("signature", signature);
   };
 
   // Test
-  const obj = [data, sigPad, { signature }];
+  // const obj = [data, sigPad, { signature }];
   // const obj = [{data}, {signature}]
-  console.log(obj);
+  // console.log(obj);
 
   function submit(e) {
     e.preventDefault(e);
     const body = { data, signature };
-    console.log("data", data.email);
-    console.log("My e.target", e.target.email.value);
-    console.log(sigPad);
-    console.log(signature);
+    // console.log("data", data.email);
+    // console.log("My e.target", e.target.email.value);
+    // console.log(sigPad);
+    // console.log(signature);
     Axios.post(url, body)
       .then((res) => {
         setData({ ...data, [e.target.name]: e.target.value });
-        console.log("My Data from Res: ", res);
+        // console.log("My Data from Res: ", res);
         window.location.replace("/AboutUs");
       })
       .catch((err) => console.log(err));
@@ -54,8 +54,8 @@ const PostForm = () => {
     const newData = { ...data };
     newData[e.target.id] = e.target.value;
     setData(newData);
-    console.log(`data from handle: ${JSON.stringify(data)}`);
-    console.log(newData);
+    // console.log(`data from handle: ${JSON.stringify(data)}`);
+    // console.log(newData);
   }
 
   return (
