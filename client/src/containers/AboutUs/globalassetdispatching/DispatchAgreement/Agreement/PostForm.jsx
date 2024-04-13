@@ -3,7 +3,6 @@ import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import Axios from "axios";
 
-
 const PostForm = () => {
   let sigPad = useRef({});
   const url = "/api/agreement/need2work";
@@ -17,8 +16,8 @@ const PostForm = () => {
     company: "",
     signature: "",
   });
-  const [showResults, setShowResults] = React.useState(false)
-  const onClick = () => setShowResults(true)
+  const [showResults, setShowResults] = React.useState(false);
+  const onClick = () => setShowResults(true);
 
   const clear = (e) => {
     sigPad.current.clear();
@@ -26,25 +25,25 @@ const PostForm = () => {
   const save = (e) => {
     setSign(sigPad.current.getTrimmedCanvas().toDataURL("image/png"));
     // data["numberMC"]=Number
-    console.log("signature", signature);
+    // console.log("signature", signature);
   };
 
   // Test
-  const obj = [data, sigPad, { signature }];
+  // const obj = [data, sigPad, { signature }];
   // const obj = [{data}, {signature}]
-  console.log(obj);
+  // console.log(obj);
 
   function submit(e) {
     e.preventDefault(e);
     const body = { data, signature };
-    console.log("data", data.email);
-    console.log("My e.target", e.target.email.value);
-    console.log(sigPad);
-    console.log(signature);
+    // console.log("data", data.email);
+    // console.log("My e.target", e.target.email.value);
+    // console.log(sigPad);
+    // console.log(signature);
     Axios.post(url, body)
       .then((res) => {
         setData({ ...data, [e.target.name]: e.target.value });
-        console.log("My Data from Res: ", res);
+        // console.log("My Data from Res: ", res);
         window.location.replace("/AboutUs");
       })
       .catch((err) => console.log(err));
@@ -54,8 +53,8 @@ const PostForm = () => {
     const newData = { ...data };
     newData[e.target.id] = e.target.value;
     setData(newData);
-    console.log(`data from handle: ${JSON.stringify(data)}`);
-    console.log(newData);
+    // console.log(`data from handle: ${JSON.stringify(data)}`);
+    // console.log(newData);
   }
 
   return (
@@ -274,16 +273,23 @@ const PostForm = () => {
         {/* Please Hide this until the customer click save below. */}
         {/* <input hidden={false} type="submit" value="Submit" />{" "} */}
         {"Please Click Save to save signature Before Submitting this form"}
-
         {/* The Test */}
         <div>
-        {/* <input type="submit" value="Save Signature" onClick={onClick} /> */}
-        { showResults ? <button hidden={false} type="submit" value="Submit">Submit</button> : null }
+          {/* <input type="submit" value="Save Signature" onClick={onClick} /> */}
+          {showResults ? (
+            <button hidden={false} type="submit" value="Submit">
+              Submit
+            </button>
+          ) : null}
         </div>
       </form>
       {/* Fix the value if there is a problem */}
-      <button value={sigPad} onClick={clear}>Clear</button>
-      <div onClick={save}><input type="submit" value="Save" onClick={onClick} /></div>
+      <button value={sigPad} onClick={clear}>
+        Clear
+      </button>
+      <div onClick={save}>
+        <input type="submit" value="Save" onClick={onClick} />
+      </div>
     </>
   );
 };
