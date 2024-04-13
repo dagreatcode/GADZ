@@ -19,7 +19,7 @@ function Banner() {
         allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture full" 
         allowFullScreen
       ></iframe> */}
-      <video // autoPlay
+      <video autoPlay
         loop
         muted
         playsinline
