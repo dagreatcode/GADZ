@@ -35,7 +35,7 @@ const RoadFreight = () => {
           <img src={Image2} style={{ width: "100%" }} alt="talks" />
         </div>
         <div className="row">
-          <div className="display-4" style={{ padding: "40px" }}>
+          <div className="display-6" style={{ padding: "40px" }}>
             Road Freight Our Road Support Will Keep Your Business On The Move
             LET US HELP YOU WITH YOUR CARGO PROBLEM We focus on understanding
             your challeges, seeking to learn more about your business needs and
@@ -46,7 +46,7 @@ const RoadFreight = () => {
             trailers. Over-dimensional, heavy haul, and expedited shipments
           </div>
           <img src={Image1} style={{ width: "100%" }} alt="talks" />
-          <div className="display-4" style={{ padding: "40px" }}>
+          <div className="display-6" style={{ padding: "40px" }}>
             We Understand That Everything Is A Process. Asked Questions! What
             makes you different from others? Our passion for helping other
             businesses grow is what makes us different from your average
