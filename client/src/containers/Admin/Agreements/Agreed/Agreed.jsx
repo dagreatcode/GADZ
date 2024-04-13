@@ -8,10 +8,10 @@ const Agreed = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    const getData = async () => {
+    // const getData = async () => {
       try {
         if (id) {
-          await axios.get(`/api/agreement/agreed/${id}`).then((res) => {
+          axios.get(`/api/agreement/agreed/${id}`).then((res) => {
             setTour(res.data);
             // console.log(res.data.date);
           });
@@ -35,9 +35,9 @@ const Agreed = () => {
         //   error: err.message,
         // };
       }
-    };
-    return () => getData();
-  }, [id]);
+    }, [id]);
+    // return () => getData();
+  // }, []);
 
   //   if (id) {
   //     axios
