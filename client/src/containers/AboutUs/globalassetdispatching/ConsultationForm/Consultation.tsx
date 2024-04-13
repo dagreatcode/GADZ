@@ -31,24 +31,24 @@ const Consultation = () => {
             </nav>
           </div>
           <img src={Image1} style={{ width: "100%" }} alt="talks" />
-<div>
-  <h1>Consultation interest</h1>
-  <p>Call us for a free consultation. See below..</p>
-  <ol>
-    <li>Services Offered</li>
-    <li>Customer Service Issues</li>
-    <li>New Carrier Setup</li>
-    <li>Rate Request</li>
-    <li>Factoring</li>
-    <li>Business Development</li>
-    <li>Procurement</li>
-    <li>Load Booking</li>
-    <li>Driver Recruiting</li>
-    <li>Roadside Safety and Support</li>
-    <li>Carrier Service Issues</li>
-    <li>etc...</li>
-  </ol>
-</div>
+          <div>
+            <h1>Consultation interest</h1>
+            <p>Call us for a free consultation. See below..</p>
+            <ol>
+              <li>Services Offered</li>
+              <li>Customer Service Issues</li>
+              <li>New Carrier Setup</li>
+              <li>Rate Request</li>
+              <li>Factoring</li>
+              <li>Business Development</li>
+              <li>Procurement</li>
+              <li>Load Booking</li>
+              <li>Driver Recruiting</li>
+              <li>Roadside Safety and Support</li>
+              <li>Carrier Service Issues</li>
+              <li>etc...</li>
+            </ol>
+          </div>
         </div>
       </div>
     </>

@@ -26,7 +26,7 @@ const Agreed = () => {
         return (
           <div>
             <p>Something went wrong 😭</p>
-   
+
             {err.message && <span>Here's the error: {err.message}</span>}
           </div>
         );
