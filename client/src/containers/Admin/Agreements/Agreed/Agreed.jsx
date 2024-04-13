@@ -11,7 +11,7 @@ const Agreed = () => {
     const getData = async () => {
       try {
         if (id) {
-          axios.get(`/api/agreement/agreed/${id}`).then((res) => {
+          await axios.get(`/api/agreement/agreed/${id}`).then((res) => {
             setTour(res.data);
             // console.log(res.data.date);
           });
