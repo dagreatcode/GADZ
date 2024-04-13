@@ -9,8 +9,9 @@ const Agreements = () => {
   const [agreeData, setData] = useState([]);
 
   useEffect(() => {
-    // let letsClean = async () =>
-      fetch("/api/agreement/view")
+    // Fix code to work in production
+    let letsClean = async () =>
+      await fetch("/api/agreement/view")
         .then((res) => res.json())
         .then((data) => {
           // console.log("Data is returned", data);
@@ -21,11 +22,12 @@ const Agreements = () => {
           //   console.log(data[0].date)
         })
         .catch((err) => err);
-    // return () => {
-    //   letsClean();
-    // };
+    // Fix code to work in production
+    return () => {
+      letsClean();
+    };
     // setAgreement(true);
-  }, []);
+  }, [setAgreement]);
 
   useEffect(() => {
     const letsClean = () => {
