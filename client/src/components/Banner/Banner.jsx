@@ -19,12 +19,7 @@ function Banner() {
         allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture full" 
         allowFullScreen
       ></iframe> */}
-      <video autoPlay
-        loop
-        muted
-        playsinline
-        webkit-playsinline
-      >
+      <video autoPlay loop muted playsinline webkit-playsinline>
         <source
           src="https://res.cloudinary.com/fashion-commit/video/upload/v1702063638/Earth_axigrw.mp4"
           type="video/mp4"
