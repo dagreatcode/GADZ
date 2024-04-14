@@ -32,8 +32,7 @@ const Home = () => {
             trigger="loop"
             state="loop-rotate"
             // delay="2000"
-            style={{width: "250px" ,height:"250px"}}
-       
+            style={{ width: "250px", height: "250px" }}
           ></lord-icon>
         </div>
         <div className="display-2">It's A New World</div>
@@ -68,6 +67,12 @@ const Home = () => {
           <br />
           <br />
           <br />
+          <lord-icon
+            src="https://cdn.lordicon.com/hsrrkevt.json"
+            trigger="loop"
+            state="loop-cycle"
+            style={{ width: "250px", height: "250px" }}
+          ></lord-icon>
           <br />
           <br />
           <br />
