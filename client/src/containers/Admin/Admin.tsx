@@ -15,6 +15,7 @@ const Admin = () => {
       <br />
       <Link to="/AdminAllUsers">All Users</Link>
       <br />
+      <Link to="/Agreements">Agreements</Link>
     </>
   );
 };
