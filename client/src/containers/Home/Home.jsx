@@ -23,7 +23,19 @@ const Home = () => {
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src={Truck} alt="Big Truck" />
-
+        {/* <a href="https://lordicon.com/">Icons by Lordicon.com</a> */}
+        {/* <script src="https://cdn.lordicon.com/lordicon.js"></script> */}
+        <div>
+          <lord-icon
+            src="https://cdn.lordicon.com/tltikfri.json"
+            // trigger="hover"
+            trigger="loop"
+            state="loop-rotate"
+            // delay="2000"
+            style={{width: "250px" ,height:"250px"}}
+       
+          ></lord-icon>
+        </div>
         <div className="display-2">It's A New World</div>
         <div style={{ textAlign: "center" }}>
           <div className="row">
@@ -53,17 +65,25 @@ const Home = () => {
               </p>
             </div>
           </div>
-          <br/><br/><br/><br/><br/><br/><br/>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
           <div className="row">
             <div className="col-md-6">
               <h1 className="jumbotron display-4">We are Global</h1>
-              <br/>
-              <br/>
-              <p className="display-6">That mindset of becoming one of the best provided me
-                the luxury of traveling abroad, applying the ability to scale up
-                operations as a asset leader. My desire is to partner with
-                businesses seeking to put a root cause to their challeges and
-                produce a solution that fits!</p>
+              <br />
+              <br />
+              <p className="display-6">
+                That mindset of becoming one of the best provided me the luxury
+                of traveling abroad, applying the ability to scale up operations
+                as a asset leader. My desire is to partner with businesses
+                seeking to put a root cause to their challeges and produce a
+                solution that fits!
+              </p>
             </div>
             <div className="col-md-6">
               <img src={Logistics} style={{ width: "100%" }} alt="Logistics" />
