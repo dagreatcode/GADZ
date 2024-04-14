@@ -42,7 +42,7 @@ const Bio = () => {
               </strong>
               <br />
               <br />
-              <p className="display-6" style={{ padding: "40px" }}>
+              <p className="fs-3" style={{ padding: "40px" }}>
                 “I embrace being an asset in everything I do. My journey in life
                 has installed a great belief in trusting the process. Life
                 accomplishmemts will grant you the pleasure of what it looks
@@ -68,7 +68,7 @@ const Bio = () => {
               </strong>
               <br />
               <br />
-              <p className="display-6" style={{ padding: "40px" }}>
+              <p className="fs-3" style={{ padding: "40px" }}>
                 Eagerly learning those coporations from the ground up allowed me
                 to develop the operational structure. My ability to observe
                 process, determine a problem, analize a rootcause resolution
@@ -89,7 +89,40 @@ const Bio = () => {
                 Leading With Integrity! Our core values: 1. Trust 2. Resilence
                 3. Transparency 4. Reliable
               </p>
+              <h3>
+  Fancy display heading
+  <small className="text-muted"> With faded secondary text</small>
+</h3>
+<blockquote className="blockquote">
+  <p className="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+</blockquote>
+
+
             </div>
+            <dl className="row">
+  <dt className="col-sm-3">Description lists</dt>
+  <dd className="col-sm-9">A description list is perfect for defining terms.</dd>
+
+  <dt className="col-sm-3">Euismod</dt>
+  <dd className="col-sm-9">
+    <p>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</p>
+    <p>Donec id elit non mi porta gravida at eget metus.</p>
+  </dd>
+
+  <dt className="col-sm-3">Malesuada porta</dt>
+  <dd className="col-sm-9">Etiam porta sem malesuada magna mollis euismod.</dd>
+
+  <dt className="col-sm-3 text-truncate">Truncated term is truncated</dt>
+  <dd className="col-sm-9">Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</dd>
+
+  <dt className="col-sm-3">Nesting</dt>
+  <dd className="col-sm-9">
+    <dl className="row">
+      <dt className="col-sm-4">Nested definition list</dt>
+      <dd className="col-sm-8">Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc.</dd>
+    </dl>
+  </dd>
+</dl>
           </div>
         </div>
       </div>

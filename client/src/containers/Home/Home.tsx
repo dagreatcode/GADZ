@@ -22,7 +22,7 @@ const Home = () => {
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src={Truck} alt="Big Truck" />
-        <div>It's A New World</div>
+        <div className="display-2">It's A New World</div>
         <div style={{ textAlign: "center" }}>
           <div className="row">
             <div className="col-md-12">

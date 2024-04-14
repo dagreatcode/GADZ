@@ -36,8 +36,8 @@ const Consultation = () => {
               <h1 className="display-3" style={{ padding: "40px" }}>
                 Consultation interest
               </h1>
-              <p>Call us for a free consultation. See below..</p>
-              <ul className="display-6" style={{ padding: "40px" }}>
+              <p className="fs-5">Call us for a free consultation. See below..</p>
+              <ul className="fs-2 list-unstyled" style={{ padding: "40px" }}>
                 <li>Services Offered</li>
                 <li>Customer Service Issues</li>
                 <li>New Carrier Setup</li>
