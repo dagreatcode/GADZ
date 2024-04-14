@@ -8,7 +8,7 @@ const Agreed = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    const getData = async () => {
+    // const getData = async () => {
       try {
         if (id) {
           axios.get(`/api/agreement/agreed/${id}`).then((res) => {
@@ -35,9 +35,9 @@ const Agreed = () => {
         //   error: err.message,
         // };
       }
-    };
-    return () => getData();
-  }, [id]);
+    }, [id]);
+    // return () => getData();
+  // }, []);
 
   //   if (id) {
   //     axios
