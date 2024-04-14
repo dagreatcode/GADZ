@@ -9,27 +9,35 @@ const Agreements = () => {
   const [agreeData, setData] = useState([]);
 
   useEffect(() => {
-    fetch("/api/agreement/view")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Data is returned", data);
-        //   setAgreement(true);
-        setAgreement(true);
-        setData(data);
-        //   setData(data)
-        //   console.log(data[0].date)
-      });
+    // let letsClean = async () =>
+      fetch("/api/agreement/view")
+        .then((res) => res.json())
+        .then((data) => {
+          // console.log("Data is returned", data);
+          //   setAgreement(true);
+          setAgreement(true);
+          setData(data);
+          //   setData(data)
+          //   console.log(data[0].date)
+        })
+        .catch((err) => err);
+    // return () => {
+    //   letsClean();
+    // };
     // setAgreement(true);
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("agree") === "true") {
-      setAgreement(true);
-      console.log(true);
-    } else {
-      setAgreement(false);
-      console.log(false);
-    }
+    const letsClean = () => {
+      if (localStorage.getItem("agree") === "true") {
+        setAgreement(true);
+        // console.log(true);
+      } else {
+        setAgreement(false);
+        // console.log(false);
+      }
+    };
+    return () => letsClean();
   }, []);
 
   const handleSubmit = (e: any) => {
@@ -39,17 +47,16 @@ const Agreements = () => {
     console.log("agreed");
   };
 
-  const handleID = (e:any )=>{
+  const handleID = (e: any) => {
     e.preventDefault();
-    console.log("Do Something")
+    console.log("Do Something");
     const id = e.target.value;
     // console.log(id)
     // axios.get(`/api/agreement/agreed/:${id}`)
     // fetch(`/api/agreement/agreed/${id}`)
-    window.location.href=`/agreed/${id}`;
+    window.location.href = `/agreed/${id}`;
     // window.location.href=`http://localhost:3000/agreed/${id}`;
-
-  }
+  };
 
   return agreement ? (
     <div className="container">

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -10,7 +10,10 @@ const Footer = () => {
             <span>Get connected with us on social networks:</span>
           </div>
           <div>
-            <Link to="https://www.facebook.com/global.asset.dispatching.service" className="me-4 link-secondary">
+            <Link
+              to="https://www.facebook.com/global.asset.dispatching.service"
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-facebook-f"></i>
             </Link>
             <Link to="" className="me-4 link-secondary">
@@ -19,7 +22,10 @@ const Footer = () => {
             <Link to="" className="me-4 link-secondary">
               <i className="fab fa-google"></i>
             </Link>
-            <Link to="https://www.instagram.com/Global_assetleader/" className="me-4 link-secondary">
+            <Link
+              to="https://www.instagram.com/Global_assetleader/"
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-instagram"></i>
             </Link>
             <Link to="" className="me-4 link-secondary">
@@ -35,73 +41,71 @@ const Footer = () => {
             <div className="row mt-3">
               <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
                 <h6 className="text-uppercase fw-bold mb-4">
-                  <i className="fas fa-gem me-3 text-secondary"></i>Company name
+                  <i className="fas fa-gem me-3 text-secondary"></i>GADZConnect
                 </h6>
                 <p>
-                  Here you can use rows and columns to organize your footer
-                  content. Lorem ipsum dolor sit amet, consectetur adipisicing
-                  elit.
+                  You have the loads, we got the GADZ. Connect your assets and manage them easily. Make loads available to the public or make yourself assessable as a driver. 
                 </p>
               </div>
               <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
                 <h6 className="text-uppercase fw-bold mb-4">Products</h6>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Angular
+                  <Link to="/RoadFreight" className="text-reset">
+                    Road Freight
                   </Link>
                 </p>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    React
+                  <Link to="/Bio" className="text-reset">
+                    Biography
                   </Link>
                 </p>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Vue
+                  <Link to="/Consultation" className="text-reset">
+                    Consultation
                   </Link>
                 </p>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Laravel
+                  <Link to="/DispatchAgreement " className="text-reset">
+                    Dispatch Agreement
                   </Link>
                 </p>
               </div>
               <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
                 <h6 className="text-uppercase fw-bold mb-4">Useful links</h6>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Pricing
+                  <Link to="/AboutUs" className="text-reset">
+                    About Us
                   </Link>
                 </p>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Settings
+                  <Link to="/ContactUs" className="text-reset">
+                    Contact Us
                   </Link>
                 </p>
                 <p>
-                  <Link to="#!" className="text-reset">
-                    Orders
+                  <Link to="/Services" className="text-reset">
+                    Services
                   </Link>
                 </p>
-                <p>
-                  <Link to="#!" className="text-reset">
-                    Help
+                {/* <p>
+                  <Link to="/DispatchAgreement " className="text-reset">
+                  Dispatch Agreement 
                   </Link>
-                </p>
+                </p> */}
               </div>
               <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
                 <h6 className="text-uppercase fw-bold mb-4">Contact</h6>
                 <p>
-                  <i className="fas fa-home me-3 text-secondary"></i> New York,
-                  NY 10012, US
+                  <i className="fas fa-home me-3 text-secondary"></i>Dallas, TX
+                  508 suite 826 commerce st  75203, USA
                 </p>
                 <p>
                   <i className="fas fa-envelope me-3 text-secondary"></i>
-                  info@example.com
+                  info@gadzconnect.com
                 </p>
                 <p>
-                  <i className="fas fa-phone me-3 text-secondary"></i> + 01 234
-                  567 88
+                  <i className="fas fa-phone me-3 text-secondary"></i> + 01 972
+                  597 8040
                 </p>
                 <p>
                   <i className="fas fa-print me-3 text-secondary"></i> + 01 234
