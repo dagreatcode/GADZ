@@ -53,6 +53,7 @@ const Home = () => {
               </p>
             </div>
           </div>
+          <br/><br/><br/><br/><br/><br/><br/>
           <div className="row">
             <div className="col-md-6">
               <h1 className="jumbotron display-4">We are Global</h1>
