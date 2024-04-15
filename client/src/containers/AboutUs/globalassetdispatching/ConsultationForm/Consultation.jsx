@@ -36,7 +36,14 @@ const Consultation = () => {
               <h1 className="display-3" style={{ padding: "40px" }}>
                 Consultation interest
               </h1>
-              <p className="fs-5">Call us for a free consultation. See below..</p>
+              <lord-icon
+                src="https://cdn.lordicon.com/egmlnyku.json"
+                trigger="hover"
+                style={{ width: "250px", height: "250px" }}
+              ></lord-icon>
+              <p className="fs-5">
+                Call us for a free consultation. See below..
+              </p>
               <ul className="fs-2 list-unstyled" style={{ padding: "40px" }}>
                 <li>Services Offered</li>
                 <li>Customer Service Issues</li>
