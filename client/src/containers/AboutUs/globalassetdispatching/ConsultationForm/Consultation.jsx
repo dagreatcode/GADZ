@@ -33,6 +33,7 @@ const Consultation = () => {
             </div>
             <img src={Image1} style={{ width: "100%" }} alt="talks" />
             <div>
+              <p className="fs-2" style={{ marginTop: "30px" }}> Managing logistics can be a complex and time-consuming process, often leading to inefficiencies, delays, and unnecessary costs. Traditional methods lack transparency, coordination, and real-time insights, hindering businesses from reaching their full potential. </p>
               <h1 className="display-3" style={{ padding: "40px" }}>
                 Consultation interest
               </h1>

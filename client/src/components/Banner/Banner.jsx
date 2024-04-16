@@ -36,7 +36,10 @@ function Banner() {
         {/* <video autoPlay muted controls src='./Earth.mp4' /> */}
 
         <h1 className="jumbotron display-3" style={{ padding: "100px" }}>
-          Our Services
+          We’re on a mission to empower businesses of all sizes to thrive in
+          today’s fast-paced world. By leveraging cutting-edge technology and
+          innovative solutions, we’re revolutionizing the transportation and
+          logistics industry, one shipment at a time.{" "}
         </h1>
 
         <Carousel autoPlay infiniteLoop interval="6000">
