@@ -109,10 +109,10 @@ const Login = () => {
             <div className="col-lg-7 text-center text-lg-start">
               <h1 className="display-4 fw-bold lh-1 mb-3">Sign Up</h1>
               <p className="col-lg-10 fs-4">
-                For signing up early, you will be able to use this site forever, for
-                free. Early sign up is a was to help the developers with bugs and
-                updates. We value your opinion and hope to bring great customer
-                service.
+                Ready to experience the future of logistics management? Sign up
+                for GADZ CONNECT today and take your business to new heights.
+                Let’s embark on this journey together, and unlock the full
+                potential of your logistics operations.
               </p>
             </div>
             <div className="col-md-10 mx-auto col-lg-5">
