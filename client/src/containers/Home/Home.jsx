@@ -75,6 +75,9 @@ const Home = () => {
           <br />
           <br />
           <br />
+          <br />
+          <br />
+  
           <lord-icon
             src="https://cdn.lordicon.com/hsrrkevt.json"
             trigger="loop"
