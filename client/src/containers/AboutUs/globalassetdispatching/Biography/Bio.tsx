@@ -34,6 +34,26 @@ const Bio = () => {
             <img src={Image1} alt="connecting dots" />
           </div>
           <hr />
+          <h1 className="display-5">Effortless Connectivity:</h1>
+          <div className="fs-3" style={{ padding: "40px" }}>
+            Connect with a global network of buyers, sellers, carriers, and
+            service providers - all within a single, intuitive platform.
+          </div>
+          <h1 className="display-5">Real-Time Visibility:</h1>
+          <div className="fs-3" style={{ padding: "40px" }}>
+            Gain unprecedented insights into your logistics operations with our
+            advanced tracking and monitoring capabilities.
+          </div>
+          <h1 className="display-5">Smart Recommendations: </h1>
+          <div className="fs-3" style={{ padding: "40px" }}>
+            Harness the power of data-driven insights to optimize routes,
+            minimize costs, and maximize efficiency.{" "}
+          </div>
+          <h1 className="display-5">Secure and Reliable: </h1>
+          <div className="fs-3" style={{ padding: "40px" }}>
+            Rest easy knowing that your data and transactions are safeguarded by
+            industry-leading security measures.
+          </div>
           <div id="biogrid" className="row">
             <div className="col-md-6 col-xs-12">
               <strong className="display-3" style={{ padding: "40px" }}>
