@@ -29,7 +29,7 @@ function Banner() {
       </video> */}
         <lord-icon
           src="https://cdn.lordicon.com/dsccuiza.json"
-          trigger="loop"
+          trigger="hover"
           delay="2000"
           style={{ width: "250px", height: "250px" }}
         ></lord-icon>

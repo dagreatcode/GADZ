@@ -36,7 +36,7 @@ const Home = () => {
           <lord-icon
             src="https://cdn.lordicon.com/tltikfri.json"
             // trigger="hover"
-            trigger="loop"
+            trigger="hover"
             state="loop-rotate"
             // delay="2000"
             style={{ width: "250px", height: "250px" }}
@@ -80,7 +80,7 @@ const Home = () => {
   
           <lord-icon
             src="https://cdn.lordicon.com/hsrrkevt.json"
-            trigger="loop"
+            trigger="hover"
             state="loop-cycle"
             style={{ width: "250px", height: "250px" }}
           ></lord-icon>

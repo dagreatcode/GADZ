@@ -39,7 +39,7 @@ const Consultation = () => {
               </h1>
               <lord-icon
                 src="https://cdn.lordicon.com/egmlnyku.json"
-                trigger="loop"
+                trigger="hover"
                 style={{ width: "250px", height: "250px" }}
               ></lord-icon>
               <p className="fs-5">

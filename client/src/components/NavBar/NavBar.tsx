@@ -66,7 +66,7 @@ const NavBar = () => {
         </div>
 
         <span>
-          <Link to="https://www.twitter.com">
+          <Link aria-label="Twitter Link" to="https://www.twitter.com">
             <i
               className="fab fa-twitter"
               style={{ fontSize: "30px", padding: "20px" }}
@@ -74,7 +74,7 @@ const NavBar = () => {
           </Link>
         </span>
         <span>
-          <Link to="https://www.facebook.com/global.asset.dispatching.service">
+          <Link aria-label="Facebook Link" to="https://www.facebook.com/global.asset.dispatching.service">
             <i
               className="fab fa-facebook-f"
               style={{ fontSize: "30px", padding: "20px" }}
@@ -82,7 +82,7 @@ const NavBar = () => {
           </Link>
         </span>
         <span>
-          <Link to="https://www.youtube.com">
+          <Link aria-label="Youtube Link" to="https://www.youtube.com">
             <i
               className="fab fa-youtube"
               style={{ fontSize: "30px", padding: "20px" }}
@@ -90,7 +90,7 @@ const NavBar = () => {
           </Link>
         </span>
         <span>
-          <Link to="https://www.instagram.com/Global_assetleader/">
+          <Link aria-label="Instagram Link" to="https://www.instagram.com/Global_assetleader/">
             <i
               className="fab fa-instagram"
               style={{ fontSize: "30px", padding: "20px" }}
