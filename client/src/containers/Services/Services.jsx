@@ -11,6 +11,10 @@ const Services = () => {
           <div className="display-4" style={{ padding: "40px" }}>
             Services
           </div>
+          <br />
+            <h1 className="display-6" style={{ padding: "40px" }}>
+            “At GADZ CONNECT, we’re committed to empowering businesses of all sizes to thrive in today’s dynamic marketplace. Let us be your partner in success-together, we’ll reshape the future of logistics.”
+        </h1>
           <img src={Image1} style={{ width: "100%" }} alt="flyer" />
         </div>
       </div>
