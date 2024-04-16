@@ -3,9 +3,9 @@ import React from "react";
 // import LiveChat from '../../components/LiveChat/LiveChat';
 // import Comments from '../../components/Comments/Comments';
 // import { useSelector } from 'react-redux';
-import Truck from "./images/truck.png";
-import Logistics from "./images/logistics.png";
-import Town from "./images/town.jpeg";
+// import Truck from "./images/truck.png";
+// import Logistics from "./images/logistics.png";
+// import Town from "./images/town.jpeg";
 
 // import realMeetsBW from "./images/realMeetsBW.jpeg"
 
@@ -22,7 +22,7 @@ const Home = () => {
       <Link to="/User">User Pages After Login</Link> */}
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
-        <img src={Truck} alt="Big Truck" />
+        <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236780/extras/Screenshot_2023-08-24_210910_khwcnx.png" alt="Big Truck" />
         {/* <a href="https://lordicon.com/">Icons by Lordicon.com</a> */}
         <div className="display-6" style={{ padding: "40px" }}>
           The innovative solution revolutionizing the transportation and
@@ -47,7 +47,7 @@ const Home = () => {
           <div className="row">
             <div className="col-md-12">
               <img
-                src={Town}
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236865/extras/Free-Photo-700x860-1660911398_i2sz1t.png"
                 style={{ width: "100%", height: "75%" }}
                 alt="Big Town top view"
               />
@@ -104,7 +104,7 @@ const Home = () => {
               </p>
             </div>
             <div className="col-md-6">
-              <img src={Logistics} style={{ width: "100%" }} alt="Logistics" />
+              <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236800/extras/Screenshot_2023-08-24_211718_maz9rg.png" style={{ width: "100%" }} alt="Logistics" />
             </div>
           </div>
         </div>

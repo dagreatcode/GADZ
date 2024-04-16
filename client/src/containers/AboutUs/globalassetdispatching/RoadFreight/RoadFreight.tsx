@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Image1 from "./images/shipping.jpeg";
-import Image2 from "./images/Semi-Truck-Photo-3707432807.jpeg";
+// import Image1 from "./images/shipping.jpeg";
+// import Image2 from "./images/Semi-Truck-Photo-3707432807.jpeg";
 
 const RoadFreight = () => {
   return (
@@ -33,7 +33,7 @@ const RoadFreight = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src={Image2} style={{ width: "100%" }} alt="talks" />
+            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236720/extras/Semi-Truck-Photo-3707432807_te19ps.png" style={{ width: "100%" }} alt="talks" />
           </div>
           <div className="row">
             <div className="fs-3" style={{ padding: "40px" }}>
@@ -47,7 +47,7 @@ const RoadFreight = () => {
               double-drop trailers. Over-dimensional, heavy haul, and expedited
               shipments
             </div>
-            <img src={Image1} style={{ width: "100%" }} alt="talks" />
+            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713237046/extras/1911991-4227381452_jvdowh.png" style={{ width: "100%" }} alt="talks" />
             <div className="fs-3" style={{ padding: "40px" }}>
               We Understand That Everything Is A Process. Asked Questions! What
               makes you different from others? Our passion for helping other

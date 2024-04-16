@@ -1,7 +1,7 @@
 import React from "react";
 import Video1 from "../../components/Banner/Banner";
 import { Link } from "react-router-dom";
-import Image1 from "./images/Semi-Truck.jpeg";
+// import Image1 from "./images/Semi-Truck.jpeg";
 
 function AboutUs() {
   return (
@@ -32,7 +32,7 @@ function AboutUs() {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
               <img
-                src={Image1}
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236706/extras/Semi-Truck-Background-HD-2902259868_bb3wmw.jpg"
                 style={{ width: "100%" }}
                 alt="Big Green Truck"
               />

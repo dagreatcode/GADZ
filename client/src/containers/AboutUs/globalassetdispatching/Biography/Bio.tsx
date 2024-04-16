@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Image1 from "./images/Connect.jpeg";
+// import Image1 from "./images/Connect.jpeg";
 
 const Bio = () => {
   return (
@@ -31,7 +31,7 @@ const Bio = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src={Image1} alt="connecting dots" />
+            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236853/extras/global-network-connection-world-map-point-and-line-composition-concept-of-global-business-illustration-free-vector-797581667_hypga3.png" alt="connecting dots" />
           </div>
           <hr />
           <h1 className="display-5">Effortless Connectivity:</h1>

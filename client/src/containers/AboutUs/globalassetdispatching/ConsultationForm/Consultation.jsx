@@ -1,5 +1,5 @@
 import React from "react";
-import Image1 from "./images/realMeets.jpeg";
+// import Image1 from "./images/realMeets.jpeg";
 import { Link } from "react-router-dom";
 
 const Consultation = () => {
@@ -31,7 +31,7 @@ const Consultation = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src={Image1} style={{ width: "100%" }} alt="talks" />
+            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236881/extras/image0_tpalbn.png" style={{ width: "100%" }} alt="talks" />
             <div>
               <p className="fs-2" style={{ marginTop: "30px" }}> Managing logistics can be a complex and time-consuming process, often leading to inefficiencies, delays, and unnecessary costs. Traditional methods lack transparency, coordination, and real-time insights, hindering businesses from reaching their full potential. </p>
               <h1 className="display-3" style={{ padding: "40px" }}>

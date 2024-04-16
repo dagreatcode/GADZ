@@ -55,6 +55,7 @@ const ContactUs = () => {
         </p>
         <div style={{ textAlign: "center" }}> </div>
         <br />
+        <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713237084/extras/Dispatcher-2-1984023525_alvokn.png" style={{ width: "100%" }} alt="flyer" />
         <form>
           <div className="container">
             <br />
