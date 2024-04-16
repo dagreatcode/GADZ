@@ -24,6 +24,13 @@ const Home = () => {
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
         <img src={Truck} alt="Big Truck" />
         {/* <a href="https://lordicon.com/">Icons by Lordicon.com</a> */}
+        <div className="display-6" style={{ padding: "40px" }}>
+          The innovative solution revolutionizing the transportation and
+          logistics industry. We’re here to transform the way you manage your
+          logistics operations, offering a seamless platform that connects
+          buyers and sellers, carriers and shippers, and every player in
+          between!
+        </div>
         {/* <script src="https://cdn.lordicon.com/lordicon.js"></script> */}
         <div>
           <lord-icon
@@ -55,6 +62,7 @@ const Home = () => {
               <br />
               <br />
               <h1 className="jumbotron display-4">What We Offer?</h1>
+              <hr />
               <br />
               <br />
               <p className="display-6">
@@ -78,16 +86,18 @@ const Home = () => {
           <br />
           <br />
           <div className="row">
+            <h1 className="jumbotron display-4">We are Global</h1>
+            <hr />
+
+            <br />
+            <br />
             <div className="col-md-6">
-              <h1 className="jumbotron display-4">We are Global</h1>
-              <br />
-              <br />
               <p className="display-6">
-                That mindset of becoming one of the best provided me the luxury
-                of traveling abroad, applying the ability to scale up operations
-                as a asset leader. My desire is to partner with businesses
-                seeking to put a root cause to their challeges and produce a
-                solution that fits!
+                “At GADZCONNECT, we’re redefining the way businesses manage
+                their logistics operations. Say goodbye to the complexities and
+                inefficiencies of traditional logistics processes- and hello to
+                a world of seamless connectivity, real-time visibility, and
+                unparalleled efficiency.
               </p>
             </div>
             <div className="col-md-6">
