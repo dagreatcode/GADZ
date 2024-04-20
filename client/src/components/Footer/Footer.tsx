@@ -119,7 +119,7 @@ const Footer = () => {
         </section>
         <div
           className="text-center p-4"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.025)" }}
+          style={{ backgroundColor: "#0000006" }}
         >
           {
             "© 2023 Copyright Global Asset Dispatching, LLC All Rights Reserved. n\

@@ -16,13 +16,19 @@ const Home = () => {
       <div className="row jumbotron">
         <div className="display-4" style={{ padding: "40px" }}>
           Welcome To GADZConnect!
+          <img
+          // sizes="(min-width: 650px) 50vw, 100vw"
+          style={{ width: "950px", height: "350px" }}
+          src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236780/extras/Screenshot_2023-08-24_210910_khwcnx.png"
+          alt="Big Truck"
+        />
         </div>
 
         {/* <Link to="/Admin">Admin Pages After login</Link><br/>
       <Link to="/User">User Pages After Login</Link> */}
         {/* <LiveChat /> */}
         {/* <Comments comments={comments} title="🥳Show All Comments Here✒️" /> */}
-        <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236780/extras/Screenshot_2023-08-24_210910_khwcnx.png" alt="Big Truck" />
+
         {/* <a href="https://lordicon.com/">Icons by Lordicon.com</a> */}
         <div className="display-6" style={{ padding: "40px" }}>
           The innovative solution revolutionizing the transportation and
@@ -38,6 +44,7 @@ const Home = () => {
             // trigger="hover"
             trigger="hover"
             state="loop-rotate"
+            // fetchpriority="high"
             // delay="2000"
             style={{ width: "250px", height: "250px" }}
           ></lord-icon>
@@ -77,7 +84,7 @@ const Home = () => {
           <br />
           <br />
           <br />
-  
+
           <lord-icon
             src="https://cdn.lordicon.com/hsrrkevt.json"
             trigger="hover"
@@ -104,7 +111,13 @@ const Home = () => {
               </p>
             </div>
             <div className="col-md-6">
-              <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236800/extras/Screenshot_2023-08-24_211718_maz9rg.png" style={{ width: "100%" }} alt="Logistics" />
+              <img
+                width="auto"
+                height="360"
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236800/extras/Screenshot_2023-08-24_211718_maz9rg.png"
+                // style={{ width: "100%" }}
+                alt="Logistics"
+              />
             </div>
           </div>
         </div>

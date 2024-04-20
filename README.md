@@ -4,6 +4,7 @@ In order to follow all of the updates to this site, please visit [GADZWiki](http
 ___
 Important Terminal Commands
 ```
+npm run client exited with code 0
 npx create-react-app pwa-react-typescript --template cra-template-pwa-typescript
 sudo pkill -f node
 npm install -g sequelize-cli
