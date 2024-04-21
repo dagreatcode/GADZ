@@ -31,7 +31,10 @@ const Bio = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236853/extras/global-network-connection-world-map-point-and-line-composition-concept-of-global-business-illustration-free-vector-797581667_hypga3.png" alt="connecting dots" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670838/GADZ/global-network-connection-world-map-point-and-line-composition-concept-of-global-business-illustration-free-vector-797581667_vyvoqu.webp"
+              alt="connecting dots"
+            />
           </div>
           <hr />
           <h1 className="display-5">Effortless Connectivity:</h1>
@@ -63,7 +66,7 @@ const Bio = () => {
               <br />
               <br />
               <p className="fs-3" style={{ padding: "40px" }}>
-                “I embrace being an asset in everything I do. My journey in life
+                I embrace being an asset in everything I do. My journey in life
                 has installed a great belief in trusting the process. Life
                 accomplishmemts will grant you the pleasure of what it looks
                 like to be creative, resilient and significant”! Who Is Shamira

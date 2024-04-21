@@ -55,7 +55,11 @@ const ContactUs = () => {
         </p>
         <div style={{ textAlign: "center" }}> </div>
         <br />
-        <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713237084/extras/Dispatcher-2-1984023525_alvokn.png" style={{ width: "100%" }} alt="flyer" />
+        <img
+          src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670835/GADZ/Dispatcher-2-1984023525_fxyfzh.webp"
+          style={{ width: "100%" }}
+          alt="Call Center"
+        />
         <form>
           <div className="container">
             <br />
@@ -63,8 +67,8 @@ const ContactUs = () => {
             <br />
             <br />
             <h1 className="display-6" style={{ padding: "40px" }}>
-          Send us a message for a free consultation
-        </h1>
+              Send us a message for a free consultation
+            </h1>
             <div
               className="row"
               style={{

@@ -35,12 +35,15 @@ function Banner() {
         ></lord-icon>
         {/* <video autoPlay muted controls src='./Earth.mp4' /> */}
 
-        <h1 className="jumbotron display-3" style={{ padding: "100px" }}>
+        <h1 className="jumbotron display-3" style={{ padding: "50px" }}>
+          Our Mission
+        </h1>
+        <p className="fs-1" style={{ padding: "40px" }}>
           We’re on a mission to empower businesses of all sizes to thrive in
           today’s fast-paced world. By leveraging cutting-edge technology and
           innovative solutions, we’re revolutionizing the transportation and
           logistics industry, one shipment at a time.{" "}
-        </h1>
+        </p>
 
         <Carousel autoPlay infiniteLoop interval="6000">
           <div>
@@ -88,7 +91,9 @@ function Banner() {
           </div>
         </Carousel>
 
-        <div className="jumbotron display-3">Our Location</div>
+        <div className="jumbotron display-3" style={{ padding: "50px" }}>
+          Our Location
+        </div>
         <iframe
           title="myFrame"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3354.519079327509!2d-96.80896185070704!3d32.77849320596261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864e9917754ecff7%3A0x45437a4fc8e53e1e!2s826%20Commerce%20St%2C%20Dallas%2C%20TX%2075202!5e0!3m2!1sen!2sus!4v1713024559568!5m2!1sen!2sus"

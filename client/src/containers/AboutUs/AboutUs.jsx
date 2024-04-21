@@ -32,7 +32,7 @@ function AboutUs() {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
               <img
-                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236706/extras/Semi-Truck-Background-HD-2902259868_bb3wmw.jpg"
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670844/GADZ/Semi-Truck-Background-HD-2902259868_s4tccu.webp"
                 style={{ width: "100%" }}
                 alt="Big Green Truck"
               />

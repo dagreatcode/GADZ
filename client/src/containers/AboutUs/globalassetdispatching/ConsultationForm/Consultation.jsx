@@ -31,20 +31,35 @@ const Consultation = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236881/extras/image0_tpalbn.png" style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670839/GADZ/image0_y2uxz2.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
             <div>
-              <p className="fs-2" style={{ marginTop: "30px" }}> Managing logistics can be a complex and time-consuming process, often leading to inefficiencies, delays, and unnecessary costs. Traditional methods lack transparency, coordination, and real-time insights, hindering businesses from reaching their full potential. </p>
               <h1 className="display-3" style={{ padding: "40px" }}>
                 Consultation interest
               </h1>
+              <p className="fs-5">
+                Call us for a free consultation. See below..
+              </p>
               <lord-icon
                 src="https://cdn.lordicon.com/egmlnyku.json"
                 trigger="hover"
                 style={{ width: "250px", height: "250px" }}
               ></lord-icon>
-              <p className="fs-5">
-                Call us for a free consultation. See below..
+              <p className="fs-2" style={{ marginTop: "30px" }}>
+                {" "}
+                Managing logistics can be a complex and time-consuming process,
+                often leading to inefficiencies, delays, and unnecessary costs.
+                Traditional methods lack transparency, coordination, and
+                real-time insights, hindering businesses from reaching their
+                full potential.{" "}
               </p>
+              <h1 className="display-3" style={{ padding: "40px" }}>
+                Topics of Concern{" "}
+              </h1>
+              <hr />
               <ul className="fs-2 list-unstyled" style={{ padding: "40px" }}>
                 <li>Services Offered</li>
                 <li>Customer Service Issues</li>
@@ -59,6 +74,14 @@ const Consultation = () => {
                 <li>Carrier Service Issues</li>
                 <li>etc...</li>
               </ul>
+
+              <h1 className="jumbotron display-6" style={{ padding: "50px" }}>
+                If you have any other questions, feel free to ask! Contact us
+                for a consultation on your specific needs, or simply want to ask
+                questions about our services? We'll be happy to help! Please
+                feel free to call or email us with any inquiries you may have.
+                Don't forget to use the useful links below to contact us.
+              </h1>
             </div>
           </div>
         </div>

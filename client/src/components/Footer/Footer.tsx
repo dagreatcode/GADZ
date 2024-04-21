@@ -11,29 +11,45 @@ const Footer = () => {
           </div>
           <div>
             <Link
-            aria-label="Facebook Link"
+              aria-label="Facebook Link"
               to="https://www.facebook.com/global.asset.dispatching.service"
               className="me-4 link-secondary"
             >
               <i className="fab fa-facebook-f"></i>
             </Link>
-            <Link aria-label="Twitter Link" to="" className="me-4 link-secondary">
+            <Link
+              aria-label="Twitter Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-twitter"></i>
             </Link>
-            <Link aria-label="Google Link" to="" className="me-4 link-secondary">
+            <Link
+              aria-label="Google Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-google"></i>
             </Link>
             <Link
-            aria-label="Instagram Link"
+              aria-label="Instagram Link"
               to="https://www.instagram.com/Global_assetleader/"
               className="me-4 link-secondary"
             >
               <i className="fab fa-instagram"></i>
             </Link>
-            <Link aria-label="LinkedIn Link" to="" className="me-4 link-secondary">
+            <Link
+              aria-label="LinkedIn Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-linkedin"></i>
             </Link>
-            <Link aria-label="GitHub Link" to="" className="me-4 link-secondary">
+            <Link
+              aria-label="GitHub Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-github"></i>
             </Link>
           </div>
@@ -46,7 +62,9 @@ const Footer = () => {
                   <i className="fas fa-gem me-3 text-secondary"></i>GADZCONNECT
                 </p>
                 <p>
-                  You have the loads, we got the GADZ. Connect your assets and manage them easily. Make loads available to the public or make yourself assessable as a driver. 
+                  You have the loads, we got the GADZ. Connect your assets and
+                  manage them easily. Make loads available to the public or make
+                  yourself assessable as a driver.
                 </p>
               </div>
               <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
@@ -99,7 +117,7 @@ const Footer = () => {
                 <p className="text-uppercase fw-bold mb-4">Contact</p>
                 <p>
                   <i className="fas fa-home me-3 text-secondary"></i>Dallas, TX
-                  508 suite 826 commerce st  75203, USA
+                  508 suite 826 commerce st 75203, USA
                 </p>
                 <p>
                   <i className="fas fa-envelope me-3 text-secondary"></i>

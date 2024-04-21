@@ -17,11 +17,11 @@ const Home = () => {
         <div className="display-4" style={{ padding: "40px" }}>
           Welcome To GADZConnect!
           <img
-          // sizes="(min-width: 650px) 50vw, 100vw"
-          style={{ width: "950px", height: "350px" }}
-          src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236780/extras/Screenshot_2023-08-24_210910_khwcnx.png"
-          alt="Big Truck"
-        />
+            // sizes="(min-width: 650px) 50vw, 100vw"
+            style={{ width: "950px", height: "350px" }}
+            src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
+            alt="Big Truck"
+          />
         </div>
 
         {/* <Link to="/Admin">Admin Pages After login</Link><br/>
@@ -54,7 +54,7 @@ const Home = () => {
           <div className="row">
             <div className="col-md-12">
               <img
-                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236865/extras/Free-Photo-700x860-1660911398_i2sz1t.png"
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670837/GADZ/Free-Photo-700x860-1660911398_fvksf2.webp"
                 style={{ width: "100%", height: "75%" }}
                 alt="Big Town top view"
               />
@@ -103,8 +103,8 @@ const Home = () => {
             <br />
             <div className="col-md-6">
               <p className="display-6">
-                “At GADZCONNECT, we’re redefining the way businesses manage
-                their logistics operations. Say goodbye to the complexities and
+                At GADZCONNECT, we’re redefining the way businesses manage their
+                logistics operations. Say goodbye to the complexities and
                 inefficiencies of traditional logistics processes- and hello to
                 a world of seamless connectivity, real-time visibility, and
                 unparalleled efficiency.
@@ -114,7 +114,7 @@ const Home = () => {
               <img
                 width="auto"
                 height="360"
-                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236800/extras/Screenshot_2023-08-24_211718_maz9rg.png"
+                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670842/GADZ/Screenshot_2023-08-24_211718_hjhizt.webp"
                 // style={{ width: "100%" }}
                 alt="Logistics"
               />

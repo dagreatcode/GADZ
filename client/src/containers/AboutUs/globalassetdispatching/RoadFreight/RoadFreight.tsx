@@ -33,7 +33,11 @@ const RoadFreight = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236720/extras/Semi-Truck-Photo-3707432807_te19ps.png" style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670845/GADZ/Semi-Truck-Photo-3707432807_zep99p.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
           </div>
           <div className="row">
             <div className="fs-3" style={{ padding: "40px" }}>
@@ -47,7 +51,11 @@ const RoadFreight = () => {
               double-drop trailers. Over-dimensional, heavy haul, and expedited
               shipments
             </div>
-            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713237046/extras/1911991-4227381452_jvdowh.png" style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670835/GADZ/1911991-4227381452_ixgk8u.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
             <div className="fs-3" style={{ padding: "40px" }}>
               We Understand That Everything Is A Process. Asked Questions! What
               makes you different from others? Our passion for helping other

@@ -33,7 +33,11 @@ const DispatchAgreement = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src="https://res.cloudinary.com/fashion-commit/image/upload/v1713236879/extras/image1_vqnpw1.jpg" style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670840/GADZ/image1_la62ck.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
           </div>
           <div>
             {" "}

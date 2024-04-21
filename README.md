@@ -1,8 +1,11 @@
 # GADZ
 
 In order to follow all of the updates to this site, please visit [GADZWiki](https://github.com/dagreatcode/GADZ/wiki) and [Project Board](https://github.com/users/dagreatcode/projects/4)
-___
+
+---
+
 Important Terminal Commands
+
 ```
 npm run client exited with code 0
 npx create-react-app pwa-react-typescript --template cra-template-pwa-typescript
@@ -13,6 +16,7 @@ sequelize init:config & sequelize init:models
 ERD Entity relational diagram
 sudo su postgres
 ```
+
 https://github.com/marmelab/react-admin
 https://pimylifeup.com/raspberry-pi-postgresql/
 https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
@@ -24,13 +28,14 @@ https://www.facebook.com/global.asset.dispatching.service
 https://www.instagram.com/Global_assetleader/
 http://twitter.com/
 
-
-## Description 
+## Description
 
 #### WireFrame Diagram
+
 ![image](./assets/GADZWireframe.png)
 
 #### Database Diagram
+
 ![image](./db/daDiagram.drawio.png)
 
 Your GitHub profile is an extremely important aspect of your public identity as a developer. A well-crafted one allows you to show off your work to other developers as well as potential employers. An important component of your GitHub profile—and one that many new developers often overlook—is the README.md file.
@@ -45,16 +50,14 @@ If you're new to Markdown, read the GitHub guide on [Mastering Markdown](https:/
 
 If you need an example of a good README, check out [the VSCode repository](https://github.com/microsoft/vscode).
 
-
 ## Table of Contents (Optional)
 
 If your README is very long, add a table of contents to make it easy for users to find what they need.
 
-* [Installation](#installation)
-* [Usage](#usage)
-* [Credits](#credits)
-* [License](#license)
-
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
 
 ## Installation
 
@@ -77,22 +80,25 @@ Test Driven Error driven Data Driven...
     [ ] Create Frontend trailed by Jest testing..
     [ ] Set up Redis for caching data.
 
-## Usage 
+## Usage
 
-If we are working on this project together, clone this project and ask for access. 
+If we are working on this project together, clone this project and ask for access.
 
-If you are working on this on your own, fork this project and continue to the next steps. 
+If you are working on this on your own, fork this project and continue to the next steps.
 
 #### Please see examples and screenshots below.
-___
+
+---
 
 Create a .env file in the root of the project
-add  
+add
+
 ```
-DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=verify-full" 
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=verify-full"
 ```
 
-Open terminal in code editor and run 
+Open terminal in code editor and run
+
 ```
 npm install
 npm install -D
@@ -100,11 +106,13 @@ npm run build && npm run start
 ```
 
 ###### After installing these VS Code Extension, CHECK The db Folder!!!
+
 Add VS Code Extension [Database Client](https://database-client.com/#/home) by Weijan. Pick the PostgreSQL extension.
 
 Also Add VS Code Extension REST Client API
 
 CHECK THE db FOLDER for the dbDiagram as well.
+
 ## Tools
 
 render.com
@@ -141,12 +149,9 @@ lint prittier
 
 SEO
 
-
 ## Credits
 
 All credits go to GT Collage. Made from scratch MERN Stack Web App.
-
-
 
 ## License
 
@@ -172,16 +177,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. [https://choosealicense.com/](https://choosealicense.com/)
 
-
 ---
 
-🏆 
+🏆
+
 ## Badges
 
 ![GADZConnect](https://img.shields.io/github/languages/top/dagreatcode/gadz)
 
 Badges aren't _necessary_, per se, but they demonstrate street cred. Badges let other developers know that you know what you're doing. Check out the badges hosted by [shields.io](https://shields.io/). You may not understand what they all represent now, but you will in time.
-
 
 ## Contributing
 
@@ -189,16 +193,19 @@ If you created an application or package and would like other developers to cont
 
 ## Tests
 
-Run this command to test the frontend react CLIENT app with JEST. 
+Run this command to test the frontend react CLIENT app with JEST.
+
 ```
 npm run testClient
 
 ```
 
-Run this command to test the backend server files/routes/algorithms/plugins with Mocha & Chai. 
+Run this command to test the backend server files/routes/algorithms/plugins with Mocha & Chai.
+
 ```
 npm run test
 ```
 
 ---
+
 © 2023. DaGreat Code LLC. All Rights Reserved.
