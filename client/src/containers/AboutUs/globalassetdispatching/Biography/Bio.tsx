@@ -37,10 +37,10 @@ const Bio = () => {
           </div>
           <div style={{ padding: "10%" }}>
             {" "}
-            <h3>
+            <h1>
               A little about us
               <small className="text-muted"> GADZConnect</small>
-            </h3>
+            </h1>
             <blockquote className="blockquote">
               <p className="mb-0">Don't miss out on the early discounts.</p>
             </blockquote>

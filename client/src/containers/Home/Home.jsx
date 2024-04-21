@@ -14,9 +14,9 @@ const Home = () => {
         <div className="display-4" style={{ padding: "40px" }}>
           Welcome To GADZConnect!
         </div>
-        <img style={{ textAlign: "center" }}
+        <img 
           // sizes="(min-width: 650px) 50vw, 100vw"
-          // style={{ width: "950px", height: "350px" }}
+          style={{ width: "950px", height: "350px" }}
           src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
           alt="Big Truck"
         />
