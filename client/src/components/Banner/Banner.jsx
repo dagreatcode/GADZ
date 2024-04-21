@@ -2,7 +2,6 @@ import React from "react";
 // import Video1 from "./Earth.mp4";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
-// import image1 from "https://placehold.co/600x400"
 
 function Banner() {
   return (
@@ -11,30 +10,12 @@ function Banner() {
         <h1 className="jumbotron display-3">
           Time fly's when you are having fun
         </h1>
-        {/* <iframe 
-        style={{border:"1", margin:"50px"}}
-        width={1222} height={887}
-        src="https://www.youtube.com/embed/ErOMbspikNg" 
-        title="4K 3D Earth Globe Spinning" 
-        // frameBorder="0" 
-        allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture full" 
-        allowFullScreen
-      ></iframe> */}
-        {/* <video autoPlay loop muted playsinline>
-        <source
-          src="https://res.cloudinary.com/fashion-commit/video/upload/v1702063638/Earth_axigrw.mp4"
-          type="video/mp4"
-        />
-        <h1>GLOBAL ASSET DISPATCHING WE FOCUS ON MAXIMIZING YOUR PROFIT </h1>
-      </video> */}
         <lord-icon
           src="https://cdn.lordicon.com/dsccuiza.json"
           trigger="hover"
           delay="2000"
           style={{ width: "250px", height: "250px" }}
         ></lord-icon>
-        {/* <video autoPlay muted controls src='./Earth.mp4' /> */}
-
         <h1 className="jumbotron display-3" style={{ padding: "50px" }}>
           Our Mission
         </h1>
@@ -44,7 +25,6 @@ function Banner() {
           innovative solutions, we’re revolutionizing the transportation and
           logistics industry, one shipment at a time.{" "}
         </p>
-
         <Carousel autoPlay infiniteLoop interval="6000">
           <div>
             <img
@@ -90,7 +70,6 @@ function Banner() {
             </p>
           </div>
         </Carousel>
-
         <div className="jumbotron display-3" style={{ padding: "50px" }}>
           Our Location
         </div>
@@ -112,15 +91,6 @@ function Banner() {
             textAlign: "center",
           }}
         />
-        {/* <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3354.519079327509!2d-96.80896185070704!3d32.77849320596261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864e9917754ecff7%3A0x45437a4fc8e53e1e!2s826%20Commerce%20St%2C%20Dallas%2C%20TX%2075202!5e0!3m2!1sen!2sus!4v1713024559568!5m2!1sen!2sus"
-        width="600"
-        height="450"
-        style="border:0;"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-      ></iframe> */}
       </div>
     </>
   );

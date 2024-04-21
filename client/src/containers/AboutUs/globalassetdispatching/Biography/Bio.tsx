@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-// import Image1 from "./images/Connect.jpeg";
 
 const Bio = () => {
   return (
