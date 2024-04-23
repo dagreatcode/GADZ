@@ -11,27 +11,45 @@ const Footer = () => {
           </div>
           <div>
             <Link
+              aria-label="Facebook Link"
               to="https://www.facebook.com/global.asset.dispatching.service"
               className="me-4 link-secondary"
             >
               <i className="fab fa-facebook-f"></i>
             </Link>
-            <Link to="" className="me-4 link-secondary">
+            <Link
+              aria-label="Twitter Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-twitter"></i>
             </Link>
-            <Link to="" className="me-4 link-secondary">
+            <Link
+              aria-label="Google Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-google"></i>
             </Link>
             <Link
+              aria-label="Instagram Link"
               to="https://www.instagram.com/Global_assetleader/"
               className="me-4 link-secondary"
             >
               <i className="fab fa-instagram"></i>
             </Link>
-            <Link to="" className="me-4 link-secondary">
+            <Link
+              aria-label="LinkedIn Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-linkedin"></i>
             </Link>
-            <Link to="" className="me-4 link-secondary">
+            <Link
+              aria-label="GitHub Link"
+              to=""
+              className="me-4 link-secondary"
+            >
               <i className="fab fa-github"></i>
             </Link>
           </div>
@@ -40,15 +58,17 @@ const Footer = () => {
           <div className="container text-center text-md-start mt-5">
             <div className="row mt-3">
               <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-                <h6 className="text-uppercase fw-bold mb-4">
-                  <i className="fas fa-gem me-3 text-secondary"></i>GADZConnect
-                </h6>
+                <p className="text-uppercase fw-bold mb-4">
+                  <i className="fas fa-gem me-3 text-secondary"></i>GADZCONNECT
+                </p>
                 <p>
-                  You have the loads, we got the GADZ. Connect your assets and manage them easily. Make loads available to the public or make yourself assessable as a driver. 
+                  You have the loads, we got the GADZ. Connect your assets and
+                  manage them easily. Make loads available to the public or make
+                  yourself assessable as a driver.
                 </p>
               </div>
               <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                <h6 className="text-uppercase fw-bold mb-4">Products</h6>
+                <p className="text-uppercase fw-bold mb-4">Products</p>
                 <p>
                   <Link to="/RoadFreight" className="text-reset">
                     Road Freight
@@ -71,7 +91,7 @@ const Footer = () => {
                 </p>
               </div>
               <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-                <h6 className="text-uppercase fw-bold mb-4">Useful links</h6>
+                <p className="text-uppercase fw-bold mb-4">Useful links</p>
                 <p>
                   <Link to="/AboutUs" className="text-reset">
                     About Us
@@ -94,10 +114,10 @@ const Footer = () => {
                 </p> */}
               </div>
               <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                <h6 className="text-uppercase fw-bold mb-4">Contact</h6>
+                <p className="text-uppercase fw-bold mb-4">Contact</p>
                 <p>
                   <i className="fas fa-home me-3 text-secondary"></i>Dallas, TX
-                  508 suite 826 commerce st  75203, USA
+                  508 suite 826 commerce st 75203, USA
                 </p>
                 <p>
                   <i className="fas fa-envelope me-3 text-secondary"></i>
@@ -117,7 +137,7 @@ const Footer = () => {
         </section>
         <div
           className="text-center p-4"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.025)" }}
+          style={{ backgroundColor: "#0000006" }}
         >
           {
             "© 2023 Copyright Global Asset Dispatching, LLC All Rights Reserved. n\

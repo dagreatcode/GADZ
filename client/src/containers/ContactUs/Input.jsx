@@ -1,7 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Input = ({ value, id, className, placeholder, name, type, handleInputChange }) => {
+const Input = ({
+  value,
+  id,
+  className,
+  placeholder,
+  name,
+  type,
+  handleInputChange,
+}) => {
   return (
     <div>
       <input
