@@ -7,7 +7,7 @@ function Banner() {
   return (
     <>
       <div style={{ textAlign: "center" }}>
-        <h1 className="jumbotron display-3">
+        <h1 className="jumbotron display-6">
           Time fly's when you are having fun
         </h1>
         <lord-icon
@@ -16,10 +16,11 @@ function Banner() {
           delay="2000"
           style={{ width: "250px", height: "250px" }}
         ></lord-icon>
-        <h1 className="jumbotron display-3" style={{ padding: "50px" }}>
+        {/* <br/> */}
+        <h1 className="jumbotron display-4" style={{ padding: "10px" }}>
           Our Mission
         </h1>
-        <p className="fs-1" style={{ padding: "40px" }}>
+        <p className="fs-3" style={{ padding: "20px" }}>
           We’re on a mission to empower businesses of all sizes to thrive in
           today’s fast-paced world. By leveraging cutting-edge technology and
           innovative solutions, we’re revolutionizing the transportation and

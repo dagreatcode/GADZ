@@ -48,12 +48,14 @@ const ContactUs = () => {
           JOIN THE FUTURE OF LOGISTICS
         </h1>
         <p className="fs-3">
-          Ready to experience the future of logistics management? Sign up for
-          GADZ CONNECT today and take your business to new heights. Let’s embark
-          on this journey together, and unlock the full potential of your
-          logistics operations.
+          Ready to take your logistics operations to the next level? Join the
+          thousands of businesses already benefiting from GADZ CONNECT. Sign up
+          today and experience the future of logistics management firsthand!
         </p>
         <div style={{ textAlign: "center" }}> </div>
+        <br />
+        <br />
+        <br />
         <br />
         <img
           src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670835/GADZ/Dispatcher-2-1984023525_fxyfzh.webp"

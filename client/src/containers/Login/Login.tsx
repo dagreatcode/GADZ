@@ -173,8 +173,6 @@ const Login = () => {
                 </button>
                 <hr className="my-4" />
                 <small className="text-muted">
-                Ready to take your logistics operations to the next level? Join the thousands of businesses already benefiting from GADZ CONNECT. Sign up today and experience the future of logistics management firsthand!
-
                   By clicking Sign up, you agree to the terms of use.
                 </small>
               </form>
