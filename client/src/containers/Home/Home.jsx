@@ -16,7 +16,7 @@ const Home = () => {
         </div>
         <img
           // sizes="(min-width: 650px) 50vw, 100vw"
-          style={{ width: "950px", height: "auto" }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
           src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
           alt="Big Truck"
         />
