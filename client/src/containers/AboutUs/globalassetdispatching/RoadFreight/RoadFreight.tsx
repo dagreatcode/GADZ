@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Image1 from "./images/shipping.jpeg";
-import Image2 from "./images/Semi-Truck-Photo-3707432807.jpeg";
+// import Image1 from "./images/shipping.jpeg";
+// import Image2 from "./images/Semi-Truck-Photo-3707432807.jpeg";
 
 const RoadFreight = () => {
   return (
@@ -33,10 +33,14 @@ const RoadFreight = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src={Image2} style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670845/GADZ/Semi-Truck-Photo-3707432807_zep99p.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
           </div>
           <div className="row">
-            <div className="display-6" style={{ padding: "40px" }}>
+            <div className="fs-3" style={{ padding: "40px" }}>
               Road Freight Our Road Support Will Keep Your Business On The Move
               LET US HELP YOU WITH YOUR CARGO PROBLEM We focus on understanding
               your challeges, seeking to learn more about your business needs
@@ -47,8 +51,12 @@ const RoadFreight = () => {
               double-drop trailers. Over-dimensional, heavy haul, and expedited
               shipments
             </div>
-            <img src={Image1} style={{ width: "100%" }} alt="talks" />
-            <div className="display-6" style={{ padding: "40px" }}>
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670835/GADZ/1911991-4227381452_ixgk8u.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
+            <div className="fs-3" style={{ padding: "40px" }}>
               We Understand That Everything Is A Process. Asked Questions! What
               makes you different from others? Our passion for helping other
               businesses grow is what makes us different from your average

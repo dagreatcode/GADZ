@@ -1,5 +1,5 @@
 import React from "react";
-import Image1 from "./images/realMeetsBW.jpeg";
+// import Image1 from "./images/realMeetsBW.jpeg";
 import { Link } from "react-router-dom";
 
 const DispatchAgreement = () => {
@@ -33,8 +33,13 @@ const DispatchAgreement = () => {
                 <Link to="/RoadFreight">Road Freight</Link>
               </nav>
             </div>
-            <img src={Image1} style={{ width: "100%" }} alt="talks" />
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670840/GADZ/image1_la62ck.webp"
+              style={{ width: "100%" }}
+              alt="talks"
+            />
           </div>
+          
           <Link to="/Agreement">Let's Agree</Link>
         </div>
       </div>

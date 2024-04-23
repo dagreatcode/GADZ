@@ -1,7 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const TextArea = ({ value, handleInputChange, id, className, placeholder, rows }) => {
+const TextArea = ({
+  value,
+  handleInputChange,
+  id,
+  className,
+  placeholder,
+  rows,
+}) => {
   return (
     <div>
       <textarea
