@@ -45,7 +45,7 @@ app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 
 // TODO: Add console app.
 
-// Test routes to see if ther server is talking to the client
+// Test routes to see if their server is talking to the client
 // =============================================================
 app.get("/api/config", (req, res) => {
   res.json({ success: true });
