@@ -18,6 +18,7 @@ const UserProfile = () => {
       <h1>Add Business Button to save</h1>
       <h1>Locations</h1>
       <h1> Message Customer</h1>
+      <Link to="/User">Home</Link><br/>
       <Link to="/MessageUser">Message user</Link>
       <br />
     </>

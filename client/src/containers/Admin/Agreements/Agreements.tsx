@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 // import PropTypes from 'prop-types'
 // import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Agreements = () => {
   //   const url = "/api/agreement/create"
@@ -100,11 +101,14 @@ const Agreements = () => {
         </tbody>
       </table>
       {/* {agreeData.map((agree:any)=>(<p>{agree}</p>))} */}
+      <Link to="/Admin">Home</Link>
+
     </div>
   ) : (
     <>
       <button onClick={(e) => handleSubmit(e)}>Agree Here</button>
-      No Agreements to show
+      No Agreements to show<br/>
+      <Link to="/Admin">Home</Link>
     </>
   );
 };

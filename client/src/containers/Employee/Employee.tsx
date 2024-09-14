@@ -15,7 +15,13 @@ function Employee() {
       <br />
       <Link to="/SKPConsole">SKP Console</Link>
       <br />
-      <Link to="/Tickets">All Users</Link>
+      <Link to="/Tickets">Tickets</Link>
+      <br />
+      <Link to="/NewsLetter">New Letter</Link>
+      <br />
+      <Link to="/OffDays">Off Days</Link>
+      <br />
+      <Link to="/EmployeeProfile">Employee Profile</Link>
     </>
     </div>
   )

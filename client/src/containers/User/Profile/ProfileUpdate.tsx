@@ -1,16 +1,17 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const ProfileUpdate = () => {
-  return (
+  return (<>
     <div className="container" style={{ textAlign: "center" }}>
       <div className="row jumbotron">
         <div className="display-4" style={{ padding: "40px" }}>
           Profile Update
         </div>
 
-        <form style={{ margin: "0 auto"}}>
+        <form style={{ margin: "0 auto" }}>
           <div className="form-row">
-            
+
           </div>
           <div className="form-group">
             <div className="form-group">
@@ -108,7 +109,7 @@ const ProfileUpdate = () => {
             </div>
           </div>
           <div className="form-group">
-          <label htmlFor="selectAll">Select all that applies</label>
+            <label htmlFor="selectAll">Select all that applies</label>
             <div className="form-check">
               <input
                 className="form-check-input"
@@ -171,8 +172,8 @@ const ProfileUpdate = () => {
             </label>
           </div>
 
-          <br/>
-          <br/>
+          <br />
+          <br />
 
           <div className="form-group">
             <label htmlFor="exampleFormControlSelect1">Your available status</label>
@@ -200,8 +201,8 @@ const ProfileUpdate = () => {
               <option>5</option>
             </select>
           </div> */}
-          <br/>
-          <br/>
+          <br />
+          <br />
           <div className="form-group">
             <label htmlFor="exampleFormControlTextarea1">
               Leave us feedback
@@ -226,11 +227,13 @@ const ProfileUpdate = () => {
             Update Profile
           </button>
         </form>
-        <br/>
-          <br/>
+        <br />
+        <br />
       </div>
     </div>
-  );
+    <Link to="/User">Home</Link><br />
+
+  </>);
 };
 
 export default ProfileUpdate;
