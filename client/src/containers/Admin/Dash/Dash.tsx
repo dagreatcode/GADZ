@@ -90,7 +90,7 @@ const Dash = () => {
         <h3 className="section-title">Bar Chart</h3>
         <div className="section-content">
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data2} margin={{ top: 15, right: 0, bottom: 15, left: 0 }}>
+            <BarChart data={data} margin={{ top: 15, right: 0, bottom: 15, left: 0 }}>
               <XAxis dataKey="label" />
               <YAxis />
               <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
@@ -144,7 +144,7 @@ const Dash = () => {
           label
         />
       </PieChart>
-      
+
       <PieChart width={400} height={400}>
         <Pie
           dataKey="value"
