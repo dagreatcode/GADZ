@@ -12,6 +12,7 @@ const UserController = require("./controllers/UserAPIRoutes.js");
 const AdminController = require("./controllers/AdminController.js");
 // const inquirer = require("inquirer"); // Create Console App
 const routes = require("./routes");
+
 // Set server PORT
 // =============================================================
 const PORT = process.env.PORT || 3001;
@@ -44,7 +45,7 @@ app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 
 // TODO: Add console app.
 
-// Test routes to see if ther server is talking to the client
+// Test routes to see if their server is talking to the client
 // =============================================================
 app.get("/api/config", (req, res) => {
   res.json({ success: true });
