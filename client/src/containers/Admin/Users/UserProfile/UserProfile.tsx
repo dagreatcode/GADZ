@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "react-bootstrap/Button"
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
   return (
@@ -221,6 +222,7 @@ const UserProfile = () => {
           </form>
         </div>
       </div>
+      <Link to="/Admin">Home</Link>
     </>
   );
 };

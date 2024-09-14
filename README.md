@@ -77,9 +77,9 @@ Test Driven Error driven Data Driven...
     [ ] CI/CD with cypress
     [ ] Server and Routes Test by Mocha & Chai
     [ ] Setup Redux
-    [ ] Wireframe
+    [X] Wireframe
     [ ] Features
-    [ ] Create Frontend trailed by Jest testing..
+    [X] Create Frontend trailed by Jest testing..
     [ ] Set up Redis for caching data.
 
 ## Usage
@@ -120,6 +120,7 @@ CHECK THE db FOLDER for the dbDiagram as well.
 render.com
 linode.com
 AWS or AZURE
+Oracle is the Cloud we are choosing for the future.
 
 React Client view TypeScript ReactTypes
 

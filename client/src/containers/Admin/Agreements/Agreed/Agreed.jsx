@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 // import PropTypes from 'prop-types'
+import { Link } from "react-router-dom";
 
 const Agreed = () => {
   const [tour, setTour] = useState([]);
@@ -194,7 +195,8 @@ const Agreed = () => {
       <br />
       {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
       <br />
-      {"Next or GoBack"}
+      {"Next or Go Back "} <Link to="/Admin">Home</Link>
+
     </>
   );
 };

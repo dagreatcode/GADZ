@@ -69,7 +69,8 @@ const AvailableTable = () => {
             <td>@twitter</td>
           </tr>
         </tbody>
-      </table>
+      </table>       
+      <Link to="/User">Home</Link><br/>
       <Link to="/UserProfile">UserProfile</Link>
       <br />
     </>
