@@ -16,9 +16,10 @@ const Home = () => {
         </div>
         <img
           // sizes="(min-width: 650px) 50vw, 100vw"
-          style={{ width: "950px", height: "auto" }}
-          src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
-          alt="Big Truck"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          // src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
+          src="https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg"
+          alt="Big World of Connections"
         />
         <div className="display-6" style={{ padding: "40px" }}>
           The innovative solution revolutionizing the transportation and

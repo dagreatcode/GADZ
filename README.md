@@ -17,6 +17,8 @@ ERD Entity relational diagram
 sudo su postgres
 ```
 
+https://www.videosdk.live/blog/react-js-video-calling
+https://www.metered.ca/docs/Video-Calls/JavaScript/Building-a-Group-Video%E2%80%93Calling-Application/
 https://github.com/marmelab/react-admin
 https://pimylifeup.com/raspberry-pi-postgresql/
 https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f

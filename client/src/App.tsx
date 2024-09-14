@@ -28,6 +28,12 @@ import PrintOut from "./containers/Admin/PrintOut/PrintOut";
 import TicketsCreated from "./containers/Admin/Tickets/TicketsCreated";
 import Services from "./containers/Services/Services";
 import User from "./containers/User/User";
+import Employee from "./containers/Employee/Employee";
+import CallCenter from "./containers/Employee/CallCenter/CallCenter";
+import ClockIn from "./containers/Employee/ClockIn/ClockIn";
+import Meets from "./containers/Employee/Meets/Meets";
+import SKPConsole from "./containers/Employee/SKPConsole/SKPConsole";
+import Tickets from "./containers/Employee/Tickets/Tickets";
 import AvailableTable from "./containers/User/AvailableTable/AvailableTable";
 import UserProfile from "./containers/User/AvailableTable/UserProfile/UserProfile";
 import MessageUser from "./containers/User/AvailableTable/UserProfile/MessageUser/MessageUser";
@@ -89,6 +95,12 @@ function App() {
         <Route path="/PrintOut" element={<PrintOut />} />
         <Route path="/TicketsCreated" element={<TicketsCreated />} />
         <Route path="/User" element={<User />} />
+        <Route path="/Employee" element={<Employee />} />
+        <Route path="/CallCenter" element={<CallCenter />} />
+        <Route path="/ClockIn" element={<ClockIn />} />
+        <Route path="/Meets" element={<Meets />} />
+        <Route path="/SKPConsole" element={<SKPConsole />} />
+        <Route path="/Tickets" element={<Tickets />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/AvailableTable" element={<AvailableTable />} />
         <Route path="/UserProfile" element={<UserProfile />} />
