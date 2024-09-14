@@ -20,6 +20,7 @@ import Consultation from "./containers/AboutUs/globalassetdispatching/Consultati
 import DispatchAgreement from "./containers/AboutUs/globalassetdispatching/DispatchAgreement/DispatchAgreement";
 import RoadFreight from "./containers/AboutUs/globalassetdispatching/RoadFreight/RoadFreight";
 import Admin from "./containers/Admin/Admin";
+import NewsLetters from "./containers/Admin/NewsLetters/NewsLetters";
 import Agreements from "./containers/Admin/Agreements/Agreements";
 import Agreed from "./containers/Admin/Agreements/Agreed/Agreed";
 import B2BMessages from "./containers/Admin/B2BMessages/B2BMessages";
@@ -29,6 +30,10 @@ import TicketsCreated from "./containers/Admin/Tickets/TicketsCreated";
 import Services from "./containers/Services/Services";
 import User from "./containers/User/User";
 import Employee from "./containers/Employee/Employee";
+import NewsLetter from "./containers/Employee/NewsLetter/NewsLetter";
+import OffDays from "./containers/Employee/OffDays/OffDays";
+import EmployeeProfile from "./containers/Employee/Profile/Profile";
+
 import CallCenter from "./containers/Employee/CallCenter/CallCenter";
 import ClockIn from "./containers/Employee/ClockIn/ClockIn";
 import Meets from "./containers/Employee/Meets/Meets";
@@ -87,6 +92,7 @@ function App() {
         <Route path="/Agreed/:id" element={<Agreed />} />
         <Route path="/RoadFreight" element={<RoadFreight />} />
         <Route path="/Admin" element={<Admin />} />
+        <Route path="/NewsLetters" element={<NewsLetters />} />
         <Route path="/Agreements" element={<Agreements />} />
         <Route path="/AdminAllUsers" element={<AdminAllUsers />} />
         <Route path="/AdminUserProfile" element={<AdminUserProfile />} />
@@ -96,6 +102,9 @@ function App() {
         <Route path="/TicketsCreated" element={<TicketsCreated />} />
         <Route path="/User" element={<User />} />
         <Route path="/Employee" element={<Employee />} />
+        <Route path="/NewsLetter" element={<NewsLetter />} />
+        <Route path="/OffDays" element={<OffDays />} />
+        <Route path="/EmployeeProfile" element={<EmployeeProfile />} />
         <Route path="/CallCenter" element={<CallCenter />} />
         <Route path="/ClockIn" element={<ClockIn />} />
         <Route path="/Meets" element={<Meets />} />
