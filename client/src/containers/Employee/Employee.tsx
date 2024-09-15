@@ -54,7 +54,7 @@ function Employee() {
       <br />
       <div>
         <div style={{ textAlign: "center" }}>Off Days</div>
-        <Link to="/CallOffDaysCenter" style={{ display: "flex", justifyContent: "center" }}><Icon.Calendar3 width="82" height="82" fill="#5F9DF7" /></Link>
+        <Link to="/OffDays" style={{ display: "flex", justifyContent: "center" }}><Icon.Calendar3 width="82" height="82" fill="#5F9DF7" /></Link>
       </div>
       <br />
       <br />
