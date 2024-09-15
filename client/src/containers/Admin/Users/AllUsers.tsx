@@ -1,10 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+// import { useParams } from "react-router-dom";
+import axios from "axios";
 import {Link} from 'react-router-dom'
 
 const AllUsers = () => {
+  const [data, setData] = useState([]);
+  // const { id } = useParams();
+
+  const getData = async () => {
+    const { data } = await axios.get(`/api/user/view`);
+    setData(data);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+
   return (
     <>
       <div>AllUsers</div>
+
+{JSON.stringify(data)}
+
       <h1>These links are to make sure we can navigate to all of the pages created through out the site. </h1>
       <h5> I will create a login  with authorization and authentication for Admin's and User's momentarily</h5>
      <Link to="/AdminUserProfile">Click to edit single user, change information, approve business to use the site + credit, or archive user.</Link><br/><br/>
