@@ -1,29 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 router.post("/", (req, res) => {
-  db.Admin.create(req.body).then((newAdmin) => {
-    res.json(newAdmin);
+  db.Employee.create(req.body).then((newEmployee) => {
+    res.json(newEmployee);
   });
 });
 
-router.get("/allAdmins", (req, res) => {
-  db.Admin.findAll().then((allAdmins) => {
-    res.json(allAdmins);
+router.get("/allEmployee", (req, res) => {
+  db.Employee.findAll().then((allEmployees) => {
+    res.json(allEmployees);
   });
 });
 
-router.get("/viewAdmin", (req, res) => {
-  db.Admin.findAll().then((allAdmins) => {
-    res.send(allAdmins);
-    console.log(allAdmins);
+router.get("/viewEmployee", (req, res) => {
+  db.Employee.findAll().then((allEmployees) => {
+    res.send(allEmployees);
+    console.log(allEmployees);
   });
 });
 
-router.post("/adminLogin", (req, res) => {
+router.post("/employeeLogin", (req, res) => {
   const data = req.body;
   const email = data.email;
   const password = data.password;
@@ -35,18 +33,18 @@ router.post("/adminLogin", (req, res) => {
       message: "Email and Password are required fields!",
     });
   } else {
-    // .compare(email, Admin.password)
-    db.Admin.findOne({ where: { email: email } }).then((foundAdmin) => {
-      // console.log("foundU Data", foundAdmin.email);
-      if (!foundAdmin) {
+    // .compare(email, Employee.password)
+    db.Employee.findOne({ where: { email: email } }).then((foundEmployee) => {
+      // console.log("foundU Data", foundEmployee.email);
+      if (!foundEmployee) {
         return res.status(401).json({
           error: true,
-          data: foundAdmin,
-          message: "Admin not found.",
+          data: foundEmployee,
+          message: "Employee not found.",
         });
       }
 
-      bcrypt.compare(password, foundAdmin.password).then((result) => {
+      bcrypt.compare(password, foundEmployee.password).then((result) => {
         if (!result) {
           return res.status(401).json({
             error: true,
@@ -56,16 +54,16 @@ router.post("/adminLogin", (req, res) => {
         }
 
         // Create token
-        const token = jwt.sign({ id: foundAdmin._id }, process.env.SECRET, {
+        const token = jwt.sign({ id: foundEmployee._id }, process.env.SECRET, {
           expiresIn: "7d",
         });
 
         // Remove password from output
-        foundAdmin.password = undefined;
+        foundEmployee.password = undefined;
 
         res.status(200).json({
           error: false,
-          data: { token: token, admin: foundAdmin },
+          data: { token: token, employee: foundEmployee },
           message: null,
         });
       });
@@ -73,7 +71,7 @@ router.post("/adminLogin", (req, res) => {
   }
 });
 
-router.post("/adminSignUp", (req, res) => {
+router.post("/employeeSignUp", (req, res) => {
   const data = req.body;
   const email = data.email;
   const password = data.password;
@@ -84,13 +82,13 @@ router.post("/adminSignUp", (req, res) => {
     bcrypt
       .hash(req.body.password, 10)
       .then((hashedPassword) => {
-        db.Admin.create({
+        db.Employee.create({
           email: req.body.email,
           password: hashedPassword,
         })
-          .then((newAdmin) => {
+          .then((newEmployee) => {
             const token = jwt.sign(
-              { email: newAdmin.email },
+              { email: newEmployee.email },
               process.env.SECRET
             );
             res.json({
