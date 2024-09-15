@@ -34,6 +34,9 @@ const AllUsers = () => {
             <th>Email</th>
             <th>Password</th>
             <th>Description</th>
+            <th>Archived</th>
+            <th>Admin</th>
+            <th>Developer</th>
           </tr>
         </thead>
         <tbody>
@@ -44,9 +47,12 @@ const AllUsers = () => {
                 {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
               </td>
               <td><Link to="/AdminUserProfile">Edit  </Link></td>
-              <td>{r.email}</td>
-              <td>{r.password}</td>
-              <td>{r.description}</td>
+              <td>{r.email ? r.email : "No Email"}</td>
+              <td>{r.password ? r.password : "NoPassword"}</td>
+              <td>{r.description ? r.description : "No Information"}</td>
+              <td>{r.archived ? r.archived : "Active"}</td>
+              <td>{r.admin ? r.admin : "No"}</td>
+              <td>{r.developer? r.developer : "No"}</td>
               {/* <td>{r}</td> */}  
             </tr>
           ))}
