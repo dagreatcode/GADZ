@@ -21,12 +21,40 @@ const AllUsers = () => {
     <>
       <div>AllUsers</div>
 
-{JSON.stringify(data)}
+      <h1> I will create a login  with authorization and authentication for Admin's and User's momentarily</h1><br />
 
-      <h1>These links are to make sure we can navigate to all of the pages created through out the site. </h1>
-      <h5> I will create a login  with authorization and authentication for Admin's and User's momentarily</h5>
-     <Link to="/AdminUserProfile">Click to edit single user, change information, approve business to use the site + credit, or archive user.</Link><br/><br/>
-     <a href="https://gadzconnect.com/api/user/view">Users API. This is Raw Data coming from the database. This will be user to apply all Users Information to the page for the admin edit user or freeze user or even archive."</a><br/><br/>     
+      Users API. This is Raw Data coming from the database. This will be used to apply all Users Information to the page for the admin edit user or freeze user or even archive."<br/><br/> 
+
+      {/* {JSON.stringify(data)}<br /><br /> */}
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Edit</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((r: any, id: any) => (
+            <tr key={id}>
+              <td>
+                {" "}
+                {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
+              </td>
+              <td><Link to="/AdminUserProfile">Edit  </Link></td>
+              <td>{r.email}</td>
+              <td>{r.password}</td>
+              <td>{r.description}</td>
+              {/* <td>{r}</td> */}  
+            </tr>
+          ))}
+        </tbody>
+      </table>
+     {/* <Link to="/AdminUserProfile">Click to edit single user, change information, approve business to use the site + credit, or archive user.</Link><br/><br/> */}
+
+    <br />
      <Link to="/Admin">Home</Link>
     </>
   )
