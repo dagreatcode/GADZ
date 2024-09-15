@@ -1,27 +1,68 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-
+import * as Icon from 'react-bootstrap-icons';
 
 function Employee() {
   return (
-    <div>
+    <div className="container" style={{ textAlign: "center" }}>
       <>
       <h1>Employee</h1>
-      <Link to="/CallCenter">Call Center</Link>
       <br />
-      <Link to="/ClockIn">Clock In</Link>
       <br />
-      <Link to="/Meets">Meets</Link>
       <br />
-      <Link to="/SKPConsole">SKP Console</Link>
+      <div>
+        <div style={{ textAlign: "center" }}>Call Center</div>
+        <Link to="/CallCenter" style={{ display: "flex", justifyContent: "center" }}><Icon.TelephonePlusFill width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
       <br />
-      <Link to="/Tickets">Tickets</Link>
       <br />
-      <Link to="/NewsLetter">New Letter</Link>
       <br />
-      <Link to="/OffDays">Off Days</Link>
+      <div>
+        <div style={{ textAlign: "center" }}>Clock In</div>
+        <Link to="/ClockIn" style={{ display: "flex", justifyContent: "center" }}><Icon.StopwatchFill width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
       <br />
-      <Link to="/EmployeeProfile">Employee Profile</Link>
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>Meets</div>
+        <Link to="/Meets" style={{ display: "flex", justifyContent: "center" }}><Icon.PersonSquare width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>SKP Console</div>
+        <Link to="/SKPConsole" style={{ display: "flex", justifyContent: "center" }}><Icon.PcDisplayHorizontal width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>Tickets</div>
+        <Link to="/Tickets" style={{ display: "flex", justifyContent: "center" }}><Icon.TicketFill width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>News Letter</div>
+        <Link to="/NewsLetter" style={{ display: "flex", justifyContent: "center" }}><Icon.Newspaper width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>Off Days</div>
+        <Link to="/OffDays" style={{ display: "flex", justifyContent: "center" }}><Icon.Calendar3 width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div style={{ textAlign: "center" }}>Employee Profile</div>
+        <Link to="/EmployeeProfile" style={{ display: "flex", justifyContent: "center" }}><Icon.PersonBadge width="82" height="82" fill="#5F9DF7" /></Link>
+      </div>
     </>
     </div>
   )
