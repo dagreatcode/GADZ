@@ -5,7 +5,7 @@ import * as Icon from 'react-bootstrap-icons';
 const User = () => {
   return (
     <>
-      <div className="container" style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
+      <div className="container" style={{ textAlign: "center" }}>
 
       </div>
       <br />
