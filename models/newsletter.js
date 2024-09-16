@@ -1,9 +1,9 @@
 module.exports = function (sequelize, DataTypes) {
-  var NewLetter = sequelize.define("NewLetter", {
+  var NewsLetter = sequelize.define("NewsLetter", {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     description: DataTypes.STRING,
     archived: DataTypes.STRING,
   });
-  return NewLetter;
+  return NewsLetter;
 };
