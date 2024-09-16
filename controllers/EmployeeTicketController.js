@@ -55,7 +55,7 @@ router.post("/post-ticket", (req, res) => {
       res.json({
         error: false,
         data: newTicket,
-        message: "Successfully created new ticket.",
+        message: "Successfully created new Employee ticket.",
       });
     })
     .catch((err) => {
