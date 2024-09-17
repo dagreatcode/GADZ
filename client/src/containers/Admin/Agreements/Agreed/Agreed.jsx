@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 // import PropTypes from 'prop-types'
 import { Link } from "react-router-dom";
+import { usePDF } from 'react-to-pdf';
 
 const Agreed = () => {
+  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
   const [tour, setTour] = useState([]);
   const { id } = useParams();
 
@@ -55,6 +57,8 @@ const Agreed = () => {
 
   return (
     <>
+                <button onClick={() => toPDF()}>Download PDF</button>
+                <div ref={targetRef}>
       <h1>An agreement will show here soon. Stay tuned!</h1>
       {/* Create a PDF to send to the admin email after customer fills it out */}
       <div>Agreement: {id}</div>
@@ -193,6 +197,8 @@ const Agreed = () => {
       <br />
       {tour.date} <br />
       <br />
+      </div>
+
       {/* https://github.com/agilgur5/react-signature-canvas/blob/gh-pages/example/app.js */}
       <br />
       {"Next or Go Back "} <Link to="/Admin">Home</Link>
