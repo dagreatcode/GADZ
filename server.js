@@ -47,6 +47,28 @@ app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
 
+// server.js
+const http = require("http");
+const socketIo = require("socket.io");
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+io.on("connection", (socket) => {
+  socket.emit("me", socket.id);
+
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded");
+  });
+
+  socket.on("callUser", ({ userToCall, signalData, from }) => {
+    io.to(userToCall).emit("callUser", { signal: signalData, from });
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
+  });
+});
 // TODO: Add console app.
 
 // Test routes to see if their server is talking to the client
