@@ -1,14 +1,66 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+// import { useParams } from "react-router-dom";
+import axios from "axios";
 import {Link} from 'react-router-dom'
 
 const AllUsers = () => {
+  const [data, setData] = useState([]);
+  // const { id } = useParams();
+
+  const getData = async () => {
+    const { data } = await axios.get(`/api/user/view`);
+    setData(data);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+
   return (
     <>
       <div>AllUsers</div>
-      <h1>These links are to make sure we can navigate to all of the pages created through out the site. </h1>
-      <h5> I will create a login  with authorization and authentication for Admin's and User's momentarily</h5>
-     <Link to="/AdminUserProfile">Click to edit single user, change information, approve business to use the site + credit, or archive user.</Link><br/><br/>
-     <a href="https://gadzconnect.com/api/user/view">Users API. This is Raw Data coming from the database. This will be user to apply all Users Information to the page for the admin edit user or freeze user or even archive."</a><br/><br/>     
+
+      <h1> I will create a login  with authorization and authentication for Admin's and User's momentarily</h1><br />
+
+      Users API. This is Raw Data coming from the database. This will be used to apply all Users Information to the page for the admin edit user or freeze user or even archive."<br/><br/> 
+
+      {/* {JSON.stringify(data)}<br /><br /> */}
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Edit</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Description</th>
+            <th>Archived</th>
+            <th>Admin</th>
+            <th>Developer</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((r: any, id: any) => (
+            <tr key={id}>
+              <td>
+                {" "}
+                {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
+              </td>
+              <td><Link to="/AdminUserProfile">Edit  </Link></td>
+              <td>{r.email ? r.email : "No Email"}</td>
+              <td>{r.password ? r.password : "NoPassword"}</td>
+              <td>{r.description ? r.description : "No Information"}</td>
+              <td>{r.archived ? r.archived : "Active"}</td>
+              <td>{r.admin ? r.admin : "No"}</td>
+              <td>{r.developer? r.developer : "No"}</td>
+              {/* <td>{r}</td> */}  
+            </tr>
+          ))}
+        </tbody>
+      </table>
+     {/* <Link to="/AdminUserProfile">Click to edit single user, change information, approve business to use the site + credit, or archive user.</Link><br/><br/> */}
+
+    <br />
      <Link to="/Admin">Home</Link>
     </>
   )
