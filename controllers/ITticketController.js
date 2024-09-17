@@ -4,6 +4,13 @@ const db = require("../models");
 
 // VIEWS ROUTES
 
+router.get("/view", (req, res) => {
+  db.ITticket.findAll().then((allITticket) => {
+    res.send(allITticket);
+    console.log(allITticket);
+  });
+});
+
 router.get("/ticket", (req, res) => {
   // ALL the Tickets should be displayed
   // DB query

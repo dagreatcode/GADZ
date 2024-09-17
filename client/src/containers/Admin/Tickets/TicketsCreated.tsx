@@ -1,55 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+import axios from "axios";
 import { Link } from "react-router-dom";
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-}
 
-const TicketsCreated: React.FC = () => {
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const TicketsCreated = () => {
+  const [data, setData] = useState([]);
+  // const { id } = useParams();
+
+  const getData = async () => {
+    const { data } = await axios.get(`/api/it-help/view`);
+    setData(data);
+  };
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users/1")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data: User) => {
-        setUserData(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
+    getData();
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
 
   return (
     <>
-      <div>
-        <h1>User Data</h1>
-        {userData && (
-          <div>
-            <p>Name: {userData.name}</p>
-            <p>Email: {userData.email}</p>
-            <p>Phone: {userData.phone}</p>
-          </div>
-        )}
-      </div>
+      <div>All Tickets</div>
+
+      <h1> View All Tickets Created for IT Issues</h1>
+
+      {/* {JSON.stringify(data)}<br /><br /> */}
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>View Ticket</th>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((r: any, id: any) => (
+            <tr key={id}>
+              <td>
+                {" "}
+                {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
+              </td>
+              <td>
+                <Link to="/AdminUserProfile">View </Link>
+              </td>
+              <td>{r.name ? r.name : "No Name"}</td>
+              <td>{r.subject ? r.subject : "No Subject"}</td>
+              <td>{r.description ? r.description : "No Information"}</td>
+              {/* <td>{r}</td> */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <br />
       <Link to="/Admin">Home</Link>
     </>
   );
