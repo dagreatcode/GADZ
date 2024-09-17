@@ -10,6 +10,8 @@ const path = require("path");
 const AgreementController = require("./controllers/AgreementController.js");
 const UserController = require("./controllers/UserAPIRoutes.js");
 const AdminController = require("./controllers/AdminController.js");
+const ITticketController = require("./controllers/ITticketController.js");
+const EmployeeTicketController = require("./controllers/EmployeeTicketController.js");
 // const inquirer = require("inquirer"); // Create Console App
 const routes = require("./routes");
 
@@ -38,6 +40,8 @@ var db = require("./models");
 app.use("/api/agreement", AgreementController);
 app.use("/api/user", UserController);
 app.use("/api/admin", AdminController);
+app.use("/api/it-help", ITticketController);
+app.use("/api/employee-help", EmployeeTicketController);
 app.use(routes);
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 // app.use(AuthController);

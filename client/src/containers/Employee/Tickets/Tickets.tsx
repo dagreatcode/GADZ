@@ -8,7 +8,7 @@ const TicketsCreated = () => {
   // const { id } = useParams();
 
   const getData = async () => {
-    const { data } = await axios.get(`/api/it-help/view`);
+    const { data } = await axios.get(`/api/employee-help/view`);
     setData(data);
   };
 
@@ -18,9 +18,9 @@ const TicketsCreated = () => {
 
   return (
     <>
-      <div>All Tickets</div>
+      <div>All Tickets to the Employees</div>
 
-      <h1> View All Tickets Created for IT Issues</h1>
+      <h1> View All Tickets Created for User Issues</h1>
 
       {/* {JSON.stringify(data)}<br /><br /> */}
       <table>
