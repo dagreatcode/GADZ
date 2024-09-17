@@ -1,5 +1,19 @@
 # GADZ
 
+## Table of Contents (Optional)
+
+If your README is very long, add a table of contents to make it easy for users to find what they need.
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
+
+## Description
+
+My Story
+Developing a enterprize web app. 
+
 In order to follow all of the updates to this site, please visit [GADZWiki](https://github.com/dagreatcode/GADZ/wiki) and [Project Board](https://github.com/users/dagreatcode/projects/4)
 
 ---
@@ -17,20 +31,10 @@ ERD Entity relational diagram
 sudo su postgres
 ```
 
-https://www.videosdk.live/blog/react-js-video-calling
-https://www.metered.ca/docs/Video-Calls/JavaScript/Building-a-Group-Video%E2%80%93Calling-Application/
-https://github.com/marmelab/react-admin
-https://pimylifeup.com/raspberry-pi-postgresql/
-https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
-https://www.cockroachlabs.com/docs/stable/connect-to-the-database?filters=javascript&filters=sequelize&filters=linux
-https://cockroachlabs.cloud/cluster/320f50d5-4817-4fcb-b79c-470fea12b02c/overview?cluster-type=serverless
-
 http://globalassetdispatching.com/
 https://www.facebook.com/global.asset.dispatching.service
 https://www.instagram.com/Global_assetleader/
 http://twitter.com/
-
-## Description
 
 #### WireFrame Diagram
 
@@ -52,15 +56,6 @@ If you're new to Markdown, read the GitHub guide on [Mastering Markdown](https:/
 
 If you need an example of a good README, check out [the VSCode repository](https://github.com/microsoft/vscode).
 
-## Table of Contents (Optional)
-
-If your README is very long, add a table of contents to make it easy for users to find what they need.
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [License](#license)
-
 ## Installation
 
 What are the steps required to install your project? Provide a step-by-step description of how to get the development environment running.
@@ -81,6 +76,21 @@ Test Driven Error driven Data Driven...
     [ ] Features
     [X] Create Frontend trailed by Jest testing..
     [ ] Set up Redis for caching data.
+    [ ] Add Security to Database
+    [ ] Create Data in Database to load to LoadBoard
+    [ ] Connect forms to database
+    [ ] GADZWiki,
+    [ ] README.md, and
+    [ ] Code Sweep.
+    [ ] Redis or IndexDB and LocalStorage
+    [ ] Mobile Responsive
+    [ ] Downloadable
+    [ ] GADZDevWiki
+    [ ] GADZWiki
+    [ ] README.md
+    [ ] Logo
+    [ ] TypeScript - Mocha & Chai - Jest - OOP (class, constructors, prototype) - TDD - SQL
+    [ ] Unwanted Code and Packages.
 
 ## Usage
 
@@ -155,6 +165,14 @@ SEO
 ## Credits
 
 All credits go to GT Collage. Made from scratch MERN Stack Web App.
+
+https://www.videosdk.live/blog/react-js-video-calling
+https://www.metered.ca/docs/Video-Calls/JavaScript/Building-a-Group-Video%E2%80%93Calling-Application/
+https://github.com/marmelab/react-admin
+https://pimylifeup.com/raspberry-pi-postgresql/
+https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f
+https://www.cockroachlabs.com/docs/stable/connect-to-the-database?filters=javascript&filters=sequelize&filters=linux
+https://cockroachlabs.cloud/cluster/320f50d5-4817-4fcb-b79c-470fea12b02c/overview?cluster-type=serverless
 
 ## License
 
