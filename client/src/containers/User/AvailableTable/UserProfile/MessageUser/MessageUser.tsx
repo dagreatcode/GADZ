@@ -1,14 +1,56 @@
-import React from 'react'
 import { Link } from "react-router-dom";
+// src/Chat.tsx
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 
-const MessageUser = () => {
-  return (
-    <>
-      <div>MessageUser</div>
-      <h1>This is where you can View Business loads or available spaces or upload ID or Drivers License to another business so they can verify driver or what ever is needed or just message Company</h1>
-      <Link to="/User">Home</Link><br/>
-    </>
-  )
+const socket = io("http://localhost:3001"); // Replace with your server URL
+
+interface Message {
+  user: string;
+  text: string;
 }
 
-export default MessageUser
+const MessageUser: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [message, setMessage] = useState("");
+  const [
+    user,
+    // , setUser
+  ] = useState("User");
+
+  useEffect(() => {
+    socket.on("message", (message: Message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  }, []);
+
+  const sendMessage = () => {
+    const newMessage: Message = { user, text: message };
+    socket.emit("message", newMessage);
+    setMessage("");
+  };
+
+  return (
+    <>
+      <div>
+        <div>
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.user}:</strong> {msg.text}
+            </div>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
+      <Link to="/User">Home</Link>
+      <br />
+    </>
+  );
+};
+
+export default MessageUser;
