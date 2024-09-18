@@ -19,6 +19,7 @@
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.11.3",
     "dotenv": "^16.4.5",
+    "file-saver": "^2.0.5",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
     "react-bootstrap-icons": "^1.11.4",
@@ -48,7 +49,8 @@
     "workbox-range-requests": "^6.6.0",
     "workbox-routing": "^6.6.0",
     "workbox-strategies": "^6.6.0",
-    "workbox-streams": "^6.6.0"
+    "workbox-streams": "^6.6.0",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -76,6 +78,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/file-saver": "^2.0.7",
     "@types/react-signature-canvas": "^1.0.5"
   }
 }
