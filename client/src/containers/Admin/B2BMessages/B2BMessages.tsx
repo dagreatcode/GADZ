@@ -1,55 +1,42 @@
-import { Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const URL = "https://gadzconnect.com"
-const socket = io(URL); // Replace with your server URL
-
-// const socket = io("http://localhost:3001", {
-//   autoConnect: false
-// }); // Replace with your server URL
-
-// const socket = io(URL, {
-//   autoConnect: false
-// });
-
-// const io = new Server({
-//   cors: {
-//     origin: "http://localhost:3000"
-//   }
-// });
-//
-// io.listen(4000);
-interface Message {
+type Message = {
   user: string;
   text: string;
-}
-
-
+};
 
 const B2BMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    socket.on("message", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+    axios
+      .get<Message[]>("/messages")
+      .then((response) => setMessages(response.data))
+      .catch((error) => console.error("Error fetching messages:", error));
   }, []);
 
   return (
-    <>
-      <div>B2BMessages</div>
-      <h1>Message will show here when created.</h1>
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.user}:</strong> {msg.text}
-          </div>
-        ))}
-      </div>
-      <Link to="/Admin">Home</Link>
-    </>
-  )
-}
+    <div>
+      <h1>Admin Dashboard</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {messages.map((message, index) => (
+            <tr key={index}>
+              <td>{message.user}</td>
+              <td>{message.text}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
-export default B2BMessages
+export default B2BMessages;

@@ -23,4 +23,8 @@ io.on("connection", (socket) => {
   });
 });
 
+server.listen(3001, () => {
+  console.log("Server is running on port 3001");
+});
+
 module.exports = router;

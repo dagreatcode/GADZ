@@ -1,27 +1,32 @@
-// src/Chat.tsx
+import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
-import { Link } from "react-router-dom";
 
 const URL = "http://localhost:3001";
 const socket = io(URL); // Replace with your server URL
 
 // const socket = io("http://localhost:3001", {
-//   autoConnect: false,
+//   autoConnect: false
+// }); // Replace with your server URL
+
+// const socket = io(URL, {
+//   autoConnect: false
 // });
 
+// const io = new Server({
+//   cors: {
+//     origin: "http://localhost:3000"
+//   }
+// });
+//
+// io.listen(4000);
 interface Message {
   user: string;
   text: string;
 }
 
-const Chat: React.FC = () => {
+const AdminChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [message, setMessage] = useState("");
-  const [
-    user,
-    // , setUser
-  ] = useState("User");
 
   useEffect(() => {
     socket.on("message", (message: Message) => {
@@ -29,14 +34,10 @@ const Chat: React.FC = () => {
     });
   }, []);
 
-  const sendMessage = () => {
-    const newMessage: Message = { user, text: message };
-    socket.emit("message", newMessage);
-    setMessage("");
-  };
-
   return (
-    <div>
+    <>
+      <div>B2BMessages</div>
+      <h1>Message will show here when created.</h1>
       <div>
         {messages.map((msg, index) => (
           <div key={index}>
@@ -44,15 +45,9 @@ const Chat: React.FC = () => {
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
-      <Link to="/User">Home</Link>
-    </div>
+      <Link to="/Admin">Home</Link>
+    </>
   );
 };
 
-export default Chat;
+export default AdminChat;
