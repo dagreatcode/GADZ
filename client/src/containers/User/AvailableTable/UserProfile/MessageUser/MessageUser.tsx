@@ -1,52 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
-import axios from 'axios';
-
-const socket = io('http://localhost:3001');
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
+import axios from "axios";
 
 interface Message {
-  user: string;
-  text: string;
+  sender: string;
+  receiver: string;
+  content: string;
 }
 
+// 99.123.48.33
+
+const socket = io("http://localhost:3002"); // Backend Socket.IO server
+
 const MessageUser: React.FC = () => {
+  const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [message, setMessage] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
+  const [receiver, setReceiver] = useState<string>(""); // Add receiver state
 
   useEffect(() => {
-    // Fetch initial messages from the server
-    axios.get('http://localhost:3001/messages')
-      .then(response => setMessages(response.data))
-      .catch(error => console.error('Error fetching messages:', error));
+    // Fetch previous messages from the server
+    const fetchMessages = async () => {
+      try {
+        const res = await axios.get<Message[]>(
+          "http://localhost:3001/messages"
+        );
+        setMessages(res.data);
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    };
+    fetchMessages();
 
-    // Listen for new messages
-    socket.on('receiveMessage', (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    // Listen for incoming messages from Socket.IO
+    socket.on("receiveMessage", (newMessage: Message) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
-      socket.off('receiveMessage');
+      socket.off("receiveMessage");
     };
   }, []);
 
-  const sendMessage = () => {
-    const newMessage: Message = { user: 'User', text: message };
-    socket.emit('sendMessage', newMessage);
-    setMessage('');
+  const sendMessage = async () => {
+    if (message.trim() && username.trim() && receiver.trim()) {
+      const newMessage: Message = {
+        sender: username,
+        receiver: receiver,
+        content: message,
+      };
+
+      try {
+        // Send message to the server
+        await socket.emit("sendMessage", newMessage);
+
+        // Update the message locally (optimistic update)
+        setMessages([...messages, newMessage]);
+        setMessage("");
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    }
   };
 
   return (
     <div>
-      <h1>Chat</h1>
+      <h2>Chat Application</h2>
+      <input
+        type="text"
+        placeholder="Enter your username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Enter receiver's username"
+        value={receiver}
+        onChange={(e) => setReceiver(e.target.value)}
+      />
       <div>
         {messages.map((msg, index) => (
           <div key={index}>
-            <strong>{msg.user}:</strong> {msg.text}
+            <strong>{msg.sender}:</strong> {msg.content}
           </div>
         ))}
       </div>
       <input
         type="text"
+        placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />

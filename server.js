@@ -37,11 +37,27 @@ app.use(express.static("images"));
 // =============================================================
 var db = require("./models");
 
-const http = require("http");
-const socketIo = require("socket.io");
+// const server = require("http").createServer(app);
+// const io = require("socket.io")(http);
 
-const server = http.createServer(app);
-const io = socketIo(server);
+// const http = require("http");
+// const socketIo = require("socket.io");
+// const cors = require("cors");
+// const server = http.createServer(app);
+
+// const io = socketIo(server, {
+//   cors: {
+//     origin: [
+//       "*",
+//       // "http://another-allowed-domain.com",
+//     ],
+//     methods: ["GET", "POST"],
+//     allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// });
+
+// app.use(cors());
 
 // // Outside Routes
 // =============================================================
@@ -53,10 +69,7 @@ app.use("/api/employee-help", EmployeeTicketController);
 app.use(routes);
 app.use("/api/message", Message);
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
-// app.use("/api/chat/", require("./config/chat.js"));
-// app.use("/api/video-chat/", require("./config/videochat.js"));
-// app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
-// app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
+app.use("/messages", require("./config/chat.js"));
 
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
@@ -68,10 +81,20 @@ app.use(express.json());
 // io.on("connection", (socket) => {
 //   console.log("New client connected");
 
-//   socket.on("sendMessage", (message) => {
-//     messages.push(message);
+//   socket.on("sendMessage", async (message) => {
+//     const { sender, receiver, content } = message;
+//     try {
+//       // Basic validation
+//       if (!sender || !receiver || !content) {
+//         return socket.emit("error", "Missing required fields");
+//       }
 
-//     io.emit("receiveMessage", message);
+//       const newMessage = await db.Message.create({ sender, receiver, content });
+//       io.emit("receiveMessage", newMessage); // Emit the saved message
+//     } catch (error) {
+//       console.error("Error saving message:", error);
+//       socket.emit("error", "Internal Server Error");
+//     }
 //   });
 
 //   socket.on("disconnect", () => {
@@ -79,56 +102,23 @@ app.use(express.json());
 //   });
 // });
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
-
-  socket.on("sendMessage", async (message) => {
-    try {
-      // Basic validation
-      if (!message.content || !message.sender || !message.receiver) {
-        return socket.emit("error", "Missing required fields");
-      }
-
-      const newMessage = await db.Message.create(message);
-      io.emit("receiveMessage", newMessage); // Emit the saved message
-    } catch (error) {
-      console.error("Error saving message:", error);
-      socket.emit("error", "Internal Server Error");
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
-});
-
-app.post("/", (req, res) => {
-  console.log("Hit2", req.body);
-  res.send("Message received");
-});
-
-// app.post("/", (req, res) => {
-//   io.on("connection", (socket) => {
-//     console.log("New client connected");
-//     console.log("Hit2", req.body);
-//     socket.on("sendMessage", (message) => {
-//       // Save message to the database
-//       db.Message.create(message)
-//         .then((newMessage) => {
-//           io.emit("receiveMessage", newMessage); // Emit the saved message
-//         })
-//         .catch((error) => {
-//           console.error("Error saving message:", error);
-//         });
+// app.post("/messages", (req, res) => {
+//   const { user, text } = req.body;
+//   if (!user || !text) {
+//     return res.status(400).send("Bad Request: user and text are required.");
+//   }
+//   db.Message.create({ user, text })
+//     .then((newMessage) => {
+//       res.json(newMessage);
+//     })
+//     .catch((error) => {
+//       console.error("Error creating message:", error);
+//       res.status(500).send("Internal Server Error");
 //     });
-
-//     socket.on("disconnect", () => {
-//       console.log("Client disconnected");
-//     });
-//   });
 // });
 
 app.get("/messages", (req, res) => {
+  // console.log("Thanks for hitting the get info");
   db.Message.findAll()
     .then((messages) => {
       res.json(messages);
@@ -139,10 +129,14 @@ app.get("/messages", (req, res) => {
     });
 });
 
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   next();
-// });
+app.post("/messages", (req, res) => {
+  console.log("Post message", req.body);
+  res.send("Message received");
+});
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 // TODO: Add console app.
 
