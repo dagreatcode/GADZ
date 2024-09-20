@@ -5,7 +5,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
 
-const socket = io('http://localhost:3001'); // Replace with your server URL
+// const socket = io('http://localhost:3001'); // Replace with your server URL
+const socket = io("https://gadzconnect.com"); // Backend Socket.IO server
 
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
