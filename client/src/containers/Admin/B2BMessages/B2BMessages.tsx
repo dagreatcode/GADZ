@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 type Message = {
-  user: string;
-  text: string;
+  updatedAt: string;
+  createdAt: string,
+  sender: string;
+  receiver: string;
+  content: string;
 };
 
 const B2BMessages: React.FC = () => {
@@ -35,15 +38,15 @@ const B2BMessages: React.FC = () => {
     //   <table>
     //     <thead>
     //       <tr>
-    //         <th>User</th>
+    //         <th>sender</th>
     //         <th>Message</th>
     //       </tr>
     //     </thead>
     //     <tbody>
     //       {messages.map((message, index) => (
     //         <tr key={index}>
-    //           <td>{message.user}</td>
-    //           <td>{message.text}</td>
+    //           <td>{message.sender}</td>
+    //           <td>{message.receiver}</td>
     //         </tr>
     //       ))}
     //     </tbody>
@@ -55,15 +58,21 @@ const B2BMessages: React.FC = () => {
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ border: "1px solid black", padding: "8px" }}>User</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Message</th>
+            <th style={{ border: "1px solid black", padding: "8px" }}>Sender</th>
+            <th style={{ border: "1px solid black", padding: "8px" }}>Receiver</th>
+            <th style={{ border: "1px solid black", padding: "8px" }}>Content</th>
+            <th style={{ border: "1px solid black", padding: "8px" }}>Date & Time</th>
+            <th style={{ border: "1px solid black", padding: "8px" }}>Updated</th>
           </tr>
         </thead>
         <tbody>
           {messages.map((message, index) => (
             <tr key={index}>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{message.user}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{message.text}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>{message.sender}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>{message.receiver}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>{message.content}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>{message.createdAt}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>{message.updatedAt}</td>
             </tr>
           ))}
         </tbody>

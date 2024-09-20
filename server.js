@@ -129,10 +129,15 @@ app.get("/messages", (req, res) => {
     });
 });
 
-app.post("/messages", (req, res) => {
-  console.log("Post message", req.body);
-  res.send("Message received");
-});
+// app.post("/messages", (req, res) => {
+//   console.log("The Body", req.body);
+//   // const { sender, receiver, content } = req.body;
+//   db.Message.create(req.body).then((newMessage) => {
+//     console.log(newMessage);
+//     res.json(newMessage);
+//   });
+// });
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();

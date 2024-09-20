@@ -1,7 +1,7 @@
 // server.js
 const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
+// const socketIo = require("socket.io");
 const router = express.Router();
 const cors = require("cors");
 const db = require("../models");
@@ -22,8 +22,9 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log("New client connected");
-
+  // console.log(socket);
   socket.on("sendMessage", async (message) => {
+    console.log("MESSAGE", message);
     const { sender, receiver, content } = message;
     try {
       // Basic validation
@@ -42,6 +43,18 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
+});
+
+router.get("/", (req, res) => {
+  // console.log("Thanks for hitting the get info");
+  db.Message.findAll()
+    .then((messages) => {
+      res.json(messages);
+    })
+    .catch((error) => {
+      console.error("Error fetching messages:", error);
+      res.status(500).send("Internal Server Error");
+    });
 });
 
 server.listen(3002, () => {
