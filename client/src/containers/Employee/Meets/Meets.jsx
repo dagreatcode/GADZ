@@ -1,14 +1,13 @@
-import React from 'react'
-import { Link } from "react-router-dom";   
+// src/App.js
+import React from 'react';
+import VideoChat from './VideoChat';
 
 function Meets() {
   return (
-    <div>
-        <h1>Meets</h1>  
-        <Link to="/Employee">Home</Link>
-        <br /> 
+    <div className="Meets">
+      <VideoChat />
     </div>
-  )
+  );
 }
 
-export default Meets
+export default Meets;

@@ -1,15 +1,32 @@
-import React from 'react'
 import { Link } from "react-router-dom";
+import React from // , { useState }
+"react";
+import { loadStripe } from "@stripe/stripe-js";
+import CheckoutForm from "./CheckoutForm";
+import {
+  Elements,
+  // CardElement,
+  // useStripe,
+  // useElements,
+} from "@stripe/react-stripe-js";
 
-const Checkout = () => {
+const stripePromise = loadStripe("your-publishable-key-here");
+
+const Checkout: React.FC = () => {
   return (
     <>
-      <h1>Checkout</h1>
-      <p>This will show the user Subscription and when is the next due date. Coming Soon...</p>
-      <p>This will also show the customers you have in your cart. This is a feature. We may stick to Sub Based</p>
-      <Link to="/User">Home</Link><br />
+      <div className="container">
+        <h1>Checkout</h1>
+        <Elements stripe={stripePromise}>
+          <CheckoutForm />
+        </Elements>
+        <Link to="/User">Home</Link>
+        <br />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Checkout
+export default Checkout;
+
+// Initialize Stripe
