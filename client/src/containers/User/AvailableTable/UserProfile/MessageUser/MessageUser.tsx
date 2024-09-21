@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-const socket = io("https://gadzconnect.com:3002/messages"); // Backend Socket.IO server
+const socket = io("http://gadzconnect.com"); // Backend Socket.IO server
 // const socket = io("http://localhost:3002"); // Backend Socket.IO server
 
 const MessageUser: React.FC = () => {
