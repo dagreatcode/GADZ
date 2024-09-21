@@ -43,7 +43,8 @@ app.use("/api/user", require("./controllers/UserAPIRoutes.js"));
 app.use("/api/admin", require("./controllers/AdminController.js"));
 app.use("/api/it-help", require("./controllers/ITticketController.js"));
 app.use(
-  "/api/employee-help", require("./controllers/EmployeeTicketController.js")
+  "/api/employee-help", 
+  require("./controllers/EmployeeTicketController.js")
 );
 app.use("/api/message", require("./controllers/MessageController.js"));
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
@@ -59,7 +60,7 @@ const io = socketIo(server, {
     allowedHeaders: [
       "Content-Type",
       "Authorization",
-      //  "my-custom-header"
+      // "my-custom-header"
       ],
     // credentials: true,
   },
