@@ -155,8 +155,8 @@ const io = socketIo(server, {
     // origin: "http://localhost:3000",
     origin: "https://gadzconnect.com",
     methods: ["GET", "POST"],
-    // allowedHeaders: ["my-custom-header"],
-    credentials: true,
+    // allowedHeaders: ["Content-Type", "Authorization", "my-custom-header"],
+    // credentials: true,
   },
 });
 
@@ -222,18 +222,8 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-// db.sequelize.sync().then(() => {
-//   server.listen(PORT, () => {
-//     console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
-//   });
-// });
-
-server.listen("*", () => {
-  console.log("socket.io is connected");
-});
-{ force: true }
-db.sequelize.sync().then(function () {
-  app.listen(PORT, function () {
-    console.log(`🌎 App is running on  http://localhost:${PORT}`);
+db.sequelize.sync().then(() => {
+  server.listen(PORT, () => {
+    console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
   });
 });
