@@ -82,3 +82,13 @@
 // });
 
 // module.exports = router;
+
+
+// server.listen(3002, () => {
+//   console.log("Server is running on port 3002");
+// });
+// db.sequelize.sync().then(function () {
+//   app.listen(PORT, function () {
+//     console.log(`🌎 App is running on http://localhost:${PORT}`);
+//   });
+// });

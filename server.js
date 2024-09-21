@@ -222,8 +222,18 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync().then(() => {
-  server.listen(PORT, () => {
-    console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
+// db.sequelize.sync().then(() => {
+//   server.listen(PORT, () => {
+//     console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
+//   });
+// });
+
+server.listen("*", () => {
+  console.log("socket.io is connected");
+});
+{ force: true }
+db.sequelize.sync().then(function () {
+  app.listen(PORT, function () {
+    console.log(`🌎 App is running on  http://localhost:${PORT}`);
   });
 });
