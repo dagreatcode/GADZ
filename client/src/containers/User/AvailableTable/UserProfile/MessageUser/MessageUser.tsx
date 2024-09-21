@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-const socket = io("https://gadzconnect.com:3001", {
+const socket = io("https://gadzconnect.com", {
   secure: true,
   rejectUnauthorized: false // Only for self-signed certificates
 }); // Backend Socket.IO server
