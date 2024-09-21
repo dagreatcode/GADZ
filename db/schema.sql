@@ -1,13 +1,3 @@
-### Schema
-
-\d accounts
-
-DROP DATABASE defaultdb;
-
-CREATE DATABASE defaultdb;
-
-USE defaultdb;
-
 DROP TABLE "test_table";
 SELECT * FROM accounts;
 CREATE TABLE accounts (
