@@ -1,21 +1,22 @@
 import { Link } from "react-router-dom";   
 // src/VideoChat.js
 // https://www.twilio.com/en-us/blog/video-chat-react-html
-import React, { useState, useRef, useEffect } from 'react';
-import io from 'socket.io-client';
-import Peer from 'simple-peer';
+import React, { useState, useRef, useEffect } from "react";
+import io from "socket.io-client";
+import Peer from "simple-peer";
 
-const socket = io('http://localhost:3001'); // Replace with your server URL
+// const socket = io("http://localhost:3001"); // Replace with your server URL
+const socket = io("https://gadzconnect.com"); // Backend Socket.IO server
 
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
   const [receivingCall, setReceivingCall] = useState(false);
-  const [caller, setCaller] = useState('');
+  const [caller, setCaller] = useState("");
   const [callerSignal, setCallerSignal] = useState(null);
   const [callAccepted, setCallAccepted] = useState(false);
-  const [idToCall, setIdToCall] = useState('');
+  const [idToCall, setIdToCall] = useState("");
   const [callEnded, setCallEnded] = useState(false);
-  const [me, setMe] = useState('');
+  const [me, setMe] = useState("");
 
   const myVideo = useRef();
   const userVideo = useRef();
@@ -27,11 +28,11 @@ const VideoChat = () => {
       myVideo.current.srcObject = stream;
     });
 
-    socket.on('me', (id) => {
+    socket.on("me", (id) => {
       setMe(id);
     });
 
-    socket.on('callUser', ({ from, name: callerName, signal }) => {
+    socket.on("callUser", ({ from, name: callerName, signal }) => {
       setReceivingCall(true);
       setCaller(from);
       setCallerSignal(signal);
@@ -45,15 +46,15 @@ const VideoChat = () => {
       stream: stream,
     });
 
-    peer.on('signal', (data) => {
-      socket.emit('callUser', { userToCall: id, signalData: data, from: me });
+    peer.on("signal", (data) => {
+      socket.emit("callUser", { userToCall: id, signalData: data, from: me });
     });
 
-    peer.on('stream', (stream) => {
+    peer.on("stream", (stream) => {
       userVideo.current.srcObject = stream;
     });
 
-    socket.on('callAccepted', (signal) => {
+    socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
       peer.signal(signal);
     });
@@ -69,11 +70,11 @@ const VideoChat = () => {
       stream: stream,
     });
 
-    peer.on('signal', (data) => {
-      socket.emit('answerCall', { signal: data, to: caller });
+    peer.on("signal", (data) => {
+      socket.emit("answerCall", { signal: data, to: caller });
     });
 
-    peer.on('stream', (stream) => {
+    peer.on("stream", (stream) => {
       userVideo.current.srcObject = stream;
     });
 
@@ -89,9 +90,9 @@ const VideoChat = () => {
   return (
     <div>
       <div>
-        <video playsInline muted ref={myVideo} autoPlay style={{ width: '300px' }} />
+        <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />
         {callAccepted && !callEnded ? (
-          <video playsInline ref={userVideo} autoPlay style={{ width: '300px' }} />
+          <video playsInline ref={userVideo} autoPlay style={{ width: "300px" }} />
         ) : null}
       </div>
       <div>
