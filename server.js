@@ -17,6 +17,13 @@ const Message = require("./controllers/MessageController.js");
 // const inquirer = require("inquirer"); // Create Console App
 const routes = require("./routes");
 
+const http = require("http");
+const socketIo = require("socket.io");
+const cors = require("cors");
+const db = require("../models");
+const server = http.createServer(app);
+// const io = socketIo(server);
+
 // Set server PORT
 // =============================================================
 const PORT = process.env.PORT || 3001;
@@ -26,7 +33,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(cors());
 // Serve up static assets (usually on heroku/render)
 // =============================================================
 app.use(express.static("client/build"));
@@ -69,7 +76,7 @@ app.use("/api/employee-help", EmployeeTicketController);
 app.use(routes);
 app.use("/api/message", Message);
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
-app.use("/messages", require("./config/chat.js"));
+// app.use("/messages", require("./config/chat.js"));
 
 // app.use(AuthController);
 // require("./routes/post-api-routes.js")(app);
@@ -144,6 +151,57 @@ app.use((req, res, next) => {
 });
 
 // TODO: Add console app.
+const io = socketIo(server, {
+  cors: {
+    // origin: "http://localhost:3000",
+    origin: "https://gadzconnect.com",
+    methods: ["GET", "POST"],
+    // allowedHeaders: ["my-custom-header"],
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  // console.log(socket);
+  socket.on("sendMessage", async (message) => {
+    console.log("MESSAGE", message);
+    const { sender, receiver, content } = message;
+    try {
+      // Basic validation
+      if (!sender || !receiver || !content) {
+        return socket.emit("error", "Missing required fields");
+      }
+
+      const newMessage = await db.Message.create({ sender, receiver, content });
+      io.emit("receiveMessage", newMessage); // Emit the saved message
+    } catch (error) {
+      console.error("Error saving message:", error);
+      socket.emit("error", "Internal Server Error");
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+router.get("/messages", (req, res) => {
+  // console.log("Thanks for hitting the get info");
+  db.Message.findAll()
+    .then((messages) => {
+      res.json(messages);
+    })
+    .catch((error) => {
+      console.error("Error fetching messages:", error);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
+});
 
 // Test routes to see if their server is talking to the client
 // =============================================================
@@ -166,7 +224,10 @@ app.get("*", (req, res) => {
 // =============================================================
 // { force: true }
 db.sequelize.sync().then(function () {
-  app.listen(PORT, function () {
-    console.log(`🌎 App is running on http://localhost:${PORT}`);
+// Sync Sequelize models
+sequelize.sync().then(() => {
+  server.listen(PORT, () => {
+    console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
   });
+});
 });

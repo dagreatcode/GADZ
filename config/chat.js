@@ -5,7 +5,7 @@ const socketIo = require("socket.io");
 const router = express.Router();
 const cors = require("cors");
 const db = require("../models");
-
+"  "
 const server = http.createServer(router);
 // const io = socketIo(server);
 console.log("Here I am");
@@ -17,7 +17,7 @@ const io = socketIo(server, {
     origin: "https://gadzconnect.com",
     methods: ["GET", "POST"],
     // allowedHeaders: ["my-custom-header"],
-    // credentials: true,
+    credentials: true,
   },
 });
 // const socket = io("https://your-domain.com", {
@@ -49,19 +49,19 @@ io.on("connection", (socket) => {
   });
 });
 
-// io.on('connection', (socket) => {
-//   console.log('a user connected');
+// io.on("connection", (socket) => {
+//   console.log("a user connected");
 
-//   socket.on('sendMessage', (message) => {
-//     io.emit('receiveMessage', message);
+//   socket.on("sendMessage", (message) => {
+//     io.emit("receiveMessage", message);
 //   });
 
-//   socket.on('disconnect', () => {
-//     console.log('user disconnected');
+//   socket.on("disconnect", () => {
+//     console.log("user disconnected");
 //   });
 // });
 
-router.get("/", (req, res) => {
+router.get("/test", (req, res) => {
   // console.log("Thanks for hitting the get info");
   db.Message.findAll()
     .then((messages) => {
@@ -73,8 +73,8 @@ router.get("/", (req, res) => {
     });
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
   // Application specific logging, throwing an error, or other logic here
 });
 

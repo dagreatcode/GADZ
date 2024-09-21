@@ -4,7 +4,7 @@ const db = require("../models");
 // const bcrypt = require("bcrypt");
 // const jwt = require("jsonwebtoken");
 
-router.post("/", (req, res) => {
+router.post("/cheat", (req, res) => {
   console.log(req.body);
   db.Message.create(req.body)
     .then((newMessage) => {
@@ -16,7 +16,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/", (req, res) => {
+router.get("/cheat", (req, res) => {
   db.Message.findAll()
     .then((messages) => {
       res.json(messages);
