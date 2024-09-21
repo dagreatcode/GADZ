@@ -5,7 +5,6 @@ const socketIo = require("socket.io");
 const router = express.Router();
 const cors = require("cors");
 const db = require("../models");
-"  "
 const server = http.createServer(router);
 // const io = socketIo(server);
 console.log("Here I am");
