@@ -23,7 +23,7 @@ const MessageUser: React.FC = () => {
       try {
         const res = await axios.get<Message[]>(
           // "http://localhost:3001/messages"
-          "https://gadzconnect.com:3002/messages"
+          "/messages"
         );
         setMessages(res.data);
       } catch (error) {
