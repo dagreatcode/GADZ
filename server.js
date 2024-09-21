@@ -22,6 +22,7 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const server = http.createServer(app);
 // const io = socketIo(server);
+const app = express();
 
 // Set server PORT
 // =============================================================
@@ -29,7 +30,6 @@ const PORT = process.env.PORT || 3001;
 
 // Sets up the Express App Middleware
 // =============================================================
-const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
