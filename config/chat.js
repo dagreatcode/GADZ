@@ -57,6 +57,11 @@ router.get("/", (req, res) => {
     });
 });
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
+});
+
 server.listen(3002, () => {
   console.log("Server is running on port 3002");
 });
