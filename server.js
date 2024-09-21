@@ -41,7 +41,7 @@ app.use(express.static("images"));
 
 // Connect to SQL Database
 // =============================================================
-var db = require("./models");
+const db = require("./models");
 
 // const server = require("http").createServer(app);
 // const io = require("socket.io")(http);
@@ -222,11 +222,8 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync().then(function () {
-// Sync Sequelize models
-sequelize.sync().then(() => {
+db.sequelize.sync().then(() => {
   server.listen(PORT, () => {
     console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
   });
-});
 });
