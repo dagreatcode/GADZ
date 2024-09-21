@@ -16,13 +16,13 @@ const Message = require("./controllers/MessageController.js");
 // const Chat = require("./config/chat.js");
 // const inquirer = require("inquirer"); // Create Console App
 const routes = require("./routes");
+const app = express();
 
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
 const server = http.createServer(app);
 // const io = socketIo(server);
-const app = express();
 
 // Set server PORT
 // =============================================================
