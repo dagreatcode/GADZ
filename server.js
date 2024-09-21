@@ -30,10 +30,11 @@ app.use(express.static("images"));
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
+// Remove this block
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
 
 // // Outside Routes
 // =============================================================
@@ -53,7 +54,9 @@ const io = socketIo(server, {
     // origin: "http://localhost:3000",
     origin: "https://gadzconnect.com",
     methods: ["GET", "POST"],
-    // allowedHeaders: ["Content-Type", "Authorization", "my-custom-header"],
+    allowedHeaders: ["Content-Type", "Authorization",
+      //  "my-custom-header"
+      ],
     // credentials: true,
   },
 });
