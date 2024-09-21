@@ -8,9 +8,7 @@ interface Message {
   content: string;
 }
 
-// 99.123.48.33
-
-const socket = io("https://gadzconnect.com"); // Backend Socket.IO server
+const socket = io("https://gadzconnect.com:3002"); // Backend Socket.IO server
 // const socket = io("http://localhost:3002"); // Backend Socket.IO server
 
 const MessageUser: React.FC = () => {
@@ -24,7 +22,8 @@ const MessageUser: React.FC = () => {
     const fetchMessages = async () => {
       try {
         const res = await axios.get<Message[]>(
-          "http://localhost:3001/messages"
+          // "http://localhost:3001/messages"
+          "/messages"
         );
         setMessages(res.data);
       } catch (error) {
@@ -66,22 +65,23 @@ const MessageUser: React.FC = () => {
 
   return (
     <div>
-      <h2>Chat Application</h2>
       <input
         type="text"
         placeholder="Enter your username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        style={{ margin: "10px", padding: "5px" }}
       />
       <input
         type="text"
         placeholder="Enter receiver's username"
         value={receiver}
         onChange={(e) => setReceiver(e.target.value)}
+        style={{ margin: "10px", padding: "5px" }}
       />
-      <div>
+      <div style={{ margin: "20px 0" }}>
         {messages.map((msg, index) => (
-          <div key={index}>
+          <div key={index} style={{ margin: "10px 0" }}>
             <strong>{msg.sender}:</strong> {msg.content}
           </div>
         ))}
@@ -91,8 +91,9 @@ const MessageUser: React.FC = () => {
         placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        style={{ margin: "10px", padding: "5px" }}
       />
-      <button onClick={sendMessage}>Send</button>
+      <button onClick={sendMessage} style={{ padding: "10px 20px" }}>Send</button>
     </div>
   );
 };
