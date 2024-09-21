@@ -117,17 +117,17 @@ app.use(express.json());
 //     });
 // });
 
-app.get("/messages", (req, res) => {
-  // console.log("Thanks for hitting the get info");
-  db.Message.findAll()
-    .then((messages) => {
-      res.json(messages);
-    })
-    .catch((error) => {
-      console.error("Error fetching messages:", error);
-      res.status(500).send("Internal Server Error");
-    });
-});
+// app.get("/messages", (req, res) => {
+//   // console.log("Thanks for hitting the get info");
+//   db.Message.findAll()
+//     .then((messages) => {
+//       res.json(messages);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching messages:", error);
+//       res.status(500).send("Internal Server Error");
+//     });
+// });
 
 // app.post("/messages", (req, res) => {
 //   console.log("The Body", req.body);

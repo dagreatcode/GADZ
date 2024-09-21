@@ -1,7 +1,7 @@
 // server.js
 const express = require("express");
 const http = require("http");
-// const socketIo = require("socket.io");
+const socketIo = require("socket.io");
 const router = express.Router();
 const cors = require("cors");
 const db = require("../models");
@@ -11,15 +11,19 @@ const server = http.createServer(router);
 console.log("Here I am");
 router.use(cors());
 
-const io = require("socket.io")(server, {
+const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    // origin: "http://localhost:3000",
+    origin: "https://gadzconnect.com",
     methods: ["GET", "POST"],
     // allowedHeaders: ["my-custom-header"],
     // credentials: true,
   },
 });
-
+// const socket = io("https://your-domain.com", {
+//   secure: true,
+//   rejectUnauthorized: false // Only for self-signed certificates
+// });
 io.on("connection", (socket) => {
   console.log("New client connected");
   // console.log(socket);
@@ -45,6 +49,18 @@ io.on("connection", (socket) => {
   });
 });
 
+// io.on('connection', (socket) => {
+//   console.log('a user connected');
+
+//   socket.on('sendMessage', (message) => {
+//     io.emit('receiveMessage', message);
+//   });
+
+//   socket.on('disconnect', () => {
+//     console.log('user disconnected');
+//   });
+// });
+
 router.get("/", (req, res) => {
   // console.log("Thanks for hitting the get info");
   db.Message.findAll()
@@ -55,6 +71,11 @@ router.get("/", (req, res) => {
       console.error("Error fetching messages:", error);
       res.status(500).send("Internal Server Error");
     });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
 });
 
 server.listen(3002, () => {
