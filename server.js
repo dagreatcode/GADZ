@@ -42,7 +42,9 @@ app.use("/api/agreement", require("./controllers/AgreementController.js"));
 app.use("/api/user", require("./controllers/UserAPIRoutes.js"));
 app.use("/api/admin", require("./controllers/AdminController.js"));
 app.use("/api/it-help", require("./controllers/ITticketController.js"));
-app.use("/api/employee-help", require("./controllers/EmployeeTicketController.js"));
+app.use(
+  "/api/employee-help", require("./controllers/EmployeeTicketController.js")
+);
 app.use("/api/message", require("./controllers/MessageController.js"));
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 app.use(require("./routes"));
@@ -54,7 +56,9 @@ const io = socketIo(server, {
     // origin: "http://localhost:3000",
     origin: "https://gadzconnect.com",
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization",
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
       //  "my-custom-header"
       ],
     // credentials: true,
@@ -122,7 +126,9 @@ app.get("*", (req, res) => {
 // { force: true }
 db.sequelize.sync().then(() => {
   server.listen(PORT, () => {
-    console.log(`🌎 App and Socket.IO server are running on http://localhost:${PORT}`);
+    console.log(
+      `🌎 App and Socket.IO server are running on http://localhost:${PORT}`
+    );
   });
 });
 
