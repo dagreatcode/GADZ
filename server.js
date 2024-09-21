@@ -185,7 +185,7 @@ io.on("connection", (socket) => {
   });
 });
 
-router.get("/messages", (req, res) => {
+app.get("/messages", (req, res) => {
   // console.log("Thanks for hitting the get info");
   db.Message.findAll()
     .then((messages) => {
