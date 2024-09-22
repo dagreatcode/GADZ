@@ -52,10 +52,13 @@ app.use(require("./routes"));
 
 // TODO: Add console app.
 
+const ServerPort = process.env.SOCKET_IO_SERVER_PORT;
+
 const io = socketIo(server, {
   cors: {
     // origin: "http://localhost:3000",
-    origin: "https://gadzconnect.com",
+    // origin: "https://gadzconnect.com",
+    origin: `${ServerPort}`,
     methods: ["GET", "POST"],
     allowedHeaders: [
       "Content-Type",

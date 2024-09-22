@@ -8,7 +8,14 @@ interface Message {
   content: string;
 }
 
-const socket = io("https://gadzconnect.com", {
+const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
+console.log("ENV",process.env.REACT_APP_SOCKET_IO_CLIENT_PORT);
+  
+const socket = io(
+  // "https://gadzconnect.com",
+    // "http://localhost:3001",
+  `${ServerPort}`,
+   {
   secure: true,
   rejectUnauthorized: false // Only for self-signed certificates
 }); // Backend Socket.IO server
