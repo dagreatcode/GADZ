@@ -12,6 +12,61 @@ router.get("/view", (req, res) => {
   });
 });
 
+router.get("/view/:id", (req, res) => {
+  console.log(`Fetching user with ID: ${req.params.id}`);
+
+  db.User.findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((foundUser) => {
+      if (!foundUser) {
+        return res.status(404).send("User not found");
+      }
+      console.log(foundUser);
+      res.send(foundUser);
+    })
+    .catch((error) => {
+      console.error("Error fetching user:", error);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
+router.put("/update/:id", async (req, res) => {
+  console.log("Updating user...");
+
+  try {
+    console.log("Request Body:", req.body);
+
+    const user = await db.User.findOne({
+      where: { id: req.params.id },
+    });
+
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).send("User not found");
+    }
+
+    const [updatedRows] = await db.User.update(req.body, {
+      where: { id: req.params.id },
+    });
+
+    if (updatedRows === 0) {
+      console.log("No rows updated");
+      return res.status(404).send("User not found");
+    }
+
+    console.log(`User with ID ${req.params.id} updated successfully.`);
+    res
+      .status(200)
+      .send({ success: true, message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 router.post("/signUp", (req, res) => {
   const data = req.body;
   const email = data.email;
@@ -72,7 +127,7 @@ router.post("/login", (req, res) => {
   } else {
     // .compare(email, user.password)
     db.User.findOne({ where: { email: email } }).then((foundUser) => {
-      // console.log("foundU Data", foundUser.email);
+      console.log("foundU Data", foundUser);
       if (!foundUser) {
         return res.status(401).json({
           error: true,
