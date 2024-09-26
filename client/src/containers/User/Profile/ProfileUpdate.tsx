@@ -41,6 +41,8 @@ type User = {
   description: string;
 };
 
+const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
+
 const ProfileUpdate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -60,7 +62,7 @@ const ProfileUpdate: React.FC = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/user/view/${id}`
+          `${ServerPort}/api/user/view/${id}`
         );
         setUser(response.data); // Assuming your API returns the user object directly
       } catch (error) {
@@ -101,7 +103,7 @@ const ProfileUpdate: React.FC = () => {
 
     try {
       const response = await axios.post<ApiResponse>(
-        "http://localhost:3001/api/qr-create",
+        `${ServerPort}/api/qr-create`,
         qrData
       );
       setMessages(response.data.results);
@@ -120,7 +122,7 @@ const ProfileUpdate: React.FC = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3001/api/user/update/${id}`,
+        `/api/user/update/${id}`,
         values,
         {
           headers: {
