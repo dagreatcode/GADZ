@@ -41,7 +41,7 @@ type User = {
 };
 
 const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-
+// const Workspace = process.env.REACT_APP_WORKSPACE;
 const ProfileUpdate: React.FC = () => {
   const userId = localStorage.getItem("userInfo._id"); // User ID from localStorage
   const [messages, setMessages] = useState<Message[]>([]);

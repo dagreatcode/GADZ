@@ -21,7 +21,7 @@ const Login = () => {
       // FIXME: After creating an account, it pushes on local but it do not push to the home page/ login in Production
       .post("/api/user/signUp", { email, password })
       .then((response) => {
-        console.log(response.data);
+        console.log("Login Response", response.data);
         // setJwt(response.data.data);
         navigate("/user");
         // history.push("/");

@@ -54,6 +54,7 @@ app.use(require("./routes"));
 // TODO: Add console app.
 
 const ServerPort = process.env.SOCKET_IO_SERVER_PORT;
+const APIKeyQR = process.env.API_KEY_QR;
 
 app.use(
   cors({
@@ -120,7 +121,7 @@ app.post("/api/qr-create", async (req, res) => {
   axios
     .post("https://hovercode.com/api/v2/hovercode/create/", data, {
       headers: {
-        Authorization: "Token 89e69c1ca220f79caacf708ad120eedfd2795f41",
+        Authorization: `Token ${APIKeyQR}`,
       },
       timeout: 10000,
     })
@@ -143,7 +144,7 @@ app.get("/api/qr-view", (req, res) => {
       "https://hovercode.com/api/v2/workspace/82140683-32bd-4422-9ff9-7ecec248c952/hovercodes/",
       {
         headers: {
-          Authorization: "Token 89e69c1ca220f79caacf708ad120eedfd2795f41",
+          Authorization: `Token ${APIKeyQR}`,
         },
         timeout: 10000,
       }
