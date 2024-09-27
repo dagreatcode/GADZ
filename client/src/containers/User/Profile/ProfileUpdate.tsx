@@ -7,7 +7,6 @@ import Row from "react-bootstrap/Row";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-// Define types
 type Message = {
   svg_file: string;
   created: string;
@@ -41,9 +40,10 @@ type User = {
 };
 
 const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-// const Workspace = process.env.REACT_APP_WORKSPACE;
+
 const ProfileUpdate: React.FC = () => {
-  const userId = localStorage.getItem("userInfo._id"); // User ID from localStorage
+  const storedUserInfo = localStorage.getItem("userInfo");
+  const userId = storedUserInfo ? JSON.parse(storedUserInfo)._id : "";
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,47 +54,21 @@ const ProfileUpdate: React.FC = () => {
     password: "",
     description: "",
   });
+  console.log(userId)
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch user data when component mounts
   useEffect(() => {
-    console.log("LocalStorage", localStorage.getItem("userInfo"))
-    // Retrieving user info from local storage
-const storedUserInfo = localStorage.getItem("userInfo");
-
-if (storedUserInfo) {
-  const userInfo = JSON.parse(storedUserInfo);
-
-  // Iterating over the properties
-  for (const key in userInfo) {
-    if (userInfo.hasOwnProperty(key)) {
-      console.log(`${key}: ${userInfo[key]}`);
-    }
-  }
-} else {
-  console.log("No user info found in local storage.");
-}
-
-
-
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         setError("No token found. Please log in.");
         return;
       }
-
       try {
-        const response = await axios.get(
-          `${ServerPort}/api/user/view/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
+        const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.status === 200) {
           setUser(response.data);
         } else {
@@ -102,14 +76,11 @@ if (storedUserInfo) {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // setError(error.response?.data?.message || "An error occurred.");
         setError("An error occurred.");
       }
     };
 
-    if (userId) {
-      fetchUserData();
-    }
+    if (userId) fetchUserData();
   }, [userId]);
 
   const qrData: QRData = {
@@ -133,27 +104,32 @@ if (storedUserInfo) {
   });
 
   const handleUserUpdate = async (values: User) => {
-    const token = localStorage.getItem("token"); // Retrieve token
+    console.log("Hit")
+    setIsSubmitting(true);
+    const token = localStorage.getItem("token");
     setError(null);
     setSuccessMessage(null);
 
     try {
-      const response = await axios.put(`/api/user/update/${userId}`, values, {
+      const response = await axios.put(`${ServerPort}/api/user/update/${userId}`, values, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Use token in headers
+          Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("Update response:", response);
       if (response.data.success) {
         setSuccessMessage("User updated successfully!");
         setUser(values);
+        setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         setError(response.data.message || "Failed to update user.");
       }
     } catch (error) {
       console.error("Failed to update user:", error);
       setError("An error occurred while updating the user.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -163,14 +139,12 @@ if (storedUserInfo) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token"); // Retrieve token
+      const token = localStorage.getItem("token");
       const response = await axios.post<ApiResponse>(
         `${ServerPort}/api/qr-create`,
         qrData,
         {
-          headers: {
-            Authorization: `Bearer ${token}`, // Use token in headers
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setMessages(response.data.results);
@@ -187,7 +161,7 @@ if (storedUserInfo) {
     <>
       {loading && <div>Loading...</div>}
       {error && <div className="text-danger">{error}</div>}
-
+      {userId}
       <Formik
         validationSchema={schema}
         onSubmit={handleUserUpdate}
@@ -217,7 +191,7 @@ if (storedUserInfo) {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4" controlId="validationFormik102">
-                <Form.Label>Password</Form.Label>
+                <Form.Label>{userId}</Form.Label>
                 <Form.Control
                   type="password"
                   name="password"
@@ -243,7 +217,9 @@ if (storedUserInfo) {
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
-            <Button type="submit">Update User</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Updating..." : "Update User"}
+            </Button>
             {successMessage && (
               <p style={{ color: "green" }}>{successMessage}</p>
             )}

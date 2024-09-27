@@ -39,31 +39,40 @@ router.put("/update/:id", async (req, res) => {
   try {
     console.log("Request Body:", req.body);
 
-    const user = await db.User.findOne({
-      where: { id: req.params.id },
-    });
+    // Fetch the user using findByPk
+    const user = await db.User.findByPk(req.params.id);
 
     if (!user) {
       console.log("User not found");
-      return res.status(404).send("User not found");
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
     }
 
+    // Update the user
     const [updatedRows] = await db.User.update(req.body, {
       where: { id: req.params.id },
     });
 
     if (updatedRows === 0) {
       console.log("No rows updated");
-      return res.status(404).send("User not found");
+      return res
+        .status(404)
+        .send({ success: false, message: "No updates made" });
     }
 
+    // Fetch the updated user to return
+    const updatedUser = await db.User.findByPk(req.params.id);
+
     console.log(`User with ID ${req.params.id} updated successfully.`);
-    res
-      .status(200)
-      .send({ success: true, message: "User updated successfully" });
+    res.status(200).send({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser, // Return updated user data
+    });
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send({ success: false, message: "Internal Server Error" });
   }
 });
 
@@ -114,9 +123,8 @@ router.post("/signUp", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+  const { email, password } = req.body;
+
   console.log("Req.Body", req.body);
   if (!email || !password) {
     return res.status(422).json({
@@ -124,19 +132,20 @@ router.post("/login", (req, res) => {
       data: null,
       message: "Email and Password are required fields!",
     });
-  } else {
-    // .compare(email, user.password)
-    db.User.findOne({ where: { email: email } }).then((foundUser) => {
-      console.log("foundU Data", foundUser);
+  }
+
+  db.User.findOne({ where: { email } })
+    .then((foundUser) => {
+      console.log("foundUser Data", foundUser);
       if (!foundUser) {
         return res.status(401).json({
           error: true,
-          data: foundUser,
+          data: null,
           message: "User not found.",
         });
       }
 
-      bcrypt.compare(password, foundUser.password).then((result) => {
+      return bcrypt.compare(password, foundUser.password).then((result) => {
         if (!result) {
           return res.status(401).json({
             error: true,
@@ -146,7 +155,7 @@ router.post("/login", (req, res) => {
         }
 
         // Create token
-        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET, {
+        const token = jwt.sign({ id: foundUser.id }, process.env.SECRET, {
           expiresIn: "7d",
         });
 
@@ -155,12 +164,15 @@ router.post("/login", (req, res) => {
 
         res.status(200).json({
           error: false,
-          data: { token: token, user: foundUser },
+          data: { token, user: foundUser }, // Ensure user object is included
           message: null,
         });
       });
+    })
+    .catch((error) => {
+      console.error("Error during login:", error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
     });
-  }
 });
 
 module.exports = router;

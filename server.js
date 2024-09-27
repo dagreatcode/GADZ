@@ -59,8 +59,12 @@ const APIKeyQR = process.env.API_KEY_QR;
 app.use(
   cors({
     origin: "http://localhost:3000", // Change this to your frontend URL
+    // origin: 'http://localhost:3000', // Allow your React app's origin
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   })
 );
+app.options("*", cors()); // Enable preflight for all routes
 
 const io = socketIo(server, {
   cors: {
