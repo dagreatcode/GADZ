@@ -33,26 +33,37 @@ const Login = () => {
       });
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const { email, password } = e.target;
-    axios
-      // TODO: change to /api/login
-      .post("/api/user/login", { email, password })
-      .then((response) => {
-        // setJwt(response.data.data);
-        console.log(response.data.data);
-        console.log(response.data);
-        console.log(response);
-        navigate("/user");
-        // history.push("/");
-        // window.location = "/home";
-        // this.props.history.push("/home");
-      })
-      .catch((err) => {
-        console.log(err);
+  
+    try {
+      // Make the login request
+      const response = await axios.post("/api/user/login", { email, password });
+      
+      // Assume the response contains a token and user ID
+      const { token, userId } = response.data.data;
+  
+      // Store token in localStorage or context
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      
+      // Now fetch user data
+      const userDataResponse = await axios.get(`/api/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+  
+      // Handle user data as needed
+      console.log("User Data:", userDataResponse.data);
+  
+      // Navigate to user page
+      navigate("/user");
+    } catch (err) {
+      console.log(err);
+    }
   };
+  
 
   return (
     <div className="container">

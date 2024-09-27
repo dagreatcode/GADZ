@@ -6,7 +6,6 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { useParams } from "react-router-dom";
 
 // Define types
 type Message = {
@@ -44,13 +43,13 @@ type User = {
 const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
 
 const ProfileUpdate: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const userId = localStorage.getItem("userInfo._id"); // User ID from localStorage
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [user, setUser] = useState<User>({
-    id: id || "",
+    id: userId || "",
     email: "",
     password: "",
     description: "",
@@ -59,22 +58,59 @@ const ProfileUpdate: React.FC = () => {
 
   // Fetch user data when component mounts
   useEffect(() => {
+    console.log("LocalStorage", localStorage.getItem("userInfo"))
+    // Retrieving user info from local storage
+const storedUserInfo = localStorage.getItem("userInfo");
+
+if (storedUserInfo) {
+  const userInfo = JSON.parse(storedUserInfo);
+
+  // Iterating over the properties
+  for (const key in userInfo) {
+    if (userInfo.hasOwnProperty(key)) {
+      console.log(`${key}: ${userInfo[key]}`);
+    }
+  }
+} else {
+  console.log("No user info found in local storage.");
+}
+
+
+
     const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("No token found. Please log in.");
+        return;
+      }
+
       try {
         const response = await axios.get(
-          `${ServerPort}/api/user/view/${id}`
+          `${ServerPort}/api/user/view/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        setUser(response.data); // Assuming your API returns the user object directly
+
+        if (response.status === 200) {
+          setUser(response.data);
+        } else {
+          setError("Failed to fetch user data.");
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setError("Failed to fetch user data.");
+        // setError(error.response?.data?.message || "An error occurred.");
+        setError("An error occurred.");
       }
     };
 
-    if (id) {
+    if (userId) {
       fetchUserData();
     }
-  }, [id]);
+  }, [userId]);
 
   const qrData: QRData = {
     workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
@@ -96,41 +132,18 @@ const ProfileUpdate: React.FC = () => {
     description: yup.string().required("Description is required"),
   });
 
-  const handleQrSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.post<ApiResponse>(
-        `${ServerPort}/api/qr-create`,
-        qrData
-      );
-      setMessages(response.data.results);
-      setApiResponse(response.data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-      setError("Failed to fetch messages. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleUserUpdate = async (values: User) => {
+    const token = localStorage.getItem("token"); // Retrieve token
     setError(null);
     setSuccessMessage(null);
 
     try {
-      const response = await axios.put(
-        `/api/user/update/${id}`,
-        values,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response);
+      const response = await axios.put(`/api/user/update/${userId}`, values, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Use token in headers
+        },
+      });
 
       if (response.data.success) {
         setSuccessMessage("User updated successfully!");
@@ -141,6 +154,32 @@ const ProfileUpdate: React.FC = () => {
     } catch (error) {
       console.error("Failed to update user:", error);
       setError("An error occurred while updating the user.");
+    }
+  };
+
+  const handleQrSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token"); // Retrieve token
+      const response = await axios.post<ApiResponse>(
+        `${ServerPort}/api/qr-create`,
+        qrData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use token in headers
+          },
+        }
+      );
+      setMessages(response.data.results);
+      setApiResponse(response.data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      setError("Failed to fetch messages. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
