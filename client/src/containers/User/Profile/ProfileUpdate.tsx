@@ -4,7 +4,6 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-// import * as yup from "yup";
 
 type Message = {
   svg_file: string;
@@ -149,6 +148,20 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
+  const qrData: QRData = {
+    workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
+    qr_data: "https://twitter.com/hovercodeHQ",
+    primary_color: "#3b81f6",
+    background_color: "#FFFFFF",
+    dynamic: true,
+    display_name: "Vincent Kendrick",
+    frame: "circle-viewfinder",
+    pattern: "Diamonds",
+    has_border: true,
+    logo_url: "https://hovercode.com/static/website/images/logo.png",
+    generate_png: true,
+  };
+
   const handleQrSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -158,9 +171,7 @@ const ProfileUpdate: React.FC = () => {
       const token = localStorage.getItem("token");
       const response = await axios.post<ApiResponse>(
         `${ServerPort}/api/qr-create`,
-        {
-          // Your QR data here
-        },
+        qrData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

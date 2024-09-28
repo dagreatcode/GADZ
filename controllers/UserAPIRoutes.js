@@ -5,10 +5,11 @@ const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const myPort = process.env.SOCKET_IO_SERVER_PORT || "http://localhost:3001"; // Default to a port if not set
 
 router.use(
   cors({
-    origin: "http://localhost:3000", // Adjust according to your React app's URL
+    origin: myPort, // Use the port for the socket server as the origin
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
