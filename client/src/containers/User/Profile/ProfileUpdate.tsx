@@ -4,8 +4,7 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import { Formik } from "formik";
-import * as yup from "yup";
+// import * as yup from "yup";
 
 type Message = {
   svg_file: string;
@@ -35,28 +34,35 @@ type QRData = {
 type User = {
   id: string;
   email: string;
-  password: string;
+  password: string; // Handle this securely
   description: string;
 };
 
-const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
+const ServerPort =
+  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
 const ProfileUpdate: React.FC = () => {
-  const storedUserInfo = localStorage.getItem("userInfo");
-  const userId = storedUserInfo ? JSON.parse(storedUserInfo)._id : "";
+  const userId = localStorage.userId;
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
-  const [user, setUser] = useState<User>({
-    id: userId || "",
+  const [user, setUser] = useState<User | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState<User>({
+    id: "",
     email: "",
     password: "",
     description: "",
   });
-  console.log(userId)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [formErrors, setFormErrors] = useState({
+    email: "",
+    password: "",
+    description: "",
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -66,68 +72,78 @@ const ProfileUpdate: React.FC = () => {
         return;
       }
       try {
-        const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
+        const response = await axios.get(`/api/user/view/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {
           setUser(response.data);
+          setFormData(response.data); // Initialize form data with user data
         } else {
           setError("Failed to fetch user data.");
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError("An error occurred.");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data.message || "An error occurred.");
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
       }
     };
 
     if (userId) fetchUserData();
   }, [userId]);
 
-  const qrData: QRData = {
-    workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-    qr_data: "https://twitter.com/hovercodeHQ",
-    primary_color: "#3b81f6",
-    background_color: "#FFFFFF",
-    dynamic: true,
-    display_name: "Vincent Kendrick",
-    frame: "circle-viewfinder",
-    pattern: "Diamonds",
-    has_border: true,
-    logo_url: "https://hovercode.com/static/website/images/logo.png",
-    generate_png: true,
+  const validateForm = () => {
+    const errors: any = {};
+    if (!formData.email) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email is invalid";
+    }
+    if (!formData.description) {
+      errors.description = "Description is required";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  const schema = yup.object().shape({
-    email: yup.string().email().required("Email is required"),
-    password: yup.string().required("Password is required"),
-    description: yup.string().required("Description is required"),
-  });
+  const handleUserUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return; // Validate before submission
 
-  const handleUserUpdate = async (values: User) => {
-    console.log("Hit")
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
     setError(null);
     setSuccessMessage(null);
 
     try {
-      const response = await axios.put(`${ServerPort}/api/user/update/${userId}`, values, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Update response:", response);
+      const response = await axios.put(
+        `${ServerPort}/api/user/update/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.data.success) {
         setSuccessMessage("User updated successfully!");
-        setUser(values);
+        setUser((prevUser) => ({ ...prevUser, ...formData })); // Update state with new values
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         setError(response.data.message || "Failed to update user.");
       }
-    } catch (error) {
-      console.error("Failed to update user:", error);
-      setError("An error occurred while updating the user.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.message || "An error occurred.");
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -142,90 +158,83 @@ const ProfileUpdate: React.FC = () => {
       const token = localStorage.getItem("token");
       const response = await axios.post<ApiResponse>(
         `${ServerPort}/api/qr-create`,
-        qrData,
+        {
+          // Your QR data here
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setMessages(response.data.results);
       setApiResponse(response.data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-      setError("Failed to fetch messages. Please try again later.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.message || "Failed to fetch messages.");
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  if (!user) {
+    return <div>Loading user data... ID: {userId}</div>;
+  }
+
   return (
     <>
       {loading && <div>Loading...</div>}
       {error && <div className="text-danger">{error}</div>}
-      {userId}
-      <Formik
-        validationSchema={schema}
-        onSubmit={handleUserUpdate}
-        initialValues={user}
-      >
-        {({
-          handleSubmit,
-          handleChange,
-          values,
-          touched,
-          errors,
-          setFieldValue,
-        }) => (
-          <Form noValidate onSubmit={handleSubmit}>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="4" controlId="validationFormik101">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  value={values.email}
-                  onChange={(e) => setFieldValue("email", e.target.value)}
-                  isValid={touched.email && !errors.email}
-                />
-                <Form.Control.Feedback tooltip>
-                  Looks good!
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="4" controlId="validationFormik102">
-                <Form.Label>{userId}</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  value={values.password}
-                  onChange={(e) => setFieldValue("password", e.target.value)}
-                  isValid={touched.password && !errors.password}
-                />
-                <Form.Control.Feedback tooltip>
-                  Looks good!
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="4" controlId="validationFormik103">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="description"
-                  value={values.description}
-                  onChange={(e) => setFieldValue("description", e.target.value)}
-                  isValid={touched.description && !errors.description}
-                />
-                <Form.Control.Feedback tooltip>
-                  Looks good!
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Row>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update User"}
-            </Button>
-            {successMessage && (
-              <p style={{ color: "green" }}>{successMessage}</p>
-            )}
-          </Form>
-        )}
-      </Formik>
+      <h2>Update Profile</h2>
+      <Form noValidate onSubmit={handleUserUpdate}>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="4" controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              isInvalid={!!formErrors.email}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.email}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              isInvalid={!!formErrors.description}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.description}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Updating..." : "Update User"}
+        </Button>
+        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      </Form>
 
       <h2>QR Code Results</h2>
       <form onSubmit={handleQrSubmit}>

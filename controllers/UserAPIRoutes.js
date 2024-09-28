@@ -4,6 +4,15 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
+
+router.use(
+  cors({
+    origin: "http://localhost:3000", // Adjust according to your React app's URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 router.get("/view", (req, res) => {
   db.User.findAll().then((allUsers) => {
@@ -24,7 +33,7 @@ router.get("/view/:id", (req, res) => {
       if (!foundUser) {
         return res.status(404).send("User not found");
       }
-      console.log(foundUser);
+      console.log("Found User", foundUser);
       res.send(foundUser);
     })
     .catch((error) => {
