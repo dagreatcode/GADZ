@@ -59,10 +59,11 @@ const ProfileUpdate: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
 
+  // Initialize formData with default values
   const [formData, setFormData] = useState<User>({
     id: "",
     email: "",
-    password: "",
+    password: "", // Keep blank for security
     description: "",
     newPassword: "",
   });
@@ -86,12 +87,19 @@ const ProfileUpdate: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {
-          setUser(response.data);
-          setFormData(response.data);
+          const userData = response.data;
+          setUser(userData);
+          setFormData({
+            id: userData.id || "", // Ensure this is a string
+            email: userData.email || "",
+            password: "", // Keep blank for security
+            description: userData.description || "",
+            newPassword: "",
+          });
         } else {
           setError("Failed to fetch user data.");
         }
-      } catch (error: unknown) {
+      } catch (error) {
         if (axios.isAxiosError(error)) {
           setError(error.response?.data.message || "An error occurred.");
         } else if (error instanceof Error) {
@@ -154,7 +162,7 @@ const ProfileUpdate: React.FC = () => {
       } else {
         setError(response.data.message || "Failed to update user.");
       }
-    } catch (error: unknown) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data.message || "An error occurred.");
       } else if (error instanceof Error) {
@@ -177,8 +185,7 @@ const ProfileUpdate: React.FC = () => {
     frame: "swirl",
     pattern: "Diamonds",
     has_border: true,
-    logo_url:
-      "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
+    logo_url: "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
     generate_png: true,
     eye_style: "Drop",
     text: "GADZ",
@@ -206,7 +213,7 @@ const ProfileUpdate: React.FC = () => {
       setApiResponse(response.data);
       setQrCodeSvg(response.data.svg_file);
       setSuccessMessage("QR Code generated successfully!");
-    } catch (error: unknown) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data.message || "Failed to fetch messages.");
       } else if (error instanceof Error) {
@@ -236,7 +243,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              value={formData.email}
+              value={formData.email} // Controlled input
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -246,21 +253,21 @@ const ProfileUpdate: React.FC = () => {
               {formErrors.email}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="4" controlId="password">
+          {/* <Form.Group as={Col} md="4" controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
-              value={formData.password}
+              value={formData.password} // Controlled input
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
             />
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group as={Col} md="4" controlId="newPassword">
             <Form.Label>New Password</Form.Label>
             <Form.Control
               type="password"
-              value={formData.newPassword}
+              value={formData.newPassword} // Controlled input
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
@@ -274,7 +281,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Description</Form.Label>
             <Form.Control
               as="textarea"
-              value={formData.description}
+              value={formData.description} // Controlled input
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }

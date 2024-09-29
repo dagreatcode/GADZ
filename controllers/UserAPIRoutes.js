@@ -44,41 +44,30 @@ router.get("/view/:id", (req, res) => {
 });
 
 router.put("/update/:id", async (req, res) => {
-  console.log("Updating user...");
-
   try {
     console.log("Request Body:", req.body);
-
-    // Fetch the user using findByPk
     const user = await db.User.findByPk(req.params.id);
 
     if (!user) {
-      console.log("User not found");
       return res
         .status(404)
         .send({ success: false, message: "User not found" });
     }
 
-    // Update the user
-    const [updatedRows] = await db.User.update(req.body, {
-      where: { id: req.params.id },
-    });
-
-    if (updatedRows === 0) {
-      console.log("No rows updated");
-      return res
-        .status(404)
-        .send({ success: false, message: "No updates made" });
+    if (req.body.newPassword) {
+      req.body.password = await bcrypt.hash(req.body.newPassword, 10);
     }
 
-    // Fetch the updated user to return
+    await user.update(req.body); // Update user data
     const updatedUser = await db.User.findByPk(req.params.id);
 
-    console.log(`User with ID ${req.params.id} updated successfully.`);
+    // Remove password before sending response
+    updatedUser.password = undefined;
+
     res.status(200).send({
       success: true,
       message: "User updated successfully",
-      user: updatedUser, // Return updated user data
+      user: updatedUser,
     });
   } catch (error) {
     console.error("Error updating user:", error);
