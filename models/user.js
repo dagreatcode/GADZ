@@ -18,6 +18,7 @@ module.exports = function (sequelize, DataTypes) {
     archived: DataTypes.STRING,
     contractor: DataTypes.STRING,
     company: DataTypes.STRING,
+    // qrCodeData: DataTypes.String,
   });
   return User;
 };

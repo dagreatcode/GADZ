@@ -4,6 +4,8 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import Alert from "react-bootstrap/Alert";
+import { Link } from "react-router-dom";
 
 type Message = {
   svg_file: string;
@@ -28,6 +30,11 @@ type QRData = {
   has_border: boolean;
   logo_url: string;
   generate_png: boolean;
+  eye_style: string;
+  text: string;
+  domain: string;
+  gps_tracking: boolean;
+  logo_round: boolean;
 };
 
 type User = {
@@ -35,6 +42,7 @@ type User = {
   email: string;
   password: string; // Handle this securely
   description: string;
+  newPassword?: string; // New password field
 };
 
 const ServerPort =
@@ -49,18 +57,21 @@ const ProfileUpdate: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<User>({
     id: "",
     email: "",
     password: "",
     description: "",
+    newPassword: "",
   });
 
   const [formErrors, setFormErrors] = useState({
     email: "",
     password: "",
     description: "",
+    newPassword: "",
   });
 
   useEffect(() => {
@@ -76,7 +87,7 @@ const ProfileUpdate: React.FC = () => {
         });
         if (response.status === 200) {
           setUser(response.data);
-          setFormData(response.data); // Initialize form data with user data
+          setFormData(response.data);
         } else {
           setError("Failed to fetch user data.");
         }
@@ -104,23 +115,31 @@ const ProfileUpdate: React.FC = () => {
     if (!formData.description) {
       errors.description = "Description is required";
     }
+    if (formData.newPassword && formData.newPassword.length < 6) {
+      errors.newPassword = "New password must be at least 6 characters long";
+    }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleUserUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return; // Validate before submission
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
     setError(null);
     setSuccessMessage(null);
 
+    const updatedData = { ...formData };
+    if (formData.newPassword) {
+      updatedData.password = formData.newPassword; // Update password field
+    }
+
     try {
       const response = await axios.put(
         `${ServerPort}/api/user/update/${userId}`,
-        formData,
+        updatedData,
         {
           headers: {
             "Content-Type": "application/json",
@@ -130,7 +149,7 @@ const ProfileUpdate: React.FC = () => {
       );
       if (response.data.success) {
         setSuccessMessage("User updated successfully!");
-        setUser((prevUser) => ({ ...prevUser, ...formData })); // Update state with new values
+        setUser((prevUser) => ({ ...prevUser, ...updatedData }));
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         setError(response.data.message || "Failed to update user.");
@@ -150,22 +169,29 @@ const ProfileUpdate: React.FC = () => {
 
   const qrData: QRData = {
     workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-    qr_data: "https://twitter.com/hovercodeHQ",
+    qr_data: "https://gadzconnect.com",
     primary_color: "#3b81f6",
     background_color: "#FFFFFF",
     dynamic: true,
-    display_name: "Vincent Kendrick",
-    frame: "circle-viewfinder",
+    display_name: "GADZ User",
+    frame: "swirl",
     pattern: "Diamonds",
     has_border: true,
-    logo_url: "https://hovercode.com/static/website/images/logo.png",
+    logo_url:
+      "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
     generate_png: true,
+    eye_style: "Drop",
+    text: "GADZ",
+    domain: "GADZConnect.com",
+    gps_tracking: true,
+    logo_round: true,
   };
 
   const handleQrSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessMessage(null);
 
     try {
       const token = localStorage.getItem("token");
@@ -178,6 +204,8 @@ const ProfileUpdate: React.FC = () => {
       );
       setMessages(response.data.results);
       setApiResponse(response.data);
+      setQrCodeSvg(response.data.svg_file);
+      setSuccessMessage("QR Code generated successfully!");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data.message || "Failed to fetch messages.");
@@ -197,8 +225,10 @@ const ProfileUpdate: React.FC = () => {
 
   return (
     <>
+      <Link to="/User">Home</Link>
       {loading && <div>Loading...</div>}
-      {error && <div className="text-danger">{error}</div>}
+      {error && <Alert variant="danger">{error}</Alert>}
+      {successMessage && <Alert variant="success">{successMessage}</Alert>}
       <h2>Update Profile</h2>
       <Form noValidate onSubmit={handleUserUpdate}>
         <Row className="mb-3">
@@ -226,6 +256,20 @@ const ProfileUpdate: React.FC = () => {
               }
             />
           </Form.Group>
+          <Form.Group as={Col} md="4" controlId="newPassword">
+            <Form.Label>New Password</Form.Label>
+            <Form.Control
+              type="password"
+              value={formData.newPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, newPassword: e.target.value })
+              }
+              isInvalid={!!formErrors.newPassword}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.newPassword}
+            </Form.Control.Feedback>
+          </Form.Group>
           <Form.Group as={Col} md="4" controlId="description">
             <Form.Label>Description</Form.Label>
             <Form.Control
@@ -244,12 +288,13 @@ const ProfileUpdate: React.FC = () => {
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Updating..." : "Update User"}
         </Button>
-        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       </Form>
 
       <h2>QR Code Results</h2>
       <form onSubmit={handleQrSubmit}>
-        <Button type="submit">Generate QR Code</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Generating..." : "Generate QR Code"}
+        </Button>
       </form>
 
       {Array.isArray(messages) && messages.length > 0 ? (
@@ -272,6 +317,13 @@ const ProfileUpdate: React.FC = () => {
         </ul>
       ) : (
         <div>No messages available.</div>
+      )}
+
+      {qrCodeSvg && (
+        <div>
+          <h3>Generated QR Code</h3>
+          <img src={qrCodeSvg} alt="Generated QR Code" />
+        </div>
       )}
 
       {apiResponse && (

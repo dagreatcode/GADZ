@@ -185,4 +185,15 @@ router.post("/login", (req, res) => {
     });
 });
 
+router.put("/user/update/:userId", async (req, res) => {
+  const { newPassword } = req.body;
+
+  if (newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    req.body.password = hashedPassword; // Use the hashed password
+  }
+
+  // Proceed with updating the user in the database...
+});
+
 module.exports = router;
