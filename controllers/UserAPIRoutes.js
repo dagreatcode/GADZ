@@ -61,8 +61,19 @@ router.put("/update/:id", async (req, res) => {
         .send({ success: false, message: "User not found" });
     }
 
+    // Prepare the update data
+    const updateData = { ...req.body };
+
+    // Check if a new password has been provided
+    if (updateData.newPassword) {
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+      updateData.password = hashedPassword; // Set the hashed password
+      delete updateData.newPassword; // Remove newPassword from the update data
+    }
+
     // Update the user
-    const [updatedRows] = await db.User.update(req.body, {
+    const [updatedRows] = await db.User.update(updateData, {
       where: { id: req.params.id },
     });
 
