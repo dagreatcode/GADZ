@@ -59,7 +59,6 @@ const ProfileUpdate: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
 
-  // Initialize formData with default values
   const [formData, setFormData] = useState<User>({
     id: "",
     email: "",
@@ -90,9 +89,9 @@ const ProfileUpdate: React.FC = () => {
           const userData = response.data;
           setUser(userData);
           setFormData({
-            id: userData.id || "", // Ensure this is a string
+            id: userData.id || "",
             email: userData.email || "",
-            password: "", // Keep blank for security
+            password: "",
             description: userData.description || "",
             newPassword: "",
           });
@@ -100,13 +99,7 @@ const ProfileUpdate: React.FC = () => {
           setError("Failed to fetch user data.");
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setError(error.response?.data.message || "An error occurred.");
-        } else if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("An unexpected error occurred.");
-        }
+        handleApiError(error);
       }
     };
 
@@ -141,7 +134,7 @@ const ProfileUpdate: React.FC = () => {
 
     const updatedData = { ...formData };
     if (formData.newPassword) {
-      updatedData.password = formData.newPassword; // Update password field
+      updatedData.password = formData.newPassword;
     }
 
     try {
@@ -163,13 +156,7 @@ const ProfileUpdate: React.FC = () => {
         setError(response.data.message || "Failed to update user.");
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data.message || "An error occurred.");
-      } else if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("An unexpected error occurred.");
-      }
+      handleApiError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -185,7 +172,8 @@ const ProfileUpdate: React.FC = () => {
     frame: "swirl",
     pattern: "Diamonds",
     has_border: true,
-    logo_url: "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
+    logo_url:
+      "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
     generate_png: true,
     eye_style: "Drop",
     text: "GADZ",
@@ -214,15 +202,23 @@ const ProfileUpdate: React.FC = () => {
       setQrCodeSvg(response.data.svg_file);
       setSuccessMessage("QR Code generated successfully!");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data.message || "Failed to fetch messages.");
-      } else if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("An unexpected error occurred.");
-      }
+      handleApiError(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApiError = (error: any) => {
+    if (axios.isAxiosError(error)) {
+      const message =
+        error.response?.data?.message || "An error occurred on the server.";
+      console.error("Error response:", error.response);
+      setError(message);
+    } else if (error instanceof Error) {
+      console.error("Unexpected error:", error);
+      setError(error.message);
+    } else {
+      setError("An unexpected error occurred.");
     }
   };
 
@@ -243,7 +239,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              value={formData.email} // Controlled input
+              value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -253,21 +249,11 @@ const ProfileUpdate: React.FC = () => {
               {formErrors.email}
             </Form.Control.Feedback>
           </Form.Group>
-          {/* <Form.Group as={Col} md="4" controlId="password">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={formData.password} // Controlled input
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
-          </Form.Group> */}
           <Form.Group as={Col} md="4" controlId="newPassword">
             <Form.Label>New Password</Form.Label>
             <Form.Control
               type="password"
-              value={formData.newPassword} // Controlled input
+              value={formData.newPassword}
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
@@ -281,7 +267,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Description</Form.Label>
             <Form.Control
               as="textarea"
-              value={formData.description} // Controlled input
+              value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }

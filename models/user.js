@@ -2,15 +2,22 @@ module.exports = function (sequelize, DataTypes) {
   var User = sequelize.define("User", {
     email: {
       type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-      // validate: { isEmail: true },
     },
     password: {
       type: DataTypes.STRING,
-      validate: {
-        len: [6], // A password must be at least 6 characters long
-      },
-      required: true,
+      allowNull: false,
+    },
+    qr_code_id: {
+      // Add this field
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    qr_code_svg: {
+      // Store the SVG file path
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     description: DataTypes.STRING,
     admin: DataTypes.STRING,
@@ -20,5 +27,34 @@ module.exports = function (sequelize, DataTypes) {
     company: DataTypes.STRING,
     // qrCodeData: DataTypes.String,
   });
+  return User;
+};
+
+// models/User.js
+
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define("User", {
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    qr_code_id: {
+      // Add this field
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    qr_code_svg: {
+      // Store the SVG file path
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // other fields...
+  });
+
   return User;
 };
