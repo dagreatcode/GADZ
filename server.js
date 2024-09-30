@@ -212,7 +212,7 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync().then(() => {
   server.listen(PORT, () => {
     console.log(
       `🌎 App and Socket.IO server are running on http://localhost:${PORT}`
