@@ -12,7 +12,8 @@ const cors = require("cors");
 const path = require("path");
 const db = require("./models");
 const axios = require("axios");
-const routes = require("./routes");
+// const routes = require("./routes");
+const bodyParser = require("body-parser");
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +23,7 @@ const PORT = process.env.PORT || 3001;
 
 // Sets up the Express App Middleware
 // =============================================================
-app.use(cors());
+// app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("client/build"));
@@ -53,6 +54,17 @@ app.use(require("./routes"));
 // TODO: Add console app.
 
 const ServerPort = process.env.SOCKET_IO_SERVER_PORT;
+const APIKeyQR = process.env.API_KEY_QR;
+
+app.use(
+  cors({
+    origin: ServerPort, // Change this to your frontend URL
+    // origin: 'http://localhost:3000', // Allow your React app's origin
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  })
+);
+app.options("*", cors()); // Enable preflight for all routes
 
 const io = socketIo(server, {
   cors: {
@@ -106,31 +118,19 @@ app.get("/messages", (req, res) => {
     });
 });
 
-app.post("/user/qr-create", async (req, res) => {
-  // console.log(req.body);
-  const data = {
-    workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-    qr_data: "https://twitter.com/hovercodeHQ",
-    primary_color: "#3b81f6",
-    background_color: "#FFFFFF",
-    dynamic: true,
-    display_name: "QR code for Twitter",
-    frame: "circle-viewfinder",
-    pattern: "Diamonds",
-    has_border: true,
-    logo_url: "https://hovercode.com/static/website/images/logo.png",
-    generate_png: true,
-  };
-
+app.post("/api/qr-create", async (req, res) => {
+  // console.log("Data from the frontend", req.body);
+  // console.log("Back Req.Body", req.body);
+  const data = req.body;
   axios
     .post("https://hovercode.com/api/v2/hovercode/create/", data, {
       headers: {
-        Authorization: "Token 89e69c1ca220f79caacf708ad120eedfd2795f41",
+        Authorization: `Token ${APIKeyQR}`,
       },
       timeout: 10000,
     })
     .then((response) => {
-      // console.log(response.data);
+      // console.log("Backend Data", response.data);
       res.json(response.data);
     })
     .catch((error) => {
@@ -141,6 +141,53 @@ app.post("/user/qr-create", async (req, res) => {
       // console.error("Error posting qr:", error);
       res.status(500).send("Internal Server Error");
     });
+});
+app.get("/api/qr-view", (req, res) => {
+  axios
+    .get(
+      "https://hovercode.com/api/v2/workspace/82140683-32bd-4422-9ff9-7ecec248c952/hovercodes/",
+      {
+        headers: {
+          Authorization: `Token ${APIKeyQR}`,
+        },
+        timeout: 10000,
+      }
+    )
+    .then((response) => {
+      // console.log(response.data);
+      res.json(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.json(error);
+    });
+});
+
+app.use(bodyParser.json());
+
+// // Endpoint to create a QR code
+app.post("/qr-create", async (req, res) => {
+  try {
+    const response = await axios.post(
+      "https://api.hovercode.com/user/qr-create",
+      req.body
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error creating QR code:", error);
+    res.status(500).json({ error: "Failed to create QR code." });
+  }
+});
+
+// Endpoint to view QR codes (if needed)
+app.get("/qr-view", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.hovercode.com/user/qr-view");
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching QR codes:", error);
+    res.status(500).json({ error: "Failed to fetch QR codes." });
+  }
 });
 
 // Test routes to see if their server is talking to the client
