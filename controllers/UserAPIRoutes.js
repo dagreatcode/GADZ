@@ -6,6 +6,8 @@ const db = require("../models");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const myPort = process.env.SOCKET_IO_SERVER_PORT || "http://localhost:3001"; // Default to a port if not set
+const APIKeyQR = process.env.API_KEY_QR;
+const axios = require("axios");
 
 router.use(
   cors({
@@ -44,30 +46,41 @@ router.get("/view/:id", (req, res) => {
 });
 
 router.put("/update/:id", async (req, res) => {
+  console.log("Updating user...");
+
   try {
     console.log("Request Body:", req.body);
+
+    // Fetch the user using findByPk
     const user = await db.User.findByPk(req.params.id);
 
     if (!user) {
+      console.log("User not found");
       return res
         .status(404)
         .send({ success: false, message: "User not found" });
     }
 
-    if (req.body.newPassword) {
-      req.body.password = await bcrypt.hash(req.body.newPassword, 10);
+    // Update the user
+    const [updatedRows] = await db.User.update(req.body, {
+      where: { id: req.params.id },
+    });
+
+    if (updatedRows === 0) {
+      console.log("No rows updated");
+      return res
+        .status(404)
+        .send({ success: false, message: "No updates made" });
     }
 
-    await user.update(req.body); // Update user data
+    // Fetch the updated user to return
     const updatedUser = await db.User.findByPk(req.params.id);
 
-    // Remove password before sending response
-    updatedUser.password = undefined;
-
+    console.log(`User with ID ${req.params.id} updated successfully.`);
     res.status(200).send({
       success: true,
       message: "User updated successfully",
-      user: updatedUser,
+      user: updatedUser, // Return updated user data
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -75,49 +88,72 @@ router.put("/update/:id", async (req, res) => {
   }
 });
 
-router.post("/signUp", (req, res) => {
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+router.post("/signUp", async (req, res) => {
+  const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(400);
-  } else {
-    bcrypt
-      .hash(req.body.password, 10)
-      .then((hashedPassword) => {
-        db.User.create({
-          email: req.body.email,
-          password: hashedPassword,
-        })
-          .then((newUser) => {
-            const token = jwt.sign(
-              { email: newUser.email },
-              process.env.SECRET
-            );
-            res.json({
-              err: false,
-              data: token,
-              message: "Successfully signed up.",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: true,
-              data: null,
-              message: "Unable to signUp.",
-            });
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: true,
-          data: null,
-          message: "Password?",
-        });
-      });
+    return res
+      .status(400)
+      .json({ error: true, message: "Email and password are required." });
+  }
+
+  try {
+    // Generate hashed password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Prepare QR code data
+    const qrCodeData = {
+      workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
+      qr_data: `https://yourapp.com/user/${email}`, // Use user ID or email for unique QR data
+      primary_color: "#3b81f6",
+      background_color: "#FFFFFF",
+      dynamic: true,
+      display_name: email,
+    };
+
+    // Create QR code
+    const qrResponse = await axios.post(
+      "https://hovercode.com/api/v2/hovercode/create/",
+      qrCodeData,
+      {
+        headers: {
+          Authorization: `Token ${APIKeyQR}`,
+        },
+        timeout: 10000,
+      }
+    );
+
+    // Create user in the database with the QR code info
+    const newUser = await db.User.create({
+      email,
+      password: hashedPassword,
+      qrCodeId: qrResponse.data.id, // Assuming the QR code ID is returned
+      qrCode: qrResponse.data.svg_file, // Assuming the SVG file URL is returned
+    });
+
+    // Create token
+    const token = jwt.sign({ email: newUser.email }, process.env.SECRET);
+
+    res.status(201).json({
+      error: false,
+      data: token,
+      message: "Successfully signed up.",
+    });
+  } catch (error) {
+    console.error("Error during signup:", error);
+
+    // Handle specific error cases
+    if (error.response) {
+      // Error from QR code API
+      return res
+        .status(500)
+        .json({ error: true, message: "Failed to create QR code." });
+    } else {
+      // General database or other error
+      return res
+        .status(500)
+        .json({ error: true, message: "Unable to sign up." });
+    }
   }
 });
 

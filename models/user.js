@@ -9,14 +9,19 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    qr_code_id: {
-      // Add this field
+    qrCode: {
+      // Field for QR code SVG
       type: DataTypes.STRING,
       allowNull: true,
     },
-    qr_code_svg: {
-      // Store the SVG file path
+    qrCodeId: {
+      // New field for QR code ID
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    qrData: {
+      // Additional field for QR code data if needed
+      type: DataTypes.JSON, // Store as JSON if multiple fields
       allowNull: true,
     },
     description: DataTypes.STRING,
@@ -27,34 +32,5 @@ module.exports = function (sequelize, DataTypes) {
     company: DataTypes.STRING,
     // qrCodeData: DataTypes.String,
   });
-  return User;
-};
-
-// models/User.js
-
-module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    qr_code_id: {
-      // Add this field
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    qr_code_svg: {
-      // Store the SVG file path
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    // other fields...
-  });
-
   return User;
 };
