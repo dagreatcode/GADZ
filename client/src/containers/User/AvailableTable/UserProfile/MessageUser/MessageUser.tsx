@@ -8,10 +8,18 @@ interface Message {
   content: string;
 }
 
-const socket = io("https://gadzconnect.com", {
-  secure: true,
-  rejectUnauthorized: false // Only for self-signed certificates
-}); // Backend Socket.IO server
+const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
+// console.log("ENV",process.env.REACT_APP_SOCKET_IO_CLIENT_PORT);
+
+const socket = io(
+  // "https://gadzconnect.com",
+  // "http://localhost:3001",
+  `${ServerPort}`,
+  {
+    secure: true,
+    rejectUnauthorized: false, // Only for self-signed certificates
+  }
+); // Backend Socket.IO server
 // const socket = io("http://localhost:3002"); // Backend Socket.IO server
 
 const MessageUser: React.FC = () => {
@@ -19,6 +27,19 @@ const MessageUser: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [username, setUsername] = useState<string>("");
   const [receiver, setReceiver] = useState<string>(""); // Add receiver state
+
+  // Clean-up
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   fetchData().then((data) => {
+  //     if (isMounted) {
+  //       setData(data);
+  //     }
+  //   });
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   useEffect(() => {
     // Fetch previous messages from the server
@@ -96,7 +117,9 @@ const MessageUser: React.FC = () => {
         onChange={(e) => setMessage(e.target.value)}
         style={{ margin: "10px", padding: "5px" }}
       />
-      <button onClick={sendMessage} style={{ padding: "10px 20px" }}>Send</button>
+      <button onClick={sendMessage} style={{ padding: "10px 20px" }}>
+        Send
+      </button>
     </div>
   );
 };

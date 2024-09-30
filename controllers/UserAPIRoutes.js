@@ -4,6 +4,18 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const myPort = process.env.SOCKET_IO_SERVER_PORT || "http://localhost:3001"; // Default to a port if not set
+const APIKeyQR = process.env.API_KEY_QR;
+const axios = require("axios");
+
+router.use(
+  cors({
+    origin: myPort, // Use the port for the socket server as the origin
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 router.get("/view", (req, res) => {
   db.User.findAll().then((allUsers) => {
@@ -12,56 +24,153 @@ router.get("/view", (req, res) => {
   });
 });
 
-router.post("/signUp", (req, res) => {
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+router.get("/view/:id", (req, res) => {
+  console.log(`Fetching user with ID: ${req.params.id}`);
+
+  db.User.findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((foundUser) => {
+      if (!foundUser) {
+        return res.status(404).send("User not found");
+      }
+      console.log("Found User", foundUser);
+      res.send(foundUser);
+    })
+    .catch((error) => {
+      console.error("Error fetching user:", error);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
+router.put("/update/:id", async (req, res) => {
+  console.log("Updating user...");
+
+  try {
+    console.log("Request Body:", req.body);
+
+    // Fetch the user using findByPk
+    const user = await db.User.findByPk(req.params.id);
+
+    if (!user) {
+      console.log("User not found");
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
+    }
+
+    // Prepare the update data
+    const updateData = { ...req.body };
+
+    // Check if a new password has been provided
+    if (updateData.newPassword) {
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+      updateData.password = hashedPassword; // Set the hashed password
+      delete updateData.newPassword; // Remove newPassword from the update data
+    }
+
+    // Update the user
+    const [updatedRows] = await db.User.update(updateData, {
+      where: { id: req.params.id },
+    });
+
+    if (updatedRows === 0) {
+      console.log("No rows updated");
+      return res
+        .status(404)
+        .send({ success: false, message: "No updates made" });
+    }
+
+    // Fetch the updated user to return
+    const updatedUser = await db.User.findByPk(req.params.id);
+
+    console.log(`User with ID ${req.params.id} updated successfully.`);
+    res.status(200).send({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser, // Return updated user data
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
+});
+
+router.post("/signUp", async (req, res) => {
+  const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(400);
-  } else {
-    bcrypt
-      .hash(req.body.password, 10)
-      .then((hashedPassword) => {
-        db.User.create({
-          email: req.body.email,
-          password: hashedPassword,
-        })
-          .then((newUser) => {
-            const token = jwt.sign(
-              { email: newUser.email },
-              process.env.SECRET
-            );
-            res.json({
-              err: false,
-              data: token,
-              message: "Successfully signed up.",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: true,
-              data: null,
-              message: "Unable to signUp.",
-            });
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: true,
-          data: null,
-          message: "Password?",
-        });
-      });
+    return res
+      .status(400)
+      .json({ error: true, message: "Email and password are required." });
+  }
+
+  try {
+    // Generate hashed password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Prepare QR code data
+    const qrCodeData = {
+      workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
+      qr_data: `https://yourapp.com/user/${email}`, // Use user ID or email for unique QR data
+      primary_color: "#3b81f6",
+      background_color: "#FFFFFF",
+      dynamic: true,
+      display_name: email,
+    };
+
+    // Create QR code
+    const qrResponse = await axios.post(
+      "https://hovercode.com/api/v2/hovercode/create/",
+      qrCodeData,
+      {
+        headers: {
+          Authorization: `Token ${APIKeyQR}`,
+        },
+        timeout: 10000,
+      }
+    );
+
+    // Create user in the database with the QR code info
+    const newUser = await db.User.create({
+      email,
+      password: hashedPassword,
+      qrCodeId: qrResponse.data.id, // Assuming the QR code ID is returned
+      qrCode: qrResponse.data.svg_file, // Assuming the SVG file URL is returned
+    });
+
+    // Create token
+    const token = jwt.sign({ email: newUser.email }, process.env.SECRET);
+
+    res.status(201).json({
+      error: false,
+      data: token,
+      message: "Successfully signed up.",
+    });
+  } catch (error) {
+    console.error("Error during signup:", error);
+
+    // Handle specific error cases
+    if (error.response) {
+      // Error from QR code API
+      return res
+        .status(500)
+        .json({ error: true, message: "Failed to create QR code." });
+    } else {
+      // General database or other error
+      return res
+        .status(500)
+        .json({ error: true, message: "Unable to sign up." });
+    }
   }
 });
 
 router.post("/login", (req, res) => {
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+  const { email, password } = req.body;
+
   console.log("Req.Body", req.body);
   if (!email || !password) {
     return res.status(422).json({
@@ -69,19 +178,20 @@ router.post("/login", (req, res) => {
       data: null,
       message: "Email and Password are required fields!",
     });
-  } else {
-    // .compare(email, user.password)
-    db.User.findOne({ where: { email: email } }).then((foundUser) => {
-      // console.log("foundU Data", foundUser.email);
+  }
+
+  db.User.findOne({ where: { email } })
+    .then((foundUser) => {
+      console.log("foundUser Data", foundUser);
       if (!foundUser) {
         return res.status(401).json({
           error: true,
-          data: foundUser,
+          data: null,
           message: "User not found.",
         });
       }
 
-      bcrypt.compare(password, foundUser.password).then((result) => {
+      return bcrypt.compare(password, foundUser.password).then((result) => {
         if (!result) {
           return res.status(401).json({
             error: true,
@@ -91,7 +201,7 @@ router.post("/login", (req, res) => {
         }
 
         // Create token
-        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET, {
+        const token = jwt.sign({ id: foundUser.id }, process.env.SECRET, {
           expiresIn: "7d",
         });
 
@@ -100,12 +210,26 @@ router.post("/login", (req, res) => {
 
         res.status(200).json({
           error: false,
-          data: { token: token, user: foundUser },
+          data: { token, user: foundUser }, // Ensure user object is included
           message: null,
         });
       });
+    })
+    .catch((error) => {
+      console.error("Error during login:", error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
     });
+});
+
+router.put("/user/update/:userId", async (req, res) => {
+  const { newPassword } = req.body;
+
+  if (newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    req.body.password = hashedPassword; // Use the hashed password
   }
+
+  // Proceed with updating the user in the database...
 });
 
 module.exports = router;

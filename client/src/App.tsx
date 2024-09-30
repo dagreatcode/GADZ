@@ -117,6 +117,7 @@ function App() {
         <Route path="/Checkout" element={<Checkout />} />
         <Route path="/CreateTicket" element={<CreateTicket />} />
         <Route path="/Profile" element={<Profile />} />
+        <Route path="/Profile/:id" element={<Profile />} />
         <Route path="/UserDash" element={<UserDash />} />
         <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
