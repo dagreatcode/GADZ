@@ -17,32 +17,33 @@ router.use(
   })
 );
 
-router.get("/view", (req, res) => {
-  db.User.findAll().then((allUsers) => {
+router.get("/view", async (req, res) => {
+  try {
+    const allUsers = await db.User.findAll();
     res.send(allUsers);
     console.log(allUsers);
-  });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-router.get("/view/:id", (req, res) => {
+router.get("/view/:id", async (req, res) => {
   console.log(`Fetching user with ID: ${req.params.id}`);
 
-  db.User.findOne({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((foundUser) => {
-      if (!foundUser) {
-        return res.status(404).send("User not found");
-      }
-      console.log("Found User", foundUser);
-      res.send(foundUser);
-    })
-    .catch((error) => {
-      console.error("Error fetching user:", error);
-      res.status(500).send("Internal Server Error");
+  try {
+    const foundUser = await db.User.findOne({
+      where: { id: req.params.id },
     });
+    if (!foundUser) {
+      return res.status(404).send("User not found");
+    }
+    console.log("Found User", foundUser);
+    res.send(foundUser);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.put("/update/:id", async (req, res) => {
@@ -51,9 +52,7 @@ router.put("/update/:id", async (req, res) => {
   try {
     console.log("Request Body:", req.body);
 
-    // Fetch the user using findByPk
     const user = await db.User.findByPk(req.params.id);
-
     if (!user) {
       console.log("User not found");
       return res
@@ -61,18 +60,14 @@ router.put("/update/:id", async (req, res) => {
         .send({ success: false, message: "User not found" });
     }
 
-    // Prepare the update data
     const updateData = { ...req.body };
 
-    // Check if a new password has been provided
     if (updateData.newPassword) {
-      // Hash the new password
       const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
-      updateData.password = hashedPassword; // Set the hashed password
-      delete updateData.newPassword; // Remove newPassword from the update data
+      updateData.password = hashedPassword;
+      delete updateData.newPassword;
     }
 
-    // Update the user
     const [updatedRows] = await db.User.update(updateData, {
       where: { id: req.params.id },
     });
@@ -84,14 +79,12 @@ router.put("/update/:id", async (req, res) => {
         .send({ success: false, message: "No updates made" });
     }
 
-    // Fetch the updated user to return
     const updatedUser = await db.User.findByPk(req.params.id);
-
     console.log(`User with ID ${req.params.id} updated successfully.`);
     res.status(200).send({
       success: true,
       message: "User updated successfully",
-      user: updatedUser, // Return updated user data
+      user: updatedUser,
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -109,17 +102,15 @@ router.post("/signUp", async (req, res) => {
   }
 
   try {
-    // Generate hashed password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Prepare QR code data
     const qrCodeData = {
       workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-      qr_data: "https://gadzconnect.com", // Modify this to your desired link
+      qr_data: "https://gadzconnect.com",
       primary_color: "#3b81f6",
       background_color: "#FFFFFF",
       dynamic: true,
-      display_name: email, // Use the user's email or display name here
+      display_name: email,
       frame: "swirl",
       pattern: "Diamonds",
       has_border: true,
@@ -128,12 +119,10 @@ router.post("/signUp", async (req, res) => {
       generate_png: true,
       eye_style: "Drop",
       text: "GADZ",
-      // domain: "GADZConnect.com",
       gps_tracking: true,
       logo_round: true,
     };
 
-    // Create QR code
     const qrResponse = await axios.post(
       "https://hovercode.com/api/v2/hovercode/create/",
       qrCodeData,
@@ -145,16 +134,14 @@ router.post("/signUp", async (req, res) => {
       }
     );
 
-    // Create user in the database with the QR code info
     const newUser = await db.User.create({
       email,
       password: hashedPassword,
-      qrCodeId: qrResponse.data.id, // Assuming the QR code ID is returned
-      qrCode: qrResponse.data.svg_file, // Assuming the SVG file URL is returned
-      qrPNG: qrResponse.data.png, // Assuming the SVG file URL is returned
+      qrCodeId: qrResponse.data.id,
+      qrCode: qrResponse.data.svg_file,
+      qrPNG: qrResponse.data.png,
     });
 
-    // Create token
     const token = jwt.sign({ email: newUser.email }, process.env.SECRET);
 
     res.status(201).json({
@@ -165,14 +152,11 @@ router.post("/signUp", async (req, res) => {
   } catch (error) {
     console.error("Error during signup:", error);
 
-    // Handle specific error cases
     if (error.response) {
-      // Error from QR code API
       return res
         .status(500)
         .json({ error: true, message: "Failed to create QR code." });
     } else {
-      // General database or other error
       return res
         .status(500)
         .json({ error: true, message: "Unable to sign up." });
@@ -180,7 +164,7 @@ router.post("/signUp", async (req, res) => {
   }
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   console.log("Req.Body", req.body);
@@ -192,56 +176,84 @@ router.post("/login", (req, res) => {
     });
   }
 
-  db.User.findOne({ where: { email } })
-    .then((foundUser) => {
-      console.log("foundUser Data", foundUser);
-      if (!foundUser) {
-        return res.status(401).json({
-          error: true,
-          data: null,
-          message: "User not found.",
-        });
-      }
+  try {
+    const foundUser = await db.User.findOne({ where: { email } });
+    console.log("foundUser Data", foundUser);
 
-      return bcrypt.compare(password, foundUser.password).then((result) => {
-        if (!result) {
-          return res.status(401).json({
-            error: true,
-            data: null,
-            message: "Invalid Email or Password.",
-          });
-        }
-
-        // Create token
-        const token = jwt.sign({ id: foundUser.id }, process.env.SECRET, {
-          expiresIn: "7d",
-        });
-
-        // Remove password from output
-        foundUser.password = undefined;
-
-        res.status(200).json({
-          error: false,
-          data: { token, user: foundUser }, // Ensure user object is included
-          message: null,
-        });
+    if (!foundUser) {
+      return res.status(401).json({
+        error: true,
+        data: null,
+        message: "User not found.",
       });
-    })
-    .catch((error) => {
-      console.error("Error during login:", error);
-      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+
+    const result = await bcrypt.compare(password, foundUser.password);
+    if (!result) {
+      return res.status(401).json({
+        error: true,
+        data: null,
+        message: "Invalid Email or Password.",
+      });
+    }
+
+    const token = jwt.sign({ id: foundUser.id }, process.env.SECRET, {
+      expiresIn: "7d",
     });
+
+    foundUser.password = undefined; // Remove password from output
+
+    res.status(200).json({
+      error: false,
+      data: { token, user: foundUser },
+      message: null,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
 });
 
 router.put("/user/update/:userId", async (req, res) => {
   const { newPassword } = req.body;
 
-  if (newPassword) {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    req.body.password = hashedPassword; // Use the hashed password
-  }
+  try {
+    const user = await db.User.findByPk(req.params.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
+    }
 
-  // Proceed with updating the user in the database...
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      req.body.password = hashedPassword; // Use the hashed password
+    }
+
+    const updateData = { ...req.body };
+    delete updateData.newPassword; // Remove newPassword from the update data
+
+    const [updatedRows] = await db.User.update(updateData, {
+      where: { id: req.params.userId },
+    });
+
+    if (updatedRows === 0) {
+      return res
+        .status(404)
+        .send({ success: false, message: "No updates made" });
+    }
+
+    const updatedUser = await db.User.findByPk(req.params.userId);
+    console.log(`User with ID ${req.params.userId} updated successfully.`);
+    res.status(200).send({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
 });
 
 module.exports = router;
