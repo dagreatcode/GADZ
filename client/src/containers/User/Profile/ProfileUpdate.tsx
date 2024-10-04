@@ -41,14 +41,14 @@ type User = {
   email: string;
   password?: string; // Handle this securely
   description: string;
-  userType: string; // Updated to be a string
-  experienceLevel: string; // Updated to be a string
+  userType: string;
+  experienceLevel: string;
   location: string;
   availableFrom: string;
-  newPassword?: string; // New password field
-  qrCode?: string; // URL for the QR code image
+  newPassword?: string;
+  qrCode?: string;
   qrCodeId?: string;
-  qrData?: object; // Use appropriate type for your use case
+  qrData?: object;
   preferredLoadType?: string;
   admin: boolean;
   developer: boolean;
@@ -64,7 +64,7 @@ type User = {
   driversLicense: string;
   comments: string;
   rating?: number;
-  loadDetails?: object; // Use appropriate type for your use case
+  loadDetails?: object;
   paymentTerms?: string;
   loadStatus?: string;
   driverID?: string;
@@ -72,7 +72,7 @@ type User = {
   driverAvailability?: string;
   driverRating?: number;
   companyID?: string;
-  companyProfile?: object; // Use appropriate type for your use case
+  companyProfile?: object;
   partnershipStatus?: string;
 };
 
@@ -84,23 +84,22 @@ const ProfileUpdate: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // QR code image URL
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<User>({
     id: "",
     email: "",
     password: "",
     description: "",
-    userType: "", // Changed to string to accommodate multiple choice
-    experienceLevel: "", // Changed to string to accommodate multiple choice
+    userType: "",
+    experienceLevel: "",
     location: "",
     availableFrom: "",
     newPassword: "",
-    qrCode: "", // URL for QR code image
+    qrCode: "",
     qrCodeId: "",
     qrData: {},
     preferredLoadType: "",
@@ -160,45 +159,11 @@ const ProfileUpdate: React.FC = () => {
           const userData = response.data;
           setUser(userData);
           setFormData({
-            id: userData.id || "",
-            email: userData.email || "",
+            ...userData,
             password: "",
-            description: userData.description || "",
-            userType: userData.userType || "",
-            experienceLevel: userData.experienceLevel || "",
-            location: userData.location || "",
-            availableFrom: userData.availableFrom || "",
             newPassword: "",
-            qrCode: userData.qrCode || "", // Ensure this holds the URL
-            qrCodeId: userData.qrCodeId || "",
-            qrData: userData.qrData || {},
-            preferredLoadType: userData.preferredLoadType || "",
-            admin: userData.admin || false,
-            developer: userData.developer || false,
-            archived: userData.archived || false,
-            contractor: userData.contractor || "",
-            company: userData.company || "",
-            loads: userData.loads || "",
-            drivers: userData.drivers || "",
-            entrepreneur: userData.entrepreneur || "",
-            subscribed: userData.subscribed || false,
-            address: userData.address || "",
-            phoneNumber: userData.phoneNumber || "",
-            driversLicense: userData.driversLicense || "",
-            comments: userData.comments || "",
-            rating: userData.rating || undefined,
-            loadDetails: userData.loadDetails || {},
-            paymentTerms: userData.paymentTerms || "",
-            loadStatus: userData.loadStatus || "",
-            driverID: userData.driverID || "",
-            driverExperience: userData.driverExperience || "",
-            driverAvailability: userData.driverAvailability || "",
-            driverRating: userData.driverRating || undefined,
-            companyID: userData.companyID || "",
-            companyProfile: userData.companyProfile || {},
-            partnershipStatus: userData.partnershipStatus || "",
           });
-          setQrCodeImage(userData.qrCode || null); // Set QR code image URL
+          setQrCodeImage(userData.qrCode || null);
         } else {
           setError("Failed to fetch user data.");
         }
@@ -214,38 +179,23 @@ const ProfileUpdate: React.FC = () => {
 
   const validateForm = () => {
     const errors: any = {};
-    if (!formData.email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Email is invalid";
-    }
-    if (!formData.description) {
-      errors.description = "Description is required";
-    }
-    if (!formData.userType) {
-      errors.userType = "User Type is required";
-    }
-    if (!formData.experienceLevel) {
+    if (!formData.description) errors.description = "Description is required";
+    if (!formData.userType) errors.userType = "User Type is required";
+    if (!formData.experienceLevel)
       errors.experienceLevel = "Experience Level is required";
-    }
-    if (!formData.location) {
-      errors.location = "Location is required";
-    }
-    if (!formData.availableFrom) {
+    if (!formData.location) errors.location = "Location is required";
+    if (!formData.availableFrom)
       errors.availableFrom = "Available From date is required";
-    }
-    if (formData.newPassword && formData.newPassword.length < 6) {
+    if (formData.newPassword && formData.newPassword.length < 6)
       errors.newPassword = "New password must be at least 6 characters long";
-    }
-    if (!formData.phoneNumber) {
-      errors.phoneNumber = "Phone Number is required";
-    }
-    if (!formData.driversLicense) {
+    if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
+    if (!formData.driversLicense)
       errors.driversLicense = "Drivers License is required";
-    }
-    if (!formData.comments) {
-      errors.comments = "Comments are required";
-    }
+    if (!formData.comments) errors.comments = "Comments are required";
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -261,9 +211,7 @@ const ProfileUpdate: React.FC = () => {
     setSuccessMessage(null);
 
     const updatedData = { ...formData };
-    if (formData.newPassword) {
-      updatedData.password = formData.newPassword;
-    }
+    if (formData.newPassword) updatedData.password = formData.newPassword;
 
     try {
       const response = await axios.put(
@@ -279,6 +227,7 @@ const ProfileUpdate: React.FC = () => {
       if (response.status === 200) {
         setSuccessMessage("Profile updated successfully.");
         setMessages((prevMessages) => [...prevMessages, response.data]);
+        setFormData({ ...formData, newPassword: "" }); // Reset new password field
       }
     } catch (error) {
       handleApiError(error);
