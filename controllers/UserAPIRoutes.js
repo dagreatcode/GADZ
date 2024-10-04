@@ -151,6 +151,7 @@ router.post("/signUp", async (req, res) => {
       password: hashedPassword,
       qrCodeId: qrResponse.data.id, // Assuming the QR code ID is returned
       qrCode: qrResponse.data.svg_file, // Assuming the SVG file URL is returned
+      qrPNG: qrResponse.data.png, // Assuming the SVG file URL is returned
     });
 
     // Create token
