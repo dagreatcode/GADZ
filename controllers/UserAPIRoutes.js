@@ -115,11 +115,22 @@ router.post("/signUp", async (req, res) => {
     // Prepare QR code data
     const qrCodeData = {
       workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-      qr_data: `https://yourapp.com/user/${email}`, // Use user ID or email for unique QR data
+      qr_data: "https://gadzconnect.com", // Modify this to your desired link
       primary_color: "#3b81f6",
       background_color: "#FFFFFF",
       dynamic: true,
-      display_name: email,
+      display_name: email, // Use the user's email or display name here
+      frame: "swirl",
+      pattern: "Diamonds",
+      has_border: true,
+      logo_url:
+        "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
+      generate_png: true,
+      eye_style: "Drop",
+      text: "GADZ",
+      // domain: "GADZConnect.com",
+      gps_tracking: true,
+      logo_round: true,
     };
 
     // Create QR code
