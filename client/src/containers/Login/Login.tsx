@@ -146,7 +146,7 @@ const Login: React.FC = () => {
           <Modal.Title>Sign Up</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>After sign up, please close this window and login.</h5>
+          <h5>After signing up, please close this window and Connect.</h5>
           <form onSubmit={handleSignup}>
             <div className="mb-3">
               <input
