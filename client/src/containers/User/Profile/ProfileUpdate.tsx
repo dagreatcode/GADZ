@@ -126,11 +126,16 @@ const ProfileUpdate: React.FC = () => {
         });
         if (response.status === 200) {
           const userData = response.data;
+
+          // Check if availableFrom exists and is a string before splitting
+          const availableFromDate =
+            typeof userData.availableFrom === "string"
+              ? userData.availableFrom.split("T")[0]
+              : ""; // Default to an empty string if not a valid string
+
           setFormData({
             ...userData,
-            availableFrom: userData.availableFrom
-              ? userData.availableFrom.split("T")[0] // Format to "yyyy-MM-dd"
-              : "", // Default value if null
+            availableFrom: availableFromDate, // Use the checked variable
             password: "",
             newPassword: "",
           });
@@ -181,8 +186,14 @@ const ProfileUpdate: React.FC = () => {
     setError(null);
     setSuccessMessage(null);
 
-    const updatedData = { ...formData };
-    if (formData.newPassword) updatedData.password = formData.newPassword;
+    const updatedData: Partial<User> = { ...formData };
+
+    // Only set password if newPassword is provided
+    if (formData.newPassword && formData.newPassword.trim() !== "") {
+      updatedData.password = formData.newPassword;
+    } else {
+      delete updatedData.password; // Remove password field if newPassword is not provided
+    }
 
     try {
       console.log("Updating user with data:", updatedData); // Log data being sent
