@@ -128,7 +128,9 @@ const ProfileUpdate: React.FC = () => {
           const userData = response.data;
           setFormData({
             ...userData,
-            availableFrom: userData.availableFrom.split("T")[0], // Format to "yyyy-MM-dd"
+            availableFrom: userData.availableFrom
+              ? userData.availableFrom.split("T")[0] // Format to "yyyy-MM-dd"
+              : "", // Default value if null
             password: "",
             newPassword: "",
           });
@@ -183,6 +185,7 @@ const ProfileUpdate: React.FC = () => {
     if (formData.newPassword) updatedData.password = formData.newPassword;
 
     try {
+      console.log("Updating user with data:", updatedData); // Log data being sent
       const response = await axios.put(
         `${ServerPort}/api/user/update/${userId}`,
         updatedData,
@@ -198,6 +201,7 @@ const ProfileUpdate: React.FC = () => {
         setFormData({ ...formData, newPassword: "" }); // Reset new password field
       }
     } catch (error) {
+      console.error("Error updating user:", error); // Log the error
       handleApiError(error);
     } finally {
       setLoading(false);
@@ -207,8 +211,10 @@ const ProfileUpdate: React.FC = () => {
 
   const handleApiError = (error: any) => {
     if (axios.isAxiosError(error)) {
+      console.error("API Error:", error.response?.data); // Log full error details
       setError(error.response?.data.message || error.message);
     } else {
+      console.error("Unknown Error:", error);
       setError("An unknown error occurred");
     }
   };
