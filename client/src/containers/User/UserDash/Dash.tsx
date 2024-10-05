@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-// import { PieChart, Pie } from 'recharts';
 import {
   PieChart,
   Pie,
@@ -14,8 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-// https://recharts.org/en-US/examples/SimpleRadarChart
-// https://apexcharts.com/react-chart-demos/area-charts/chart-with-missing-data-or-null-values/
+import "./Dash.css"; // Assuming you create a CSS file for styles
 
 const Dash = () => {
   const data = [
@@ -59,6 +57,7 @@ const Dash = () => {
     { name: "39", uv: -66, pv: 154 },
     { name: "40", uv: -50, pv: 186 },
   ];
+
   const data2 = [
     { name: "Group A", value: 400 },
     { name: "Group B", value: 300 },
@@ -70,76 +69,38 @@ const Dash = () => {
 
   return (
     <>
-      <div>Dash</div>
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+      </div>
 
-      <div
-        className="container"
-        style={{
-          // display: "grid",
-          // gridTemplateColumns:
-          //   "repeat(2, 1fr)" /* Two columns of equal width */,
-          // gap: "10px" /* Space between columns */,
-          flexWrap: "wrap",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <PieChart width={400} height={400}>
-          <Pie
-            dataKey="value"
-            startAngle={180}
-            endAngle={0}
-            data={data2}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-            style={{ padding: "10px" }}
-          />
-        </PieChart>
+      <div className="chart-container">
+        {/* Pie Charts */}
+        <div className="pie-charts">
+          {Array(4)
+            .fill(null)
+            .map((_, index) => (
+              <PieChart
+                key={index}
+                width={300}
+                height={300}
+                className="pie-chart"
+              >
+                <Pie
+                  dataKey="value"
+                  startAngle={180}
+                  endAngle={0}
+                  data={data2}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  label
+                />
+              </PieChart>
+            ))}
+        </div>
 
-        <PieChart width={400} height={400}>
-          <Pie
-            dataKey="value"
-            startAngle={180}
-            endAngle={0}
-            data={data2}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-          />
-        </PieChart>
-        <PieChart width={400} height={400}>
-          <Pie
-            dataKey="value"
-            startAngle={180}
-            endAngle={0}
-            data={data2}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-          />
-        </PieChart>
-
-        <PieChart width={400} height={400}>
-          <Pie
-            dataKey="value"
-            startAngle={180}
-            endAngle={0}
-            data={data2}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-          />
-        </PieChart>
-
+        {/* Bar Chart */}
         <BarChart
           width={1000}
           height={400}
@@ -150,6 +111,7 @@ const Dash = () => {
             left: 20,
             bottom: 5,
           }}
+          className="bar-chart"
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
@@ -162,8 +124,10 @@ const Dash = () => {
           <Bar dataKey="uv" fill="#82ca9d" />
         </BarChart>
       </div>
-      <Link to="/User">Home</Link>
-      <br />
+
+      <Link to="/User" className="home-link">
+        Home
+      </Link>
     </>
   );
 };
