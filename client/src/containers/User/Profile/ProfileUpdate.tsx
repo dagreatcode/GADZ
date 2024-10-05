@@ -391,7 +391,7 @@ const ProfileUpdate: React.FC = () => {
           <img src={qrCodeImage} alt="Generated QR Code" />
         </div>
       )}
-      <Link to="/profile">Back to Profile</Link>
+      <Link to="/user">Back to Profile</Link>
     </div>
   );
 };
