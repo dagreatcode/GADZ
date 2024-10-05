@@ -7,35 +7,6 @@ import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
-type Message = {
-  svg_file: string;
-  created: string;
-  display_name?: string;
-};
-
-type ApiResponse = {
-  results: Message[];
-  svg_file: string;
-};
-
-type QRData = {
-  workspace: string;
-  qr_data: string;
-  primary_color: string;
-  background_color: string;
-  dynamic: boolean;
-  display_name: string;
-  frame: string;
-  pattern: string;
-  has_border: boolean;
-  logo_url: string;
-  generate_png: boolean;
-  eye_style: string;
-  text: string;
-  gps_tracking: boolean;
-  logo_round: boolean;
-};
-
 type User = {
   id: string;
   email: string;
@@ -81,10 +52,8 @@ const ServerPort =
 
 const ProfileUpdate: React.FC = () => {
   const userId = localStorage.userId;
-  const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
@@ -157,9 +126,9 @@ const ProfileUpdate: React.FC = () => {
         });
         if (response.status === 200) {
           const userData = response.data;
-          setUser(userData);
           setFormData({
             ...userData,
+            availableFrom: userData.availableFrom.split("T")[0], // Format to "yyyy-MM-dd"
             password: "",
             newPassword: "",
           });
@@ -226,7 +195,6 @@ const ProfileUpdate: React.FC = () => {
       );
       if (response.status === 200) {
         setSuccessMessage("Profile updated successfully.");
-        setMessages((prevMessages) => [...prevMessages, response.data]);
         setFormData({ ...formData, newPassword: "" }); // Reset new password field
       }
     } catch (error) {
@@ -257,7 +225,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              value={formData.email}
+              value={formData.email || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -271,7 +239,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Description</Form.Label>
             <Form.Control
               type="text"
-              value={formData.description}
+              value={formData.description || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
@@ -287,7 +255,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>User Type</Form.Label>
             <Form.Control
               as="select"
-              value={formData.userType}
+              value={formData.userType || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, userType: e.target.value })
               }
@@ -307,7 +275,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Experience Level</Form.Label>
             <Form.Control
               as="select"
-              value={formData.experienceLevel}
+              value={formData.experienceLevel || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, experienceLevel: e.target.value })
               }
@@ -328,7 +296,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Location</Form.Label>
             <Form.Control
               type="text"
-              value={formData.location}
+              value={formData.location || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
               }
@@ -342,7 +310,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Available From</Form.Label>
             <Form.Control
               type="date"
-              value={formData.availableFrom}
+              value={formData.availableFrom || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, availableFrom: e.target.value })
               }
@@ -358,7 +326,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>New Password</Form.Label>
             <Form.Control
               type="password"
-              value={formData.newPassword}
+              value={formData.newPassword || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
@@ -372,7 +340,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Phone Number</Form.Label>
             <Form.Control
               type="text"
-              value={formData.phoneNumber}
+              value={formData.phoneNumber || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, phoneNumber: e.target.value })
               }
@@ -388,7 +356,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Drivers License</Form.Label>
             <Form.Control
               type="text"
-              value={formData.driversLicense}
+              value={formData.driversLicense || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, driversLicense: e.target.value })
               }
@@ -402,7 +370,7 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Comments</Form.Label>
             <Form.Control
               as="textarea"
-              value={formData.comments}
+              value={formData.comments || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, comments: e.target.value })
               }
