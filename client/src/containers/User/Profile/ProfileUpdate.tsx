@@ -32,7 +32,7 @@ type QRData = {
   generate_png: boolean;
   eye_style: string;
   text: string;
-  domain: string;
+  // domain: string;
   gps_tracking: boolean;
   logo_round: boolean;
 };
@@ -166,9 +166,9 @@ const ProfileUpdate: React.FC = () => {
     workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
     qr_data: "https://gadzconnect.com",
     primary_color: "#3b81f6",
-    background_color: "#FFFFFF",
+    background_color: "#ffffff",
     dynamic: true,
-    display_name: "GADZ User",
+    display_name: "GADZConnect",
     frame: "swirl",
     pattern: "Diamonds",
     has_border: true,
@@ -176,8 +176,8 @@ const ProfileUpdate: React.FC = () => {
       "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
     generate_png: true,
     eye_style: "Drop",
-    text: "GADZ",
-    domain: "GADZConnect.com",
+    text: "GADZConnect",
+    // domain: "GADZConnect.com",
     gps_tracking: true,
     logo_round: true,
   };
