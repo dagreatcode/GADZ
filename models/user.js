@@ -1,3 +1,4 @@
+// models/User.js
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define("User", {
     email: {
@@ -30,7 +31,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     userType: {
-      type: DataTypes.STRING, // Flexibility for user types
+      type: DataTypes.STRING,
       allowNull: true,
     },
     preferredLoadType: {
@@ -38,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     experienceLevel: {
-      type: DataTypes.STRING, // Flexibility for experience levels
+      type: DataTypes.STRING,
       allowNull: true,
     },
     availableFrom: {
@@ -73,7 +74,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    loads: {
+    loadReferences: {
+      // Renamed from 'loads' to 'loadReferences'
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -120,7 +122,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     loadStatus: {
-      type: DataTypes.STRING, // Flexibility for load statuses
+      type: DataTypes.STRING,
       allowNull: true,
     },
     driverID: {
@@ -128,7 +130,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     driverExperience: {
-      type: DataTypes.STRING, // Flexibility for driver experience
+      type: DataTypes.STRING,
       allowNull: true,
     },
     driverAvailability: {
@@ -148,10 +150,15 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     partnershipStatus: {
-      type: DataTypes.STRING, // Flexibility for partnership statuses
+      type: DataTypes.STRING,
       allowNull: true,
     },
   });
+
+  // Associations
+  User.associate = (models) => {
+    User.hasMany(models.Load, { foreignKey: "userId" }); // Keeping association name as 'loads'
+  };
 
   return User;
 };

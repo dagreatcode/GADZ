@@ -2,42 +2,24 @@
 
 const fs = require("fs");
 const path = require("path");
-const Sequelize = require("sequelize");
+const { Sequelize } = require("sequelize"); // Directly import Sequelize
 const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/config.json")[env];
 const db = {};
 
-const sequelize = new Sequelize(process.env.DATABASE_URL); // Example for postgres
+// Ensure DATABASE_URL is defined
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set.");
+}
 
-// let sequelize;
-// if (config.use_env_variable) {
-//   sequelize = new Sequelize(process.env[config.use_env_variable], config);
-// } else {
-//   sequelize = new Sequelize(config.database, config.username, config.password, config);
-// }
+// Initialize Sequelize with the DATABASE_URL from environment variables
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres", // Explicitly specify the dialect
+});
 
-// let sequelize;
-// if (config.use_env_variable) {
-//   sequelize = new Sequelize(process.env.DATABASE_URL);
-//   (async () => {
-//     try {
-//       await sequelize.authenticate();
-//       console.log("Connection has been established successfully.");
-//     } catch (error) {
-//       console.error("Unable to connect to the database:", error);
-//     }
-//   })();
-// } else {
-//   sequelize = new Sequelize(
-//     config.database,
-//     config.username,
-//     config.password,
-//     config
-//   );
-// }
-
+// Read all model files and initialize them
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
@@ -55,12 +37,14 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
+// Setup associations if defined
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
+// Attach sequelize and Sequelize to the db object
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
