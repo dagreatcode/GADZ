@@ -211,9 +211,9 @@ app.get("*", (req, res) => {
 // =============================================================
 // Starts the server to begin listening
 // =============================================================
-// { force: true }
+// { force: true } { alter: true }
 db.sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     server.listen(PORT, () => {
       console.log(
