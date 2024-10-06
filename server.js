@@ -83,7 +83,8 @@ const io = socketIo(server, {
 
 io.on("connection", (socket) => {
   console.log("New client connected");
-  // console.log(socket);
+  console.log("Socket ID", socket.id);
+  // Messaging feature
   socket.on("sendMessage", async (message) => {
     console.log("MESSAGE", message);
     const { sender, receiver, content } = message;
@@ -99,6 +100,27 @@ io.on("connection", (socket) => {
       console.error("Error saving message:", error);
       socket.emit("error", "Internal Server Error");
     }
+
+    // Video chat feature
+    socket.on("joinRoom", (userId) => {
+      socket.join(userId);
+      console.log(`${userId} joined the room`);
+      socket.to(userId).emit("userJoined", userId);
+    });
+
+    socket.on("sendSignal", ({ signal, to }) => {
+      socket.to(to).emit("receiveSignal", { signal, from: socket.id });
+    });
+
+    socket.on("leaveRoom", (userId) => {
+      socket.leave(userId);
+      console.log(`${userId} left the room`);
+      socket.to(userId).emit("userLeft", userId);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected:", socket.id);
+    });
   });
 
   socket.on("disconnect", () => {
