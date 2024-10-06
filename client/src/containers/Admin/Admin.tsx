@@ -1,51 +1,42 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import * as Icon from 'react-bootstrap-icons';
+import * as Icon from "react-bootstrap-icons";
+import "./Admin.css";
 
 const Admin = () => {
+  const sections = [
+    { name: "B2B Messages", path: "/B2BMessages", icon: <Icon.ChatText /> },
+    { name: "Dash Board", path: "/Dash", icon: <Icon.Speedometer /> },
+    { name: "Print Out", path: "/PrintOut", icon: <Icon.PrinterFill /> },
+    {
+      name: "User IT Tickets",
+      path: "/TicketsCreated",
+      icon: <Icon.TicketDetailed />,
+    },
+    { name: "All Users", path: "/AdminAllUsers", icon: <Icon.PeopleFill /> },
+    { name: "Agreements", path: "/Agreements", icon: <Icon.EmojiHeartEyes /> },
+  ];
+
   return (
-    <>
-      <div className="container" style={{ textAlign: "center" }}>Admin</div>
-      <div>
-        <div style={{ textAlign: "center" }}>B2B Messages</div>
-        <Link to="/B2BMessages" style={{ display: "flex", justifyContent: "center" }}><Icon.ChatText width="82" height="82" fill="#5F9DF7" /></Link>
+    <div className="admin-container">
+      <h1 className="page-title">Admin Dashboard</h1>
+      <div className="grid-container">
+        {sections.map((section, index) => (
+          <div key={index} className="grid-item">
+            <Link to={section.path} className="link-item">
+              <div className="icon-wrapper">
+                {React.cloneElement(section.icon, {
+                  width: "82",
+                  height: "82",
+                  fill: "#5F9DF7",
+                })}
+              </div>
+              <div className="section-title">{section.name}</div>
+            </Link>
+          </div>
+        ))}
       </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Dash Board</div>
-        <Link to="/Dash" style={{ display: "flex", justifyContent: "center" }}><Icon.Speedometer width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Print Out</div>
-        <Link to="/PrintOut" style={{ display: "flex", justifyContent: "center" }}><Icon.PrinterFill width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>User IT Tickets</div>
-        <Link to="/TicketsCreated" style={{ display: "flex", justifyContent: "center" }}><Icon.TicketDetailed width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>All Users</div>
-        <Link to="/AdminAllUsers" style={{ display: "flex", justifyContent: "center" }}><Icon.PeopleFill width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Agreements</div>
-        <Link to="/Agreements" style={{ display: "flex", justifyContent: "center" }}><Icon.EmojiHeartEyes width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-    </>
+    </div>
   );
 };
 
