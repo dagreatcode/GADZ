@@ -102,10 +102,10 @@ io.on("connection", (socket) => {
     }
 
     // Video chat feature
-    socket.on("joinRoom", (userId) => {
-      socket.join(userId);
-      console.log(`${userId} joined the room`);
-      socket.to(userId).emit("userJoined", userId);
+    socket.on("userJoined", (userId) => {
+      const peer = createPeer(userId, me, stream);
+      connectionsRef.current[userId] = peer;
+      setUsers((prev) => ({ ...prev, [userId]: userId }));
     });
 
     socket.on("sendSignal", ({ signal, to }) => {

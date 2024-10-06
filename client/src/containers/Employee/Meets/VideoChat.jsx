@@ -21,15 +21,20 @@ const VideoChat = () => {
   }, [me]);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        setStream(stream);
-        myVideo.current.srcObject = stream;
-      })
-      .catch((err) => {
+    const initializeStream = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: true,
+        });
+        setStream(mediaStream);
+        myVideo.current.srcObject = mediaStream;
+      } catch (err) {
         console.error("Unable to access media devices:", err);
-      });
+      }
+    };
+
+    initializeStream();
 
     socket.on("me", (id) => {
       setMe(id);
@@ -67,14 +72,13 @@ const VideoChat = () => {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stream]); // We are excluding me and joinRoom here for a specific reason
+  }, [stream, joinRoom, me]);
 
   useEffect(() => {
     if (me) {
       joinRoom();
     }
-  }, [me, joinRoom]); // Added me here
+  }, [me, joinRoom]);
 
   const createPeer = (userId, callerId, stream) => {
     const peer = new Peer({
