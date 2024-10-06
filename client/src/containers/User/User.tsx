@@ -1,50 +1,64 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import * as Icon from 'react-bootstrap-icons';
+import * as Icon from "react-bootstrap-icons";
+import "./User.css"; // Assuming you create a CSS file for styles
 
 const User = () => {
   return (
-    <>
-      <div className="container" style={{ textAlign: "center" }}>
+    <div className="user-container">
+      <header className="user-header">
+        <h1>Welcome to the User Dashboard</h1>
+        <p>Navigate through the options below to manage your tasks.</p>
+      </header>
 
+      <div className="user-options">
+        <div className="user-option">
+          <h2>Available Table</h2>
+          <Link to="/AvailableTable">
+            <Icon.Table width="82" height="82" fill="#5F9DF7" />
+          </Link>
+          <p>View available options for your needs.</p>
+        </div>
+
+        <div className="user-option">
+          <h2>Checkout</h2>
+          <Link to="/Checkout">
+            <Icon.Cart width="82" height="82" fill="#5F9DF7" />
+          </Link>
+          <p>Proceed to checkout and complete your purchases.</p>
+        </div>
+
+        <div className="user-option">
+          <h2>Create Ticket</h2>
+          <Link to="/CreateTicket">
+            <Icon.TicketPerforatedFill width="82" height="82" fill="#5F9DF7" />
+          </Link>
+          <p>Create a support ticket for any issues.</p>
+        </div>
+
+        <div className="user-option">
+          <h2>Profile</h2>
+          <Link to="/Profile">
+            <Icon.PersonBadge width="82" height="82" fill="#5F9DF7" />
+          </Link>
+          <p>View and edit your user profile.</p>
+        </div>
+
+        <div className="user-option">
+          <h2>User Dashboard</h2>
+          <Link to="/UserDash">
+            <Icon.Speedometer2 width="82" height="82" fill="#5F9DF7" />
+          </Link>
+          <p>Access your dashboard for an overview of your activity.</p>
+        </div>
       </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>AvailableTable</div>
-        <Link to="/AvailableTable" style={{ display: "flex", justifyContent: "center" }}><Icon.Table width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Checkout</div>
-        <Link to="/Checkout" style={{ display: "flex", justifyContent: "center" }}><Icon.Cart width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>CreateTicket</div>
-        <Link to="/CreateTicket" style={{ display: "flex", justifyContent: "center" }}><Icon.TicketPerforatedFill width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div style={{ textAlign: "center" }}>Profile</div>
-      <br />
-      <Link to="/Profile" style={{ display: "flex", justifyContent: "center" }}><Icon.PersonBadge style={{}} width="82" height="82" fill="#5F9DF7" /></Link>
-      <br />
-      <br />
-      <br />
-      <div style={{ textAlign: "center" }}>UserDash</div>
-      <br />
-      <Link to="/UserDash" style={{ display: "flex", justifyContent: "center" }}><Icon.Speedometer2 width="82" height="82" fill="#5F9DF7" /></Link>
-      <br />
-      <br />
-      <br />
-    </>
+
+      <footer className="user-footer">
+        <p>
+          &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+        </p>
+      </footer>
+    </div>
   );
 };
 
