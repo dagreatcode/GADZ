@@ -212,13 +212,19 @@ app.get("*", (req, res) => {
 // Starts the server to begin listening
 // =============================================================
 // { force: true }
-db.sequelize.sync().then(() => {
-  server.listen(PORT, () => {
-    console.log(
-      `🌎 App and Socket.IO server are running on http://localhost:${PORT}`
-    );
+db.sequelize
+  .sync({ force: true })
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(
+        `🌎 App and Socket.IO server are running on http://localhost:${PORT}`
+      );
+    });
+  })
+  .catch((err) => {
+    // Use console.log or console.error to log the error
+    console.error("Error syncing database:", err.message); // Log the error message
   });
-});
 
 process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);

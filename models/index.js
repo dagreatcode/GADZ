@@ -38,6 +38,18 @@ const sequelize = new Sequelize(process.env.DATABASE_URL); // Example for postgr
 //   );
 // }
 
+const models = {
+  User: require("./user")(sequelize, Sequelize.DataTypes),
+  Load: require("./load")(sequelize, Sequelize.DataTypes),
+};
+
+// Setup associations
+Object.keys(models).forEach((modelName) => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models);
+  }
+});
+
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
