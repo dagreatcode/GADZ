@@ -1,76 +1,48 @@
 "use strict";
 
-const { User } = require("../models/user"); // Adjust the path if necessary
-const { Load } = require("../models/load"); // Adjust the path if necessary
+const { User, Load } = require("../models"); // Adjust the path if necessary
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const userEmail = "admin@admin.com";
+    // Fetch all users
+    const users = await User.findAll();
 
-    // Find or create the user
-    const [user] = await User.findOrCreate({
-      where: { email: userEmail },
-      defaults: {
-        password: "password", // Adjust as necessary
-        admin: false,
-      },
+    // Define the loads to be created for each user
+    const loads = [];
+
+    users.forEach((user, index) => {
+      loads.push({
+        description: `Load ${index + 1} description`,
+        archived: false,
+        company: `Company ${String.fromCharCode(65 + index)}`, // A, B, C, ...
+        userId: user.id,
+      });
     });
-
-    // Define the loads to be created
-    const loads = [
-      {
-        description: "Load 1 description",
-        archived: false,
-        company: "Company A",
-        userId: user.id,
-      },
-      {
-        description: "Load 2 description",
-        archived: false,
-        company: "Company B",
-        userId: user.id,
-      },
-      {
-        description: "Load 3 description",
-        archived: false,
-        company: "Company C",
-        userId: user.id,
-      },
-      {
-        description: "Load 4 description",
-        archived: false,
-        company: "Company D",
-        userId: user.id,
-      },
-      {
-        description: "Load 5 description",
-        archived: false,
-        company: "Company E",
-        userId: user.id,
-      },
-    ];
 
     // Bulk create the loads
     await Load.bulkCreate(loads);
-    console.log("Loads seeded successfully!");
+    console.log("Loads seeded successfully for all users!");
   },
 
   down: async (queryInterface, Sequelize) => {
-    const userEmail = "admin@admin.com"; // Fixed the typo here
+    // Find all users
+    const users = await User.findAll();
 
-    // Find the user
-    const user = await User.findOne({ where: { email: userEmail } });
-
-    if (user) {
-      // Delete loads associated with the user
-      await Load.destroy({ where: { userId: user.id } });
-      // Optionally, you can delete the user if needed
-      await User.destroy({ where: { email: userEmail } });
+    if (users.length > 0) {
+      // Delete loads associated with all users
+      const userIds = users.map((user) => user.id);
+      await Load.destroy({ where: { userId: userIds } });
       console.log("Data rolled back successfully!");
     } else {
-      console.log("User not found, no data to rollback.");
+      console.log("No users found, no data to rollback.");
     }
   },
 };
 
 console.log("Done");
+
+// NODE_ENV=production npx sequelize-cli db:seed:all
+// DATABASE_URL=postgres://username:password@hostname:port/databasename
+// sequelize db:seed:all
+// sequelize db:seed:undo
+// sequelize db:seed:undo:all

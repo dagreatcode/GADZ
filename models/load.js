@@ -4,6 +4,7 @@ module.exports = function (sequelize, DataTypes) {
     description: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: "This is my first load",
     },
     archived: {
       type: DataTypes.BOOLEAN,
