@@ -1,0 +1,67 @@
+.bio-container {
+  max-width: 1200px; /* Maximum width for larger screens */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Padding around the content */
+}
+
+.contact-section {
+  display: flex;
+  justify-content: center; /* Center the contact button */
+  margin: 25px 0; /* Margin around the contact section */
+}
+
+.btn-dark {
+  background-color: blue; /* Button background color */
+  border-radius: 50px; /* Rounded button */
+  padding: 15px 30px; /* Button padding */
+  color: white; /* Button text color */
+  font-size: 25px; /* Button text size */
+}
+
+.bio-title {
+  text-align: center; /* Center title */
+  margin: 40px 0; /* Margin above and below */
+  font-size: 2.5rem; /* Title font size */
+}
+
+.nav-links {
+  text-align: center; /* Center navigation links */
+  margin: 20px 0; /* Margin around the links */
+}
+
+.bio-image {
+  width: 100%; /* Full width for the image */
+  height: auto; /* Maintain aspect ratio */
+  margin: 20px 0; /* Margin around the image */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.about-section {
+  text-align: center; /* Center about section */
+  padding: 20px; /* Padding around about section */
+}
+
+.service-list {
+  margin: 40px 0; /* Margin around the service list */
+}
+
+.service-list dt {
+  font-weight: bold; /* Bold text for definitions */
+}
+
+.service-list dd {
+  margin-left: 20px; /* Indent description */
+}
+
+.bio-details {
+  display: flex; /* Flex layout for bio columns */
+  justify-content: space-between; /* Space between columns */
+  margin-top: 40px; /* Margin above the bio details */
+}
+
+.bio-column {
+  flex: 1; /* Equal width for both columns */
+  padding: 20px; /* Padding inside columns */
+  text-align: justify; /* Justify text */
+}

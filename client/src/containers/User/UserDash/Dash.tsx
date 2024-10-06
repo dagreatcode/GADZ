@@ -79,50 +79,49 @@ const Dash = () => {
           {Array(4)
             .fill(null)
             .map((_, index) => (
-              <PieChart
-                key={index}
-                width={300}
-                height={300}
-                className="pie-chart"
-              >
-                <Pie
-                  dataKey="value"
-                  startAngle={180}
-                  endAngle={0}
-                  data={data2}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  label
-                />
-              </PieChart>
+              <div key={index} className="pie-chart-wrapper">
+                <PieChart width={300} height={300} className="pie-chart">
+                  <Pie
+                    dataKey="value"
+                    startAngle={180}
+                    endAngle={0}
+                    data={data2}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label
+                  />
+                </PieChart>
+              </div>
             ))}
         </div>
 
         {/* Bar Chart */}
-        <BarChart
-          width={1000}
-          height={400}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-          className="bar-chart"
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend verticalAlign="top" wrapperStyle={{ lineHeight: "40px" }} />
-          <ReferenceLine y={0} stroke="#000" />
-          <Brush dataKey="name" height={30} stroke="#8884d8" />
-          <Bar dataKey="pv" fill="#8884d8" />
-          <Bar dataKey="uv" fill="#82ca9d" />
-        </BarChart>
+        <div className="bar-chart-wrapper">
+          <BarChart
+            width={1000}
+            height={400}
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+            className="bar-chart"
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend verticalAlign="top" wrapperStyle={{ lineHeight: "40px" }} />
+            <ReferenceLine y={0} stroke="#000" />
+            <Brush dataKey="name" height={30} stroke="#8884d8" />
+            <Bar dataKey="pv" fill="#8884d8" />
+            <Bar dataKey="uv" fill="#82ca9d" />
+          </BarChart>
+        </div>
       </div>
 
       <Link to="/User" className="home-link">
