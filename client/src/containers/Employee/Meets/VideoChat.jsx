@@ -8,11 +8,11 @@ const socket = io(`${ServerPort}`);
 
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
-  const [users, setUsers] = useState({});
   const [me, setMe] = useState("");
   const [callEnded, setCallEnded] = useState(false);
   const myVideo = useRef();
   const connectionsRef = useRef({});
+  const [userStreams, setUserStreams] = useState({}); // State to hold user streams
 
   const joinRoom = useCallback(() => {
     if (me) {
@@ -24,7 +24,7 @@ const VideoChat = () => {
     const initializeStream = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 } },
+          video: { width: { ideal: 320 }, height: { ideal: 240 } }, // Lower resolution for better performance
           audio: true,
         });
         setStream(mediaStream);
@@ -38,13 +38,13 @@ const VideoChat = () => {
 
     socket.on("me", (id) => {
       setMe(id);
-      joinRoom(); // Automatically join the room once you have an ID
+      joinRoom();
     });
 
     socket.on("userJoined", (userId) => {
       const peer = createPeer(userId, me, stream);
       connectionsRef.current[userId] = peer;
-      setUsers((prev) => ({ ...prev, [userId]: userId }));
+      setUserStreams((prev) => ({ ...prev, [userId]: null })); // Initialize user stream
     });
 
     socket.on("receiveSignal", ({ signal, from }) => {
@@ -59,10 +59,10 @@ const VideoChat = () => {
         connectionsRef.current[userId].destroy();
         delete connectionsRef.current[userId];
       }
-      setUsers((prev) => {
-        const newUsers = { ...prev };
-        delete newUsers[userId];
-        return newUsers;
+      setUserStreams((prev) => {
+        const newStreams = { ...prev };
+        delete newStreams[userId];
+        return newStreams;
       });
     });
 
@@ -91,14 +91,11 @@ const VideoChat = () => {
       socket.emit("sendSignal", { signal, to: userId });
     });
 
-    peer.on("stream", (stream) => {
-      const userVideo = document.createElement("video");
-      userVideo.playsInline = true;
-      userVideo.autoplay = true;
-      userVideo.srcObject = stream;
-      userVideo.style.width = "300px"; // Set style for user video
-      userVideo.style.border = "1px solid black";
-      document.getElementById("videoContainer").appendChild(userVideo);
+    peer.on("stream", (userStream) => {
+      setUserStreams((prev) => ({
+        ...prev,
+        [userId]: userStream, // Store user stream
+      }));
     });
 
     return peer;
@@ -111,7 +108,7 @@ const VideoChat = () => {
     }
     connectionsRef.current = {};
     socket.emit("leaveRoom", { userId: me });
-    setUsers({}); // Clear users from the state
+    setUserStreams({}); // Clear user streams from the state
   };
 
   return (
@@ -129,8 +126,16 @@ const VideoChat = () => {
         id="videoContainer"
         style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
       >
-        {Object.keys(users).map((userId) => (
+        {Object.keys(userStreams).map((userId) => (
           <div key={userId} style={{ margin: "10px" }}>
+            <video
+              playsInline
+              autoPlay
+              ref={(ref) => {
+                if (ref) ref.srcObject = userStreams[userId];
+              }}
+              style={{ width: "300px", border: "1px solid black" }}
+            />
             <h3>User: {userId}</h3>
           </div>
         ))}
