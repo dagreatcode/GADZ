@@ -1,71 +1,53 @@
-import React from 'react'
+import React from "react";
 import { Link } from "react-router-dom";
-import * as Icon from 'react-bootstrap-icons';
+import * as Icon from "react-bootstrap-icons";
+import "./Employee.css";
 
-function Employee() {
+const Employee = () => {
+  const sections = [
+    {
+      name: "Call Center",
+      path: "/CallCenter",
+      icon: <Icon.TelephonePlusFill />,
+    },
+    { name: "Clock In", path: "/ClockIn", icon: <Icon.StopwatchFill /> },
+    { name: "Meets", path: "/Meets", icon: <Icon.PersonSquare /> },
+    {
+      name: "SKP Console",
+      path: "/SKPConsole",
+      icon: <Icon.PcDisplayHorizontal />,
+    },
+    { name: "Tickets", path: "/Tickets", icon: <Icon.TicketFill /> },
+    { name: "News Letter", path: "/NewsLetter", icon: <Icon.Newspaper /> },
+    { name: "Off Days", path: "/OffDays", icon: <Icon.Calendar3 /> },
+    {
+      name: "Employee Profile",
+      path: "/EmployeeProfile",
+      icon: <Icon.PersonBadge />,
+    },
+  ];
+
   return (
-    <div className="container" style={{ textAlign: "center" }}>
-      <>
-      <h1>Employee</h1>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Call Center</div>
-        <Link to="/CallCenter" style={{ display: "flex", justifyContent: "center" }}><Icon.TelephonePlusFill width="82" height="82" fill="#5F9DF7" /></Link>
+    <div className="employee-container">
+      <h1 className="page-title">Employee Dashboard</h1>
+      <div className="grid-container">
+        {sections.map((section, index) => (
+          <div key={index} className="grid-item">
+            <Link to={section.path} className="link-item">
+              <div className="icon-wrapper">
+                {React.cloneElement(section.icon, {
+                  width: "82",
+                  height: "82",
+                  fill: "#5F9DF7",
+                })}
+              </div>
+              <div className="section-title">{section.name}</div>
+            </Link>
+          </div>
+        ))}
       </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Clock In</div>
-        <Link to="/ClockIn" style={{ display: "flex", justifyContent: "center" }}><Icon.StopwatchFill width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Meets</div>
-        <Link to="/Meets" style={{ display: "flex", justifyContent: "center" }}><Icon.PersonSquare width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>SKP Console</div>
-        <Link to="/SKPConsole" style={{ display: "flex", justifyContent: "center" }}><Icon.PcDisplayHorizontal width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Tickets</div>
-        <Link to="/Tickets" style={{ display: "flex", justifyContent: "center" }}><Icon.TicketFill width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>News Letter</div>
-        <Link to="/NewsLetter" style={{ display: "flex", justifyContent: "center" }}><Icon.Newspaper width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Off Days</div>
-        <Link to="/OffDays" style={{ display: "flex", justifyContent: "center" }}><Icon.Calendar3 width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div style={{ textAlign: "center" }}>Employee Profile</div>
-        <Link to="/EmployeeProfile" style={{ display: "flex", justifyContent: "center" }}><Icon.PersonBadge width="82" height="82" fill="#5F9DF7" /></Link>
-      </div>
-    </>
     </div>
-  )
-}
+  );
+};
 
-export default Employee
+export default Employee;

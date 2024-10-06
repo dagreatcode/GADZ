@@ -1,0 +1,57 @@
+.user-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background for contrast */
+    min-height: 100vh; /* Ensure full height */
+  }
+  
+  .user-header {
+    margin-bottom: 40px;
+  }
+  
+  .user-header h1 {
+    font-size: 2.5rem;
+    color: #333; /* Darker text color */
+  }
+  
+  .user-header p {
+    font-size: 1.2rem;
+    color: #666; /* Subtle text color */
+  }
+  
+  .user-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px; /* Space between options */
+  }
+  
+  .user-option {
+    background: #fff; /* White background for cards */
+    border: 1px solid #ddd; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px;
+    width: 200px; /* Fixed width for uniformity */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.2s; /* Smooth hover effect */
+  }
+  
+  .user-option:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+  }
+  
+  .user-option h2 {
+    font-size: 1.5rem;
+    color: #5F9DF7; /* Link color */
+  }
+  
+  .user-option p {
+    color: #777; /* Slightly muted text for descriptions */
+  }
+  
+  .user-footer {
+    margin-top: 50px;
+    font-size: 0.9rem;
+    color: #666; /* Footer text color */
+  }
+  

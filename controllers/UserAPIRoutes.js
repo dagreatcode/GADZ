@@ -128,7 +128,6 @@ router.post("/signUp", async (req, res) => {
       generate_png: true,
       eye_style: "Drop",
       text: "GADZ",
-      // domain: "GADZConnect.com",
       gps_tracking: true,
       logo_round: true,
     };
@@ -151,6 +150,7 @@ router.post("/signUp", async (req, res) => {
       password: hashedPassword,
       qrCodeId: qrResponse.data.id, // Assuming the QR code ID is returned
       qrCode: qrResponse.data.svg_file, // Assuming the SVG file URL is returned
+      qrPNG: qrResponse.data.png, // Assuming the PNG file URL is returned
     });
 
     // Create token
@@ -235,12 +235,49 @@ router.post("/login", (req, res) => {
 router.put("/user/update/:userId", async (req, res) => {
   const { newPassword } = req.body;
 
-  if (newPassword) {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    req.body.password = hashedPassword; // Use the hashed password
-  }
+  try {
+    // Fetch the user using findByPk
+    const user = await db.User.findByPk(req.params.userId);
 
-  // Proceed with updating the user in the database...
+    if (!user) {
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
+    }
+
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      req.body.password = hashedPassword; // Use the hashed password
+    }
+
+    // Prepare the update data
+    const updateData = { ...req.body };
+    delete updateData.newPassword; // Remove newPassword from the update data
+
+    // Update the user
+    const [updatedRows] = await db.User.update(updateData, {
+      where: { id: req.params.userId },
+    });
+
+    if (updatedRows === 0) {
+      return res
+        .status(404)
+        .send({ success: false, message: "No updates made" });
+    }
+
+    // Fetch the updated user to return
+    const updatedUser = await db.User.findByPk(req.params.userId);
+
+    console.log(`User with ID ${req.params.userId} updated successfully.`);
+    res.status(200).send({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser, // Return updated user data
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
 });
 
 module.exports = router;

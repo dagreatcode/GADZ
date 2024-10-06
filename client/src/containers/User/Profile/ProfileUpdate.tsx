@@ -7,42 +7,44 @@ import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
-type Message = {
-  svg_file: string;
-  created: string;
-  display_name?: string;
-};
-
-type ApiResponse = {
-  results: Message[];
-  svg_file: string;
-};
-
-type QRData = {
-  workspace: string;
-  qr_data: string;
-  primary_color: string;
-  background_color: string;
-  dynamic: boolean;
-  display_name: string;
-  frame: string;
-  pattern: string;
-  has_border: boolean;
-  logo_url: string;
-  generate_png: boolean;
-  eye_style: string;
-  text: string;
-  // domain: string;
-  gps_tracking: boolean;
-  logo_round: boolean;
-};
-
 type User = {
   id: string;
   email: string;
-  password: string; // Handle this securely
+  password?: string; // Handle this securely
   description: string;
-  newPassword?: string; // New password field
+  userType: string;
+  experienceLevel: string;
+  location: string;
+  availableFrom: string;
+  newPassword?: string;
+  qrCode?: string;
+  qrCodeId?: string;
+  qrData?: object;
+  preferredLoadType?: string;
+  admin: boolean;
+  developer: boolean;
+  archived: boolean;
+  contractor: string;
+  company?: string;
+  loads?: string;
+  drivers?: string;
+  entrepreneur: string;
+  subscribed?: boolean;
+  address?: string;
+  phoneNumber: string;
+  driversLicense: string;
+  comments: string;
+  rating?: number;
+  loadDetails?: object;
+  paymentTerms?: string;
+  loadStatus?: string;
+  driverID?: string;
+  driverExperience?: string;
+  driverAvailability?: string;
+  driverRating?: number;
+  companyID?: string;
+  companyProfile?: object;
+  partnershipStatus?: string;
 };
 
 const ServerPort =
@@ -50,35 +52,72 @@ const ServerPort =
 
 const ProfileUpdate: React.FC = () => {
   const userId = localStorage.userId;
-  const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<User>({
     id: "",
     email: "",
-    password: "", // Keep blank for security
+    password: "",
     description: "",
+    userType: "",
+    experienceLevel: "",
+    location: "",
+    availableFrom: "",
     newPassword: "",
+    qrCode: "",
+    qrCodeId: "",
+    qrData: {},
+    preferredLoadType: "",
+    admin: false,
+    developer: false,
+    archived: false,
+    contractor: "",
+    company: "",
+    loads: "",
+    drivers: "",
+    entrepreneur: "",
+    subscribed: false,
+    address: "",
+    phoneNumber: "",
+    driversLicense: "",
+    comments: "",
+    rating: undefined,
+    loadDetails: {},
+    paymentTerms: "",
+    loadStatus: "",
+    driverID: "",
+    driverExperience: "",
+    driverAvailability: "",
+    driverRating: undefined,
+    companyID: "",
+    companyProfile: {},
+    partnershipStatus: "",
   });
 
   const [formErrors, setFormErrors] = useState({
     email: "",
-    password: "",
     description: "",
+    userType: "",
+    experienceLevel: "",
+    location: "",
+    availableFrom: "",
     newPassword: "",
+    phoneNumber: "",
+    driversLicense: "",
+    comments: "",
   });
 
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
         setError("No token found. Please log in.");
+        setLoading(false);
         return;
       }
       try {
@@ -87,19 +126,27 @@ const ProfileUpdate: React.FC = () => {
         });
         if (response.status === 200) {
           const userData = response.data;
-          setUser(userData);
+
+          // Check if availableFrom exists and is a string before splitting
+          const availableFromDate =
+            typeof userData.availableFrom === "string"
+              ? userData.availableFrom.split("T")[0]
+              : ""; // Default to an empty string if not a valid string
+
           setFormData({
-            id: userData.id || "",
-            email: userData.email || "",
+            ...userData,
+            availableFrom: availableFromDate, // Use the checked variable
             password: "",
-            description: userData.description || "",
             newPassword: "",
           });
+          setQrCodeImage(userData.qrCode || null);
         } else {
           setError("Failed to fetch user data.");
         }
       } catch (error) {
         handleApiError(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -108,17 +155,23 @@ const ProfileUpdate: React.FC = () => {
 
   const validateForm = () => {
     const errors: any = {};
-    if (!formData.email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Email is invalid";
-    }
-    if (!formData.description) {
-      errors.description = "Description is required";
-    }
-    if (formData.newPassword && formData.newPassword.length < 6) {
+    if (!formData.description) errors.description = "Description is required";
+    if (!formData.userType) errors.userType = "User Type is required";
+    if (!formData.experienceLevel)
+      errors.experienceLevel = "Experience Level is required";
+    if (!formData.location) errors.location = "Location is required";
+    if (!formData.availableFrom)
+      errors.availableFrom = "Available From date is required";
+    if (formData.newPassword && formData.newPassword.length < 6)
       errors.newPassword = "New password must be at least 6 characters long";
-    }
+    if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
+    if (!formData.driversLicense)
+      errors.driversLicense = "Drivers License is required";
+    if (!formData.comments) errors.comments = "Comments are required";
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -128,16 +181,22 @@ const ProfileUpdate: React.FC = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setLoading(true);
     const token = localStorage.getItem("token");
     setError(null);
     setSuccessMessage(null);
 
-    const updatedData = { ...formData };
-    if (formData.newPassword) {
+    const updatedData: Partial<User> = { ...formData };
+
+    // Only set password if newPassword is provided
+    if (formData.newPassword && formData.newPassword.trim() !== "") {
       updatedData.password = formData.newPassword;
+    } else {
+      delete updatedData.password; // Remove password field if newPassword is not provided
     }
 
     try {
+      console.log("Updating user with data:", updatedData); // Log data being sent
       const response = await axios.put(
         `${ServerPort}/api/user/update/${userId}`,
         updatedData,
@@ -148,98 +207,42 @@ const ProfileUpdate: React.FC = () => {
           },
         }
       );
-      if (response.data.success) {
-        setSuccessMessage("User updated successfully!");
-        setUser((prevUser) => ({ ...prevUser, ...updatedData }));
-        setTimeout(() => setSuccessMessage(null), 3000);
-      } else {
-        setError(response.data.message || "Failed to update user.");
+      if (response.status === 200) {
+        setSuccessMessage("Profile updated successfully.");
+        setFormData({ ...formData, newPassword: "" }); // Reset new password field
       }
     } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const qrData: QRData = {
-    workspace: "82140683-32bd-4422-9ff9-7ecec248c952",
-    qr_data: "https://gadzconnect.com",
-    primary_color: "#3b81f6",
-    background_color: "#ffffff",
-    dynamic: true,
-    display_name: "GADZConnect",
-    frame: "swirl",
-    pattern: "Diamonds",
-    has_border: true,
-    logo_url:
-      "https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg",
-    generate_png: true,
-    eye_style: "Drop",
-    text: "GADZConnect",
-    // domain: "GADZConnect.com",
-    gps_tracking: true,
-    logo_round: true,
-  };
-
-  const handleQrSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post<ApiResponse>(
-        `${ServerPort}/api/qr-create`,
-        qrData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setMessages(response.data.results);
-      setApiResponse(response.data);
-      setQrCodeSvg(response.data.svg_file);
-      setSuccessMessage("QR Code generated successfully!");
-    } catch (error) {
+      console.error("Error updating user:", error); // Log the error
       handleApiError(error);
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleApiError = (error: any) => {
     if (axios.isAxiosError(error)) {
-      const message =
-        error.response?.data?.message || "An error occurred on the server.";
-      console.error("Error response:", error.response);
-      setError(message);
-    } else if (error instanceof Error) {
-      console.error("Unexpected error:", error);
-      setError(error.message);
+      console.error("API Error:", error.response?.data); // Log full error details
+      setError(error.response?.data.message || error.message);
     } else {
-      setError("An unexpected error occurred.");
+      console.error("Unknown Error:", error);
+      setError("An unknown error occurred");
     }
   };
 
-  if (!user) {
-    return <div>Loading user data... ID: {userId}</div>;
-  }
-
   return (
-    <>
-      <Link to="/User">Home</Link>
-      {loading && <div>Loading...</div>}
+    <div>
+      <h1>Profile Update</h1>
+      {loading && <p>Loading...</p>}
       {error && <Alert variant="danger">{error}</Alert>}
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-      <h2>Update Profile</h2>
-      <Form noValidate onSubmit={handleUserUpdate}>
+      <Form onSubmit={handleUserUpdate}>
         <Row className="mb-3">
-          <Form.Group as={Col} md="4" controlId="email">
+          <Form.Group as={Col} md="6" controlId="email">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              value={formData.email}
+              value={formData.email || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -249,25 +252,11 @@ const ProfileUpdate: React.FC = () => {
               {formErrors.email}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="4" controlId="newPassword">
-            <Form.Label>New Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={formData.newPassword}
-              onChange={(e) =>
-                setFormData({ ...formData, newPassword: e.target.value })
-              }
-              isInvalid={!!formErrors.newPassword}
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.newPassword}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group as={Col} md="4" controlId="description">
+          <Form.Group as={Col} md="6" controlId="description">
             <Form.Label>Description</Form.Label>
             <Form.Control
-              as="textarea"
-              value={formData.description}
+              type="text"
+              value={formData.description || ""} // Ensure value is never null
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
@@ -278,54 +267,149 @@ const ProfileUpdate: React.FC = () => {
             </Form.Control.Feedback>
           </Form.Group>
         </Row>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Updating..." : "Update User"}
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="userType">
+            <Form.Label>User Type</Form.Label>
+            <Form.Control
+              as="select"
+              value={formData.userType || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, userType: e.target.value })
+              }
+              isInvalid={!!formErrors.userType}
+            >
+              <option value="">Select User Type</option>
+              <option value="shipper">Shipper</option>
+              <option value="carrier">Carrier</option>
+              <option value="broker">Broker</option>
+              <option value="contractor">Contractor</option>
+            </Form.Control>
+            <Form.Control.Feedback type="invalid">
+              {formErrors.userType}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="experienceLevel">
+            <Form.Label>Experience Level</Form.Label>
+            <Form.Control
+              as="select"
+              value={formData.experienceLevel || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, experienceLevel: e.target.value })
+              }
+              isInvalid={!!formErrors.experienceLevel}
+            >
+              <option value="">Select Experience Level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="expert">Expert</option>
+            </Form.Control>
+            <Form.Control.Feedback type="invalid">
+              {formErrors.experienceLevel}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="location">
+            <Form.Label>Location</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.location || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
+              isInvalid={!!formErrors.location}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.location}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="availableFrom">
+            <Form.Label>Available From</Form.Label>
+            <Form.Control
+              type="date"
+              value={formData.availableFrom || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, availableFrom: e.target.value })
+              }
+              isInvalid={!!formErrors.availableFrom}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.availableFrom}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="newPassword">
+            <Form.Label>New Password</Form.Label>
+            <Form.Control
+              type="password"
+              value={formData.newPassword || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, newPassword: e.target.value })
+              }
+              isInvalid={!!formErrors.newPassword}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.newPassword}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="phoneNumber">
+            <Form.Label>Phone Number</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.phoneNumber || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, phoneNumber: e.target.value })
+              }
+              isInvalid={!!formErrors.phoneNumber}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.phoneNumber}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="driversLicense">
+            <Form.Label>Drivers License</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.driversLicense || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, driversLicense: e.target.value })
+              }
+              isInvalid={!!formErrors.driversLicense}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.driversLicense}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="comments">
+            <Form.Label>Comments</Form.Label>
+            <Form.Control
+              as="textarea"
+              value={formData.comments || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, comments: e.target.value })
+              }
+              isInvalid={!!formErrors.comments}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.comments}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Button type="submit" disabled={isSubmitting || loading}>
+          {isSubmitting ? "Updating..." : "Update Profile"}
         </Button>
       </Form>
-
-      <h2>QR Code Results</h2>
-      <form onSubmit={handleQrSubmit}>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Generating..." : "Generate QR Code"}
-        </Button>
-      </form>
-
-      {Array.isArray(messages) && messages.length > 0 ? (
-        <ul>
-          {messages.map((message, index) => (
-            <li key={index}>
-              <p>
-                SVG File:{" "}
-                <a
-                  href={message.svg_file}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {message.svg_file}
-                </a>
-              </p>
-              <p>Created: {new Date(message.created).toLocaleString()}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div>No messages available.</div>
-      )}
-
-      {qrCodeSvg && (
+      {qrCodeImage && (
         <div>
-          <h3>Generated QR Code</h3>
-          <img src={qrCodeSvg} alt="Generated QR Code" />
+          <h3>Your QR Code</h3>
+          <img src={qrCodeImage} alt="Generated QR Code" />
         </div>
       )}
-
-      {apiResponse && (
-        <div>
-          <h3>API Response</h3>
-          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
-        </div>
-      )}
-    </>
+      <Link to="/user">Back to Profile</Link>
+    </div>
   );
 };
 

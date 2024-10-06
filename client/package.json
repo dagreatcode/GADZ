@@ -4,6 +4,7 @@
   "proxy": "http://localhost:3001",
   "private": true,
   "dependencies": {
+    "@react-google-maps/api": "^2.19.3",
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.5.0",
     "@syncfusion/ej2-react-calendars": "^26.2.12",
@@ -82,8 +83,11 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/file-saver": "^2.0.7",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^22.5.5",
     "@types/react-signature-canvas": "^1.0.5",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "install": "^0.13.0",
+    "npm": "^10.9.0"
   }
 }

@@ -24,19 +24,23 @@ const Login: React.FC = () => {
   const [signupPassword, setSignupPassword] = useState<string>("");
   const [showSignupModal, setShowSignupModal] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null); // Info message state
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSuccessMessage(null); // Reset success message
 
     try {
       const response = await axios.post<LoginResponse>(
         `${ServerPort}/api/user/login`,
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
+
+      if (response.data.error) {
+        setInfoMessage("Invalid email or password."); // Set info message
+        return;
+      }
 
       const { token, user } = response.data.data;
 
@@ -44,15 +48,18 @@ const Login: React.FC = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("userId", user.id);
 
+      setSuccessMessage("Login successful!"); // Set success message
       console.log("Login successful, token and user ID saved!");
       navigate("/user");
     } catch (err) {
+      setInfoMessage("An error occurred during login."); // Set info message
       console.error("Login error:", err);
     }
   };
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSuccessMessage(null); // Reset success message
 
     try {
       const response = await axios.post(`${ServerPort}/api/user/signup`, {
@@ -60,16 +67,18 @@ const Login: React.FC = () => {
         password: signupPassword,
       });
 
-      if (response.data.success) {
-        setSuccessMessage("You have successfully signed up! Please log in.");
-        setShowSignupModal(false); // Close modal on success
-        // Clear signup fields
-        setSignupEmail("");
-        setSignupPassword("");
-      } else {
-        console.error("Signup error:", response.data.message);
+      if (!response.data.success) {
+        setInfoMessage(response.data.message || "Signup failed."); // Set info message
+        return;
       }
+
+      setSuccessMessage("You have successfully signed up! Please log in.");
+      setShowSignupModal(false); // Close modal on success
+      // Clear signup fields
+      setSignupEmail("");
+      setSignupPassword("");
     } catch (err) {
+      setInfoMessage("An error occurred during signup."); // Set info message
       console.error("Signup error:", err);
     }
   };
@@ -82,6 +91,8 @@ const Login: React.FC = () => {
 
       {/* Success Message */}
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
+      {/* Info Message */}
+      {infoMessage && <Alert variant="warning">{infoMessage}</Alert>}
 
       {/* Login Form */}
       <form
@@ -135,7 +146,7 @@ const Login: React.FC = () => {
           <Modal.Title>Sign Up</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>After sign up, please close this window and login. </h5>
+          <h5>After signing up, please close this window to Connect.</h5>
           <form onSubmit={handleSignup}>
             <div className="mb-3">
               <input
@@ -159,6 +170,8 @@ const Login: React.FC = () => {
                 required
               />
             </div>
+            {/* Info Message in Signup Modal */}
+            {infoMessage && <Alert variant="warning">{infoMessage}</Alert>}
             <Button variant="primary" type="submit">
               Sign Up
             </Button>
