@@ -14,7 +14,7 @@ const B2BMessages: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     axios
-      .get<Message[]>("/messages")
+      .get<Message[]>("/api/message/cheat")
       .then((response) => {
         setMessages(response.data);
         setError(null);
