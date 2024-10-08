@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
+import "./Meets.css"; // Importing the CSS file for styling
 
-const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
+const ServerPort = "http://localhost:3001"; // Ensure you include http://
 const socket = io(ServerPort);
+
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
   const [users, setUsers] = useState({});
@@ -15,8 +17,7 @@ const VideoChat = () => {
 
   const joinRoom = useCallback(() => {
     if (me) {
-      console.log("Joining room with userId:", me);
-      socket.emit("userJoined", me); // Emit user join event
+      socket.emit("userJoined", me);
     }
   }, [me]);
 
@@ -37,13 +38,11 @@ const VideoChat = () => {
     initializeStream();
 
     socket.on("me", (id) => {
-      console.log("My user ID:", id);
       setMe(id);
-      joinRoom(); // Automatically join the room once you have an ID
+      joinRoom();
     });
 
     socket.on("userJoined", (userId) => {
-      console.log("User joined:", userId);
       const peer = createPeer(userId, me, stream);
       connectionsRef.current[userId] = peer;
       setUsers((prev) => ({ ...prev, [userId]: userId }));
@@ -57,7 +56,6 @@ const VideoChat = () => {
     });
 
     socket.on("userLeft", (userId) => {
-      console.log("User left:", userId);
       if (connectionsRef.current[userId]) {
         connectionsRef.current[userId].destroy();
         delete connectionsRef.current[userId];
@@ -77,12 +75,6 @@ const VideoChat = () => {
     };
   }, [stream, joinRoom, me]);
 
-  useEffect(() => {
-    if (me) {
-      joinRoom();
-    }
-  }, [me, joinRoom]);
-
   const createPeer = (userId, callerId, stream) => {
     const peer = new Peer({
       initiator: true,
@@ -91,65 +83,63 @@ const VideoChat = () => {
     });
 
     peer.on("signal", (signal) => {
-      console.log("Sending signal to:", userId);
       socket.emit("sendSignal", { signal, to: userId });
     });
 
     peer.on("stream", (stream) => {
-      console.log("Receiving stream from:", userId);
-      const userVideo = document.createElement("video");
-      userVideo.playsInline = true;
-      userVideo.autoplay = true;
-      userVideo.srcObject = stream;
-      userVideo.style.width = "300px"; // Set style for user video
-      userVideo.style.border = "1px solid black";
-      document.getElementById("videoContainer").appendChild(userVideo);
+      const userVideo = document.getElementById(userId);
+      if (userVideo) {
+        userVideo.srcObject = stream;
+      }
     });
 
     return peer;
   };
 
   const leaveCall = () => {
-    console.log("Leaving call");
     setCallEnded(true);
     for (const userId in connectionsRef.current) {
       connectionsRef.current[userId].destroy();
     }
     connectionsRef.current = {};
-    socket.emit("leaveRoom", me); // Emit leave room event
-    setUsers({}); // Clear users from the state
+    socket.emit("leaveRoom", me);
+    setUsers({});
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div>
-        <video
-          playsInline
-          muted
-          ref={myVideo}
-          autoPlay
-          style={{ width: "300px", border: "1px solid black" }}
-        />
+    <div className="video-chat-container">
+      <h1 className="title">Video Chat Application</h1>
+      <div className="video-section">
+        <video playsInline muted ref={myVideo} autoPlay className="my-video" />
+        <div id="videoContainer" className="video-grid">
+          {Object.keys(users).map((userId) => (
+            <video
+              key={userId}
+              id={userId}
+              className="user-video"
+              autoPlay
+              playsInline
+            />
+          ))}
+        </div>
       </div>
-      <div
-        id="videoContainer"
-        style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-      >
-        {Object.keys(users).map((userId) => (
-          <div key={userId} style={{ margin: "10px" }}>
-            <h3>User: {userId}</h3>
-          </div>
-        ))}
+      <div className="controls">
+        {!callEnded ? (
+          <>
+            <button className="button" onClick={joinRoom}>
+              Join Room
+            </button>
+            <button className="button" onClick={leaveCall}>
+              Leave Call
+            </button>
+          </>
+        ) : (
+          <h2>Call Ended</h2>
+        )}
       </div>
-      {!callEnded ? (
-        <>
-          <button onClick={joinRoom}>Join Room</button>
-          <button onClick={leaveCall}>Leave Call</button>
-        </>
-      ) : (
-        <h2>Call Ended</h2>
-      )}
-      <Link to="/Employee">Home</Link>
+      <Link to="/Employee" className="home-link">
+        Home
+      </Link>
     </div>
   );
 };
