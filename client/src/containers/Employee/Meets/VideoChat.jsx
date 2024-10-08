@@ -4,19 +4,19 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 
 const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-const socket = io(`${ServerPort}`);
-
+const socket = io(ServerPort);
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
+  const [users, setUsers] = useState({});
   const [me, setMe] = useState("");
   const [callEnded, setCallEnded] = useState(false);
   const myVideo = useRef();
   const connectionsRef = useRef({});
-  const userVideoRefs = useRef({}); // Ref to hold user video elements
 
   const joinRoom = useCallback(() => {
     if (me) {
-      socket.emit("joinRoom", { userId: me });
+      console.log("Joining room with userId:", me);
+      socket.emit("userJoined", me); // Emit user join event
     }
   }, [me]);
 
@@ -37,13 +37,16 @@ const VideoChat = () => {
     initializeStream();
 
     socket.on("me", (id) => {
+      console.log("My user ID:", id);
       setMe(id);
-      joinRoom();
+      joinRoom(); // Automatically join the room once you have an ID
     });
 
     socket.on("userJoined", (userId) => {
+      console.log("User joined:", userId);
       const peer = createPeer(userId, me, stream);
       connectionsRef.current[userId] = peer;
+      setUsers((prev) => ({ ...prev, [userId]: userId }));
     });
 
     socket.on("receiveSignal", ({ signal, from }) => {
@@ -54,15 +57,16 @@ const VideoChat = () => {
     });
 
     socket.on("userLeft", (userId) => {
+      console.log("User left:", userId);
       if (connectionsRef.current[userId]) {
         connectionsRef.current[userId].destroy();
         delete connectionsRef.current[userId];
       }
-      // Clean up the user video reference
-      if (userVideoRefs.current[userId]) {
-        userVideoRefs.current[userId].srcObject = null;
-        delete userVideoRefs.current[userId];
-      }
+      setUsers((prev) => {
+        const newUsers = { ...prev };
+        delete newUsers[userId];
+        return newUsers;
+      });
     });
 
     return () => {
@@ -87,37 +91,33 @@ const VideoChat = () => {
     });
 
     peer.on("signal", (signal) => {
+      console.log("Sending signal to:", userId);
       socket.emit("sendSignal", { signal, to: userId });
     });
 
-    peer.on("stream", (userStream) => {
-      if (!userVideoRefs.current[userId]) {
-        userVideoRefs.current[userId] = document.createElement("video");
-        userVideoRefs.current[userId].playsInline = true;
-        userVideoRefs.current[userId].autoplay = true;
-        userVideoRefs.current[userId].style.width = "300px";
-        userVideoRefs.current[userId].style.border = "1px solid black";
-        document
-          .getElementById("videoContainer")
-          .appendChild(userVideoRefs.current[userId]);
-      }
-      userVideoRefs.current[userId].srcObject = userStream;
+    peer.on("stream", (stream) => {
+      console.log("Receiving stream from:", userId);
+      const userVideo = document.createElement("video");
+      userVideo.playsInline = true;
+      userVideo.autoplay = true;
+      userVideo.srcObject = stream;
+      userVideo.style.width = "300px"; // Set style for user video
+      userVideo.style.border = "1px solid black";
+      document.getElementById("videoContainer").appendChild(userVideo);
     });
 
     return peer;
   };
 
   const leaveCall = () => {
+    console.log("Leaving call");
     setCallEnded(true);
     for (const userId in connectionsRef.current) {
       connectionsRef.current[userId].destroy();
     }
     connectionsRef.current = {};
-    socket.emit("leaveRoom", { userId: me });
-    Object.values(userVideoRefs.current).forEach((video) => {
-      video.srcObject = null; // Clean up user video references
-    });
-    userVideoRefs.current = {}; // Reset user video refs
+    socket.emit("leaveRoom", me); // Emit leave room event
+    setUsers({}); // Clear users from the state
   };
 
   return (
@@ -134,7 +134,13 @@ const VideoChat = () => {
       <div
         id="videoContainer"
         style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-      />
+      >
+        {Object.keys(users).map((userId) => (
+          <div key={userId} style={{ margin: "10px" }}>
+            <h3>User: {userId}</h3>
+          </div>
+        ))}
+      </div>
       {!callEnded ? (
         <>
           <button onClick={joinRoom}>Join Room</button>
