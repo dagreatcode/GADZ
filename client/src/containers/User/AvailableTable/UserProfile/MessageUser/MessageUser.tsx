@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
+import "./MessageUser.css"; // Import your CSS file
+import Snake from "./Snake";
 
 interface Message {
   sender: string;
@@ -8,55 +10,42 @@ interface Message {
   content: string;
 }
 
-const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-// console.log("ENV",process.env.REACT_APP_SOCKET_IO_CLIENT_PORT);
-
-const socket = io(
-  // "https://gadzconnect.com",
-  // "http://localhost:3001",
-  `${ServerPort}`,
-  {
-    secure: true,
-    rejectUnauthorized: false, // Only for self-signed certificates
-  }
-); // Backend Socket.IO server
-// const socket = io("http://localhost:3002"); // Backend Socket.IO server
+const ServerPort =
+  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+const socket = io(`${ServerPort}`, {
+  secure: true,
+  rejectUnauthorized: false,
+});
 
 const MessageUser: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [username, setUsername] = useState<string>("");
-  const [receiver, setReceiver] = useState<string>(""); // Add receiver state
-
-  // Clean-up
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   fetchData().then((data) => {
-  //     if (isMounted) {
-  //       setData(data);
-  //     }
-  //   });
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+  const [receiver, setReceiver] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    // Fetch previous messages from the server
     const fetchMessages = async () => {
       try {
         const res = await axios.get<Message[]>(
-          // "http://localhost:3001/messages"
-          "/messages"
+          `${ServerPort}/api/message/cheat`
         );
-        setMessages(res.data);
+        if (Array.isArray(res.data)) {
+          setMessages(res.data);
+        } else {
+          setError("Unexpected response format.");
+        }
       } catch (error) {
         console.error("Network error:", error);
+        setError("Failed to fetch messages. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchMessages();
 
-    // Listen for incoming messages from Socket.IO
     socket.on("receiveMessage", (newMessage: Message) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
@@ -75,37 +64,41 @@ const MessageUser: React.FC = () => {
       };
 
       try {
-        // Send message to the server
         await socket.emit("sendMessage", newMessage);
-
-        // Update the message locally (optimistic update)
-        setMessages([...messages, newMessage]);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
         setMessage("");
       } catch (error) {
         console.error("Error sending message:", error);
+        setError("Failed to send message. Please try again.");
       }
     }
   };
 
   return (
-    <div>
+    <div className="message-container">
+      <h2>Chat Application</h2>
       <input
         type="text"
         placeholder="Enter your username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
+        className="input-field"
       />
       <input
         type="text"
         placeholder="Enter receiver's username"
         value={receiver}
         onChange={(e) => setReceiver(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
+        className="input-field"
       />
-      <div style={{ margin: "20px 0" }}>
+      <div className="message-area">
+        {loading && <div className="loading">Loading messages...</div>}
+        {error && <div className="error">{error}</div>}
+        {!loading && !error && messages.length === 0 && (
+          <div>No messages to display.</div>
+        )}
         {messages.map((msg, index) => (
-          <div key={index} style={{ margin: "10px 0" }}>
+          <div key={index} className="message">
             <strong>{msg.sender}:</strong> {msg.content}
           </div>
         ))}
@@ -115,11 +108,14 @@ const MessageUser: React.FC = () => {
         placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
+        className="input-field"
       />
-      <button onClick={sendMessage} style={{ padding: "10px 20px" }}>
+      <button onClick={sendMessage} className="send-button">
         Send
       </button>
+      <div>
+        <Snake /> {/* Include the snake game */}
+      </div>
     </div>
   );
 };

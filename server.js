@@ -13,7 +13,8 @@ const path = require("path");
 const db = require("./models");
 const axios = require("axios");
 const bodyParser = require("body-parser");
-
+const handleVideoSocket = require("./config/videoSocket");
+const handleMessageSocket = require("./config/messageSocket");
 const app = express();
 const server = http.createServer(app);
 
@@ -39,69 +40,82 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   })
 );
+
 app.options("*", cors()); // Enable preflight for all routes
 
-// Socket.IO setup
 const io = socketIo(server, {
   cors: {
-    origin: `${ServerPort}`,
+    origin: `${ServerPort}`, // Allow connections from your client
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    // allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
-
 // Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
-  socket.emit("me", socket.id); // Send user ID back to the client
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-    socket.broadcast.emit("callEnded");
-  });
-
-  // Video call functionality
-  socket.on("callUser", ({ userToCall, signalData, from }) => {
-    console.log(`${from} is calling ${userToCall}`);
-    io.to(userToCall).emit("callUser", { signal: signalData, from });
-  });
-
-  socket.on("answerCall", (data) => {
-    console.log(`Call answered by ${data.to}`);
-    io.to(data.to).emit("callAccepted", data.signal);
-  });
-
-  // Messaging feature
-  socket.on("sendMessage", async (message) => {
-    console.log("MESSAGE", message);
-    const { sender, receiver, content } = message;
-    try {
-      // Basic validation
-      if (!sender || !receiver || !content) {
-        return socket.emit("error", "Missing required fields");
-      }
-
-      const newMessage = await db.Message.create({ sender, receiver, content });
-      io.emit("receiveMessage", newMessage); // Emit the saved message
-    } catch (error) {
-      console.error("Error saving message:", error);
-      socket.emit("error", "Internal Server Error");
-    }
-  });
-
-  socket.on("userJoined", (userId) => {
-    console.log("User joined:", userId);
-  });
-
-  socket.on("sendSignal", ({ signal, to }) => {
-    socket.to(to).emit("receiveSignal", { signal, from: socket.id });
-  });
-
-  socket.on("leaveRoom", (userId) => {
-    console.log(`${userId} left the room`);
-    socket.leave(userId);
-  });
+  handleVideoSocket(io, socket);
+  handleMessageSocket(io, socket);
 });
+
+// // Socket.IO connection handling
+// io.on("connection", (socket) => {
+//   console.log("New client connected:", socket.id);
+
+//   // Emit user ID back to the client
+//   socket.emit("me", socket.id);
+
+//   // Handle client disconnection
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected:", socket.id);
+//     socket.broadcast.emit("callEnded"); // Notify other clients that the call has ended
+//   });
+
+//   // Video call functionality
+//   socket.on("callUser", ({ userToCall, signalData, from }) => {
+//     console.log(`${from} is calling ${userToCall}`);
+//     io.to(userToCall).emit("callUser", { signal: signalData, from });
+//   });
+
+//   socket.on("answerCall", (data) => {
+//     console.log(`Call answered by ${data.to}`);
+//     io.to(data.to).emit("callAccepted", data.signal);
+//   });
+
+//   // Messaging feature
+//   socket.on("sendMessage", async (message) => {
+//     console.log("MESSAGE", message);
+//     const { sender, receiver, content } = message;
+
+//     try {
+//       // Basic validation
+//       if (!sender || !receiver || !content) {
+//         return socket.emit("error", "Missing required fields");
+//       }
+
+//       // Save the new message to the database
+//       const newMessage = await db.Message.create({ sender, receiver, content });
+//       io.emit("receiveMessage", newMessage); // Emit the saved message to all clients
+//     } catch (error) {
+//       console.error("Error saving message:", error);
+//       socket.emit("error", "Internal Server Error");
+//     }
+//   });
+
+//   // Handle user joining
+//   socket.on("userJoined", (userId) => {
+//     console.log("User joined:", userId);
+//   });
+
+//   // Handle sending signals for video calls
+//   socket.on("sendSignal", ({ signal, to }) => {
+//     socket.to(to).emit("receiveSignal", { signal, from: socket.id });
+//   });
+
+//   // Handle user leaving the room
+//   socket.on("leaveRoom", (userId) => {
+//     console.log(`${userId} left the room`);
+//     socket.leave(userId); // Optionally, implement any additional logic needed on leaving
+//   });
+// });
 
 // Outside Routes
 // =============================================================

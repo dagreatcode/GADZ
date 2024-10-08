@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import "./Meets.css"; // Importing the CSS file for styling
 
-const ServerPort = "http://localhost:3001"; // Ensure you include http://
+const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 const socket = io(ServerPort);
 
 const VideoChat = () => {
