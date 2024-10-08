@@ -1,0 +1,44 @@
+.dashboard {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fc;
+  border-radius: 8px;
+}
+
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Space between chart sections */
+}
+
+.chart-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  flex: 1 1 45%; /* Responsive sizing */
+  min-width: 300px; /* Minimum width for smaller screens */
+}
+
+h1 {
+  text-align: center;
+  color: #00796b;
+}
+
+h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.home-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+  color: #00796b;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
