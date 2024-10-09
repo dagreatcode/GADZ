@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
-import "./MessageUser.css"; // Import your CSS file
+import styles from "./MessageUser.module.css"; // Import your CSS module
 import Snake from "./Snake";
 
 interface Message {
@@ -75,30 +75,30 @@ const MessageUser: React.FC = () => {
   };
 
   return (
-    <div className="message-container">
-      <h2>Chat Application</h2>
+    <div className={styles.messageContainer}>
+      <h2 className={styles.title}>Chat Application</h2>
       <input
         type="text"
         placeholder="Enter your username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="input-field"
+        className={styles.inputField}
       />
       <input
         type="text"
         placeholder="Enter receiver's username"
         value={receiver}
         onChange={(e) => setReceiver(e.target.value)}
-        className="input-field"
+        className={styles.inputField}
       />
-      <div className="message-area">
-        {loading && <div className="loading">Loading messages...</div>}
-        {error && <div className="error">{error}</div>}
+      <div className={styles.messageArea}>
+        {loading && <div className={styles.loading}>Loading messages...</div>}
+        {error && <div className={styles.error}>{error}</div>}
         {!loading && !error && messages.length === 0 && (
           <div>No messages to display.</div>
         )}
         {messages.map((msg, index) => (
-          <div key={index} className="message">
+          <div key={index} className={styles.message}>
             <strong>{msg.sender}:</strong> {msg.content}
           </div>
         ))}
@@ -108,13 +108,13 @@ const MessageUser: React.FC = () => {
         placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="input-field"
+        className={styles.inputField}
       />
-      <button onClick={sendMessage} className="send-button">
+      <button onClick={sendMessage} className={styles.sendButton}>
         Send
       </button>
       <div>
-        <Snake /> {/* Include the snake game */}
+        <Snake /> {/* Include the Snake game */}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-/* Message Container */
-.message-container {
+/* MessageUser.module.css */
+.messageContainer {
   max-width: 800px;
   margin: auto;
   background: white;
@@ -8,12 +8,12 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.title {
   text-align: center;
   color: #333;
 }
 
-.input-field {
+.inputField {
   width: calc(100% - 22px);
   padding: 10px;
   margin: 10px 0;
@@ -21,7 +21,7 @@ h2 {
   border-radius: 5px;
 }
 
-.message-area {
+.messageArea {
   height: 200px;
   overflow-y: scroll;
   border: 1px solid #ccc;
@@ -44,7 +44,7 @@ h2 {
   margin: 10px 0;
 }
 
-.send-button {
+.sendButton {
   background: #28a745;
   color: white;
   padding: 10px;
@@ -54,6 +54,15 @@ h2 {
   transition: background 0.3s;
 }
 
-.send-button:hover {
+.sendButton:hover {
   background: #218838;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

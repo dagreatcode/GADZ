@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import './Snake.css';
+import styles from "./Snake.module.css";
 
 const Snake: React.FC = () => {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -15,11 +15,11 @@ const Snake: React.FC = () => {
   const startGame = () => {
     setGameStarted(true);
     setSnake([[0, 0]]);
-    setFood(generateFood());
+    setFood(getRandomFoodPosition([[0, 0]]));
     setDirection("RIGHT");
     setScore(0);
     setGameOver(false);
-    document.body.classList.add('no-scroll'); // Prevent scrolling
+    document.body.classList.add("no-scroll");
   };
 
   const resetGame = () => {
@@ -29,13 +29,25 @@ const Snake: React.FC = () => {
     setDirection("RIGHT");
     setScore(0);
     setGameOver(false);
-    document.body.classList.remove('no-scroll'); // Enable scrolling
+    document.body.classList.remove("no-scroll");
   };
 
-  const generateFood = () => {
-    const x = Math.floor(Math.random() * boardSize);
-    const y = Math.floor(Math.random() * boardSize);
-    return [x, y];
+  const getRandomFoodPosition = (snakePositions: number[][]): number[] => {
+    let newFood: number[];
+
+    do {
+      newFood = [
+        Math.floor(Math.random() * boardSize),
+        Math.floor(Math.random() * boardSize),
+      ];
+    } while (
+      snakePositions.some(
+        // eslint-disable-next-line no-loop-func
+        (segment) => segment[0] === newFood[0] && segment[1] === newFood[1]
+      )
+    );
+
+    return newFood;
   };
 
   const moveSnake = useCallback(() => {
@@ -62,42 +74,52 @@ const Snake: React.FC = () => {
     newSnake.unshift(head);
 
     if (head[0] === food[0] && head[1] === food[1]) {
-      setFood(generateFood());
+      setFood(getRandomFoodPosition(newSnake));
       setScore((prev) => prev + 1);
     } else {
-      newSnake.pop();
+      newSnake.pop(); // Remove the tail if not eating
     }
 
-    if (
-      head[0] < 0 ||
-      head[0] >= boardSize ||
-      head[1] < 0 ||
-      head[1] >= boardSize ||
-      newSnake.slice(1).some(segment => segment[0] === head[0] && segment[1] === head[1])
-    ) {
+    // Check for game over conditions
+    const isCollision = (head: number[], snake: number[][]) => {
+      return (
+        head[0] < 0 ||
+        head[0] >= boardSize ||
+        head[1] < 0 ||
+        head[1] >= boardSize ||
+        snake
+          .slice(1)
+          .some((segment) => segment[0] === head[0] && segment[1] === head[1])
+      );
+    };
+
+    if (isCollision(head, newSnake)) {
       setGameOver(true);
-      document.body.classList.remove('no-scroll'); // Enable scrolling on game over
+      document.body.classList.remove("no-scroll");
     } else {
       setSnake(newSnake);
     }
   }, [snake, direction, food, gameOver]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    switch (e.key) {
-      case "ArrowUp":
-        if (direction !== "DOWN") setDirection("UP");
-        break;
-      case "ArrowDown":
-        if (direction !== "UP") setDirection("DOWN");
-        break;
-      case "ArrowLeft":
-        if (direction !== "RIGHT") setDirection("LEFT");
-        break;
-      case "ArrowRight":
-        if (direction !== "LEFT") setDirection("RIGHT");
-        break;
-    }
-  }, [direction]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowUp":
+          if (direction !== "DOWN") setDirection("UP");
+          break;
+        case "ArrowDown":
+          if (direction !== "UP") setDirection("DOWN");
+          break;
+        case "ArrowLeft":
+          if (direction !== "RIGHT") setDirection("LEFT");
+          break;
+        case "ArrowRight":
+          if (direction !== "LEFT") setDirection("RIGHT");
+          break;
+      }
+    },
+    [direction]
+  );
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
@@ -108,33 +130,55 @@ const Snake: React.FC = () => {
         window.removeEventListener("keydown", handleKeyDown);
       };
     } else if (gameOver) {
-      document.body.classList.remove('no-scroll'); // Ensure scrolling is enabled if the game is over
+      document.body.classList.remove("no-scroll");
     }
-  }, [gameStarted, gameOver, moveSnake, handleKeyDown]); // Added moveSnake and handleKeyDown here
+  }, [gameStarted, gameOver, moveSnake, handleKeyDown]);
 
   return (
-    <div className="snake-game">
-      <h3>Play Snake Game!</h3>
-      <button onClick={startGame} disabled={gameStarted}>Start Game</button>
-      <button onClick={resetGame} disabled={!gameStarted}>Reset Game</button>
-      <div className="game-board" style={{ width: `${boardSize * cellSize}px`, height: `${boardSize * cellSize}px` }}>
+    <div className={styles.snakeGame}>
+      <h3 className={styles.h3}>Play Snake Game!</h3>
+      <button
+        className={styles.button}
+        onClick={startGame}
+        disabled={gameStarted}
+      >
+        Start Game
+      </button>
+      <button
+        className={styles.button}
+        onClick={resetGame}
+        disabled={!gameStarted}
+      >
+        Reset Game
+      </button>
+      <div
+        className={styles.gameBoard}
+        style={{
+          width: `${boardSize * cellSize}px`,
+          height: `${boardSize * cellSize}px`,
+        }}
+      >
         {Array.from({ length: boardSize }).map((_, rowIndex) => (
-          <div key={rowIndex} className="row">
+          <div key={rowIndex} className={styles.row}>
             {Array.from({ length: boardSize }).map((_, colIndex) => {
-              const isSnake = snake.some(segment => segment[0] === colIndex && segment[1] === rowIndex);
+              const isSnake = snake.some(
+                (segment) => segment[0] === colIndex && segment[1] === rowIndex
+              );
               const isFood = food[0] === colIndex && food[1] === rowIndex;
               return (
                 <div
                   key={colIndex}
-                  className={`cell ${isSnake ? "snake" : ""} ${isFood ? "food" : ""}`}
+                  className={`${styles.cell} ${isSnake ? styles.snake : ""} ${isFood ? styles.food : ""}`}
                 />
               );
             })}
           </div>
         ))}
       </div>
-      {gameOver && <div className="game-over">Game Over! Your score: {score}</div>}
-      <div className="score">Score: {score}</div>
+      {gameOver && (
+        <div className={styles.gameOver}>Game Over! Your score: {score}</div>
+      )}
+      <div className={styles.score}>Score: {score}</div>
     </div>
   );
 };
