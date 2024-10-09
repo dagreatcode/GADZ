@@ -14,10 +14,13 @@ const VideoChat = () => {
   const [callEnded, setCallEnded] = useState(false);
   const myVideo = useRef();
   const connectionsRef = useRef({});
+  
+  // Initialize socket outside useEffect to prevent re-initialization
+  const socketRef = useRef(socket);
 
   const joinRoom = useCallback(() => {
     if (me) {
-      socket.emit("userJoined", me);
+      socketRef.current.emit("userJoined", me);
     }
   }, [me]);
 
@@ -37,25 +40,25 @@ const VideoChat = () => {
 
     initializeStream();
 
-    socket.on("me", (id) => {
+    socketRef.current.on("me", (id) => {
       setMe(id);
       joinRoom();
     });
 
-    socket.on("userJoined", (userId) => {
+    socketRef.current.on("userJoined", (userId) => {
       const peer = createPeer(userId, me, stream);
       connectionsRef.current[userId] = peer;
       setUsers((prev) => ({ ...prev, [userId]: userId }));
     });
 
-    socket.on("receiveSignal", ({ signal, from }) => {
+    socketRef.current.on("receiveSignal", ({ signal, from }) => {
       const peer = connectionsRef.current[from];
       if (peer) {
         peer.signal(signal);
       }
     });
 
-    socket.on("userLeft", (userId) => {
+    socketRef.current.on("userLeft", (userId) => {
       if (connectionsRef.current[userId]) {
         connectionsRef.current[userId].destroy();
         delete connectionsRef.current[userId];
@@ -68,7 +71,8 @@ const VideoChat = () => {
     });
 
     return () => {
-      socket.disconnect();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      socketRef.current.disconnect();
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
@@ -83,7 +87,7 @@ const VideoChat = () => {
     });
 
     peer.on("signal", (signal) => {
-      socket.emit("sendSignal", { signal, to: userId });
+      socketRef.current.emit("sendSignal", { signal, to: userId });
     });
 
     peer.on("stream", (stream) => {
@@ -102,7 +106,7 @@ const VideoChat = () => {
       connectionsRef.current[userId].destroy();
     }
     connectionsRef.current = {};
-    socket.emit("leaveRoom", me);
+    socketRef.current.emit("leaveRoom", me);
     setUsers({});
   };
 

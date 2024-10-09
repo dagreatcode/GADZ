@@ -1,9 +1,4 @@
-// *********************************************************************************
-// Server.js - This file is the initial starting point for the Node/Express server.
-// *********************************************************************************
-
-// Dependencies
-// =============================================================
+// server.js
 require("dotenv").config();
 const express = require("express");
 const http = require("http");
@@ -18,12 +13,8 @@ const handleMessageSocket = require("./config/messageSocket");
 const app = express();
 const server = http.createServer(app);
 
-// Set server PORT
-// =============================================================
 const PORT = process.env.PORT || 3001;
 
-// Sets up the Express App Middleware
-// =============================================================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("client/build"));
@@ -31,94 +22,27 @@ app.use(express.static("images"));
 app.use(bodyParser.json());
 
 const ServerPort = process.env.SOCKET_IO_SERVER_PORT;
-const APIKeyQR = process.env.API_KEY_QR;
 
 app.use(
   cors({
-    origin: ServerPort, // Change this to your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+    origin: ServerPort,
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
-app.options("*", cors()); // Enable preflight for all routes
-
 const io = socketIo(server, {
   cors: {
-    origin: `${ServerPort}`, // Allow connections from your client
+    origin: `${ServerPort}`,
     methods: ["GET", "POST"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
-// Socket.IO connection handling
+
 io.on("connection", (socket) => {
   handleVideoSocket(io, socket);
   handleMessageSocket(io, socket);
 });
 
-// // Socket.IO connection handling
-// io.on("connection", (socket) => {
-//   console.log("New client connected:", socket.id);
-
-//   // Emit user ID back to the client
-//   socket.emit("me", socket.id);
-
-//   // Handle client disconnection
-//   socket.on("disconnect", () => {
-//     console.log("Client disconnected:", socket.id);
-//     socket.broadcast.emit("callEnded"); // Notify other clients that the call has ended
-//   });
-
-//   // Video call functionality
-//   socket.on("callUser", ({ userToCall, signalData, from }) => {
-//     console.log(`${from} is calling ${userToCall}`);
-//     io.to(userToCall).emit("callUser", { signal: signalData, from });
-//   });
-
-//   socket.on("answerCall", (data) => {
-//     console.log(`Call answered by ${data.to}`);
-//     io.to(data.to).emit("callAccepted", data.signal);
-//   });
-
-//   // Messaging feature
-//   socket.on("sendMessage", async (message) => {
-//     console.log("MESSAGE", message);
-//     const { sender, receiver, content } = message;
-
-//     try {
-//       // Basic validation
-//       if (!sender || !receiver || !content) {
-//         return socket.emit("error", "Missing required fields");
-//       }
-
-//       // Save the new message to the database
-//       const newMessage = await db.Message.create({ sender, receiver, content });
-//       io.emit("receiveMessage", newMessage); // Emit the saved message to all clients
-//     } catch (error) {
-//       console.error("Error saving message:", error);
-//       socket.emit("error", "Internal Server Error");
-//     }
-//   });
-
-//   // Handle user joining
-//   socket.on("userJoined", (userId) => {
-//     console.log("User joined:", userId);
-//   });
-
-//   // Handle sending signals for video calls
-//   socket.on("sendSignal", ({ signal, to }) => {
-//     socket.to(to).emit("receiveSignal", { signal, from: socket.id });
-//   });
-
-//   // Handle user leaving the room
-//   socket.on("leaveRoom", (userId) => {
-//     console.log(`${userId} left the room`);
-//     socket.leave(userId); // Optionally, implement any additional logic needed on leaving
-//   });
-// });
-
-// Outside Routes
-// =============================================================
+// Other routes...
 app.use("/api/agreement", require("./controllers/AgreementController.js"));
 app.use("/api/user", require("./controllers/UserAPIRoutes.js"));
 app.use("/api/admin", require("./controllers/AdminController.js"));
@@ -140,7 +64,7 @@ app.post("/api/qr-create", async (req, res) => {
       data,
       {
         headers: {
-          Authorization: `Token ${APIKeyQR}`,
+          Authorization: `Token ${process.env.API_KEY_QR}`,
         },
         timeout: 10000,
       }
@@ -158,7 +82,7 @@ app.get("/api/qr-view", async (req, res) => {
       "https://hovercode.com/api/v2/workspace/82140683-32bd-4422-9ff9-7ecec248c952/hovercodes/",
       {
         headers: {
-          Authorization: `Token ${APIKeyQR}`,
+          Authorization: `Token ${process.env.API_KEY_QR}`,
         },
         timeout: 10000,
       }
@@ -189,15 +113,9 @@ db.sequelize
   .sync()
   .then(() => {
     server.listen(PORT, () => {
-      console.log(
-        `🌎 App and Socket.IO server are running on http://localhost:${PORT}`
-      );
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
     console.error("Error syncing database:", err.message);
   });
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
