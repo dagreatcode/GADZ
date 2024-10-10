@@ -6,6 +6,8 @@ import {
   Marker,
   DirectionsRenderer,
 } from "@react-google-maps/api";
+import axios from "axios";
+import styles from "./AvailableTable.module.css"; // Import CSS module
 
 interface User {
   first: string;
@@ -13,24 +15,55 @@ interface User {
   handle: string;
 }
 
-interface AvailableTableProps {
-  drivers?: User[];
-  loads?: User[];
+interface Load {
+  id: number;
+  description: string;
+  company: string;
+  userId: string;
 }
 
-const googleMapKey = process.env.REACT_APP_API_KEY_MAP;
-const goldenGateBridge = { lat: 37.8199, lng: -122.4783 };
+interface AvailableTableProps {
+  drivers?: User[];
+}
 
-const AvailableTable: React.FC<AvailableTableProps> = ({
-  drivers = [],
-  loads = [],
-}) => {
+const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
   const [directions, setDirections] = useState<any>(null);
-  const [mapLoaded, setMapLoaded] = useState(false); // State to track if the map has loaded
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [loads, setLoads] = useState<Load[]>([]);
+  const [userLoads, setUserLoads] = useState<Load[]>([]);
+  const [newLoad, setNewLoad] = useState<Load>({
+    id: 0,
+    description: "",
+    company: "",
+    userId: "",
+  });
+
+  useEffect(() => {
+    const fetchLoads = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+        );
+        setLoads(response.data);
+
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const filteredLoads = response.data.filter(
+            (load: Load) => load.userId === userId
+          );
+          setUserLoads(filteredLoads);
+        }
+      } catch (error) {
+        console.error("Error fetching loads:", error);
+      }
+    };
+
+    fetchLoads();
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -42,7 +75,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({
           };
           setCurrentLocation(location);
           if (mapLoaded) {
-            fetchDirections(location, goldenGateBridge); // Fetch directions only if map is loaded
+            fetchDirections(location, { lat: 37.8199, lng: -122.4783 }); // Golden Gate Bridge
           }
         },
         (error) => {
@@ -58,10 +91,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({
     origin: { lat: number; lng: number },
     destination: { lat: number; lng: number }
   ) => {
-    if (!googleMapKey) return;
-
     const directionsService = new window.google.maps.DirectionsService();
-
     directionsService.route(
       {
         origin,
@@ -79,20 +109,102 @@ const AvailableTable: React.FC<AvailableTableProps> = ({
   };
 
   const handleLoad = () => {
-    setMapLoaded(true); // Set the map loaded state to true
+    setMapLoaded(true);
+  };
+
+  const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitLoad = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID not found in local storage");
+      return;
+    }
+
+    try {
+      const requestData = { ...newLoad, userId };
+      await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`,
+        requestData
+      );
+      setNewLoad({ id: 0, description: "", company: "", userId });
+
+      // Fetch updated loads after adding a new load
+      const updatedResponse = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+      );
+      setLoads(updatedResponse.data);
+
+      // Update user's loads after adding a new load
+      const filteredLoads = updatedResponse.data.filter(
+        (load: Load) => load.userId === userId
+      );
+      setUserLoads(filteredLoads);
+    } catch (error) {
+      console.error("Error creating load:", error);
+    }
   };
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif" }}>
-      <div style={{ height: "300px", overflowY: "scroll", padding: "20px" }}>
-        <h1 style={{ color: "#2c3e50" }}>Available Table / Load Board</h1>
-        <h5>
-          This is where we can see the Load Board and click on a company to do
-          business with or add to cart.
-        </h5>
-        <Table data={drivers} title="Drivers" />
-        <Table data={loads} title="Loads" />
-      </div>
+    <div className={styles.container}>
+      <img
+        src="https://example.com/truck.png"
+        alt="Truck Animation"
+        className={styles.truckAnimation}
+      />
+      <h1 className={styles.header}>Available Table / Load Board</h1>
+      <h5 className={styles.subHeader}>
+        This is where we can see the Load Board and click on a company to do
+        business with or add to cart.
+      </h5>
+      <Table data={drivers} title="Drivers" isUser={true} />
+      <Table data={loads} title="All Loads" isUser={false} />
+      <form className={styles.form} onSubmit={handleSubmitLoad}>
+        <input
+          className={styles.input}
+          type="text"
+          name="description"
+          placeholder="Load Description"
+          value={newLoad.description}
+          onChange={handleLoadInputChange}
+          required
+        />
+        <input
+          className={styles.input}
+          type="text"
+          name="company"
+          placeholder="Company"
+          value={newLoad.company}
+          onChange={handleLoadInputChange}
+          required
+        />
+        <button className={styles.button} type="submit">
+          Add Load
+        </button>
+      </form>
+
+      <h3>Your Loads</h3>
+      <table className={styles.loadTable}>
+        <thead>
+          <tr>
+            <th className={styles.tableHeader}>Your Loads</th>
+            <th className={styles.tableHeader}>Company</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userLoads.map((load, index) => (
+            <tr key={index} className={styles.tableRow}>
+              <td className={styles.tableCell}>{load.description}</td>
+              <td className={styles.tableCell}>{load.company}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <Link
         to="/User"
         style={{ margin: "20px", textDecoration: "none", color: "#2980b9" }}
@@ -100,60 +212,84 @@ const AvailableTable: React.FC<AvailableTableProps> = ({
         Home
       </Link>
 
-      <div
-        className="container"
-        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      <Link
+        to="/UserProfile"
+        style={{
+          margin: "20px",
+          textDecoration: "none",
+          color: "#2980b9",
+        }}
       >
-        {googleMapKey ? (
-          <LoadScript googleMapsApiKey={googleMapKey} onLoad={handleLoad}>
+        Profile
+      </Link>
+
+      <div className={styles.mapContainer}>
+        {process.env.REACT_APP_API_KEY_MAP ? (
+          <LoadScript
+            googleMapsApiKey={process.env.REACT_APP_API_KEY_MAP}
+            onLoad={handleLoad}
+          >
             <GoogleMap
               zoom={10}
-              mapContainerStyle={{
-                width: "100vw",
-                height: "100vh",
-              }}
-              center={currentLocation || goldenGateBridge}
-              options={{
-                gestureHandling: "greedy",
-                disableDefaultUI: true,
-              }}
+              mapContainerStyle={{ width: "100vw", height: "100vh" }}
+              center={currentLocation || { lat: 37.8199, lng: -122.4783 }} // Default to Golden Gate Bridge
+              options={{ gestureHandling: "greedy", disableDefaultUI: true }}
             >
               {currentLocation && (
                 <Marker position={currentLocation} title="Your Location" />
               )}
-              <Marker position={goldenGateBridge} title="Golden Gate Bridge" />
+              <Marker
+                position={{ lat: 37.8199, lng: -122.4783 }}
+                title="Golden Gate Bridge"
+              />
               {directions && <DirectionsRenderer directions={directions} />}
             </GoogleMap>
           </LoadScript>
         ) : (
-          <div style={{ color: "red" }}>Map API key is missing.</div>
+          <div className={styles.mapError}>Map API key is missing.</div>
         )}
       </div>
     </div>
   );
 };
 
-const Table: React.FC<{ data: User[]; title: string }> = ({ data, title }) => (
-  <table className="table" style={{ marginTop: "20px" }}>
-    <thead className="thead-dark">
+const Table: React.FC<{
+  data: User[] | Load[];
+  title: string;
+  isUser: boolean;
+}> = ({ data, title, isUser }) => (
+  <table className={styles.loadTable}>
+    <thead>
       <tr>
-        <th scope="col">{title}</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
-        <th scope="col">Profile</th>
+        <th className={styles.tableHeader}>{title}</th>
+        {isUser ? (
+          <>
+            <th className={styles.tableHeader}>First</th>
+            <th className={styles.tableHeader}>Last</th>
+            <th className={styles.tableHeader}>Handle</th>
+          </>
+        ) : (
+          <>
+            <th className={styles.tableHeader}>Description</th>
+            <th className={styles.tableHeader}>Company</th>
+          </>
+        )}
       </tr>
     </thead>
     <tbody>
       {data.map((item, index) => (
-        <tr key={index}>
-          <th scope="row">{index + 1}</th>
-          <td>{item.first}</td>
-          <td>{item.last}</td>
-          <td>{item.handle}</td>
-          <td>
-            <Link to="/UserProfile">UserProfile</Link>
+        <tr key={index} className={styles.tableRow}>
+          <td className={styles.tableCell}>
+            {isUser ? (item as User).handle : (item as Load).description}
           </td>
+          {isUser ? (
+            <>
+              <td className={styles.tableCell}>{(item as User).first}</td>
+              <td className={styles.tableCell}>{(item as User).last}</td>
+            </>
+          ) : (
+            <td className={styles.tableCell}>{(item as Load).company}</td>
+          )}
         </tr>
       ))}
     </tbody>

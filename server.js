@@ -10,9 +10,10 @@ const axios = require("axios");
 const bodyParser = require("body-parser");
 const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
+const loadController = require("./controllers/LoadController");
+
 const app = express();
 const server = http.createServer(app);
-
 const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
@@ -54,6 +55,55 @@ app.use(
 app.use("/api/message", require("./controllers/MessageController.js"));
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 app.use(require("./routes"));
+
+// Load routes
+app.get("/api/loads", loadController.getAllLoads); // Get all loads
+app.post("/api/loads", loadController.createLoad); // Create a new load
+
+// const { Load, User } = require("./models"); // Adjust the import path as necessary
+
+// app.post("/loads", async (req, res) => {
+//   const { description, company, userId } = req.body;
+//   // Validate userId
+//   if (!userId) {
+//     console.log("logs", req.body);
+//     return res.status(400).json({ error: "User ID is required" });
+//   }
+
+//   try {
+//     // Check if the user exists
+//     const user = await User.findByPk(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: "User does not exist." });
+//     }
+
+//     // Create load
+//     const newLoad = await Load.create({ description, company, userId });
+//     return res.status(201).json(newLoad);
+//   } catch (error) {
+//     console.error("Error creating load:", error);
+//     return res
+//       .status(500)
+//       .json({ error: "An error occurred while creating the load." });
+//   }
+// });
+
+// app.post("/api/myLoads", async (req, res) => {
+//   const { description, company, userId } = req.body;
+
+//   // // Check if user exists
+//   // const user = await db.User.findByPk(userId);
+//   // if (!user) {
+//   //   return res.status(400).json({ error: "User does not exist." });
+//   // }
+
+//   try {
+//     const newLoad = await db.Load.create({ description, company, userId });
+//     res.status(201).json(newLoad);
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 // API endpoints for QR code creation and viewing
 app.post("/api/qr-create", async (req, res) => {
@@ -108,9 +158,10 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
+// { alter: true }
 // Connect to SQL Database
 db.sequelize
-  .sync()
+  .sync({})
   .then(() => {
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
