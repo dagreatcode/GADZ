@@ -191,13 +191,15 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
       <table className={styles.loadTable}>
         <thead>
           <tr>
-            <th className={styles.tableHeader}>Your Loads</th>
+            <th className={styles.tableHeader}>Load ID</th>
+            <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
           </tr>
         </thead>
         <tbody>
-          {userLoads.map((load, index) => (
-            <tr key={index} className={styles.tableRow}>
+          {userLoads.map((load) => (
+            <tr key={load.id} className={styles.tableRow}>
+              <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
               <td className={styles.tableCell}>{load.company}</td>
             </tr>
@@ -270,6 +272,7 @@ const Table: React.FC<{
           </>
         ) : (
           <>
+            {/* <th className={styles.tableHeader}>Load ID</th> */}
             <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
           </>
@@ -279,16 +282,18 @@ const Table: React.FC<{
     <tbody>
       {data.map((item, index) => (
         <tr key={index} className={styles.tableRow}>
-          <td className={styles.tableCell}>
-            {isUser ? (item as User).handle : (item as Load).description}
-          </td>
           {isUser ? (
             <>
+              <td className={styles.tableCell}>{(item as User).handle}</td>
               <td className={styles.tableCell}>{(item as User).first}</td>
               <td className={styles.tableCell}>{(item as User).last}</td>
             </>
           ) : (
-            <td className={styles.tableCell}>{(item as Load).company}</td>
+            <>
+              <td className={styles.tableCell}>{(item as Load).id}</td>
+              <td className={styles.tableCell}>{(item as Load).description}</td>
+              <td className={styles.tableCell}>{(item as Load).company}</td>
+            </>
           )}
         </tr>
       ))}
