@@ -13,5 +13,15 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
     },
   });
+
+  // Associations
+  Message.associate = (models) => {
+    Message.belongsTo(models.User, { foreignKey: "sender" });
+    Message.belongsTo(models.User, {
+      foreignKey: "receiver",
+      // as: "receiver",
+    });
+  };
+
   return Message;
 };

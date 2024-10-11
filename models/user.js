@@ -155,6 +155,14 @@ module.exports = function (sequelize, DataTypes) {
 
   // Associations
   User.associate = (models) => {
+    User.hasMany(models.Message, {
+      foreignKey: "senderId",
+      as: "sentMessages",
+    });
+    User.hasMany(models.Message, {
+      foreignKey: "receiverId",
+      as: "receivedMessages",
+    });
     User.hasMany(models.Load, { foreignKey: "userId", as: "loads" });
   };
 
