@@ -5,9 +5,14 @@ import styles from "./MessageUser.module.css"; // Import your CSS module
 import Snake from "./Snake";
 
 interface Message {
-  sender: string;
-  receiver: string;
+  senderId: string;
+  receiverId: string;
   content: string;
+}
+
+interface User {
+  id: string;
+  email: string;
 }
 
 const ServerPort =
@@ -20,12 +25,19 @@ const socket = io(`${ServerPort}`, {
 const MessageUser: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [username, setUsername] = useState<string>("");
-  const [receiver, setReceiver] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [receiverId, setReceiverId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [currentUserId, setCurrentUserId] = useState<string>("");
 
   useEffect(() => {
+    // Get the current user's ID from local storage
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      setCurrentUserId(userId);
+    }
+
     const fetchMessages = async () => {
       try {
         const res = await axios.get<Message[]>(
@@ -44,7 +56,18 @@ const MessageUser: React.FC = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get<User[]>(`${ServerPort}/api/user/view`); // Ensure this endpoint returns a list of users
+        setUsers(res.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setError("Failed to fetch users.");
+      }
+    };
+
     fetchMessages();
+    fetchUsers();
 
     socket.on("receiveMessage", (newMessage: Message) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -56,10 +79,10 @@ const MessageUser: React.FC = () => {
   }, []);
 
   const sendMessage = async () => {
-    if (message.trim() && username.trim() && receiver.trim()) {
+    if (message.trim() && currentUserId && receiverId) {
       const newMessage: Message = {
-        sender: username,
-        receiver: receiver,
+        senderId: currentUserId,
+        receiverId: receiverId,
         content: message,
       };
 
@@ -77,20 +100,18 @@ const MessageUser: React.FC = () => {
   return (
     <div className={styles.messageContainer}>
       <h2 className={styles.title}>Chat Application</h2>
-      <input
-        type="text"
-        placeholder="Enter your username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className={styles.inputField}
-      />
-      <input
-        type="text"
-        placeholder="Enter receiver's username"
-        value={receiver}
-        onChange={(e) => setReceiver(e.target.value)}
-        className={styles.inputField}
-      />
+      <select
+        value={receiverId}
+        onChange={(e) => setReceiverId(e.target.value)}
+        className={styles.dropdown}
+      >
+        <option value="">Select a user to message</option>
+        {users.map((user) => (
+          <option key={user.id} value={user.id}>
+            {user.email}
+          </option>
+        ))}
+      </select>
       <div className={styles.messageArea}>
         {loading && <div className={styles.loading}>Loading messages...</div>}
         {error && <div className={styles.error}>{error}</div>}
@@ -99,7 +120,7 @@ const MessageUser: React.FC = () => {
         )}
         {messages.map((msg, index) => (
           <div key={index} className={styles.message}>
-            <strong>{msg.sender}:</strong> {msg.content}
+            <strong>{msg.senderId}:</strong> {msg.content}
           </div>
         ))}
       </div>
