@@ -1,19 +1,23 @@
-// messageSocket.js
 const db = require("../models");
 
 const handleMessageSocket = (io, socket) => {
   console.log("New client connected for messaging:", socket.id);
 
   socket.on("sendMessage", async (message) => {
-    const { sender, receiver, content } = message;
+    const { sender, receiver, content } = message; // Keep using 'sender' and 'receiver'
 
     if (!sender || !receiver || !content) {
       return socket.emit("error", "Missing required fields");
     }
 
     try {
+      // Save the message to the database
       const newMessage = await db.Message.create({ sender, receiver, content });
-      io.emit("receiveMessage", newMessage);
+
+      // Emit to the specific receiver
+      io.to(receiver).emit("receiveMessage", newMessage);
+      // Optionally, emit to the sender
+      socket.emit("receiveMessage", newMessage);
     } catch (error) {
       console.error("Error saving message:", error);
       socket.emit("error", "Internal Server Error");
@@ -22,6 +26,7 @@ const handleMessageSocket = (io, socket) => {
 
   socket.on("userJoined", (userId) => {
     console.log("User joined:", userId);
+    socket.join(userId); // Join the user room
   });
 };
 

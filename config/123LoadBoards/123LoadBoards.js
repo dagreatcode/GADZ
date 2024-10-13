@@ -21,7 +21,7 @@ async function run() {
       "123LB-Api-Version": "1.3",
       "User-Agent": "string",
       "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-      Authorization: "Bearer <YOUR_TOKEN_HERE>",
+      Authorization: "Bearer TSIw67aehxj4earHoFTTi6MZ62eJT9ARFmmmERHQ",
     },
   });
 

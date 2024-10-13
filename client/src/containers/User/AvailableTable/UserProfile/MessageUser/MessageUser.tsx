@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
-import styles from "./MessageUser.module.css"; // Import your CSS module
+import styles from "./MessageUser.module.css";
 import Snake from "./Snake";
 
 interface Message {
-  senderId: string;
-  receiverId: string;
+  sender: string; // Updated to 'sender'
+  receiver: string; // Updated to 'receiver'
   content: string;
 }
 
@@ -17,10 +17,7 @@ interface User {
 
 const ServerPort =
   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
-const socket = io(`${ServerPort}`, {
-  secure: true,
-  rejectUnauthorized: false,
-});
+const socket = io(`${ServerPort}`, { secure: true, rejectUnauthorized: false });
 
 const MessageUser: React.FC = () => {
   const [message, setMessage] = useState<string>("");
@@ -32,10 +29,10 @@ const MessageUser: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string>("");
 
   useEffect(() => {
-    // Get the current user's ID from local storage
     const userId = localStorage.getItem("userId");
     if (userId) {
       setCurrentUserId(userId);
+      socket.emit("userJoined", userId); // Notify server of user join
     }
 
     const fetchMessages = async () => {
@@ -58,7 +55,7 @@ const MessageUser: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const res = await axios.get<User[]>(`${ServerPort}/api/user/view`); // Ensure this endpoint returns a list of users
+        const res = await axios.get<User[]>(`${ServerPort}/api/user/view`);
         setUsers(res.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -81,15 +78,14 @@ const MessageUser: React.FC = () => {
   const sendMessage = async () => {
     if (message.trim() && currentUserId && receiverId) {
       const newMessage: Message = {
-        senderId: currentUserId,
-        receiverId: receiverId,
+        sender: currentUserId, // Updated to 'sender'
+        receiver: receiverId, // Updated to 'receiver'
         content: message,
       };
 
       try {
-        await socket.emit("sendMessage", newMessage);
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setMessage("");
+        socket.emit("sendMessage", newMessage); // Emit the new message
+        setMessage(""); // Clear the message input
       } catch (error) {
         console.error("Error sending message:", error);
         setError("Failed to send message. Please try again.");
@@ -120,7 +116,8 @@ const MessageUser: React.FC = () => {
         )}
         {messages.map((msg, index) => (
           <div key={index} className={styles.message}>
-            <strong>{msg.senderId}:</strong> {msg.content}
+            <strong>{msg.sender}:</strong> {msg.content}{" "}
+            {/* Updated to 'sender' */}
           </div>
         ))}
       </div>
