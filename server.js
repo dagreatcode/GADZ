@@ -71,7 +71,7 @@ const devURI = process.env.DEV_URI;
 const clientSecret = process.env.CLIENT_SECRET;
 const bearer123 = process.env.BEARER_123;
 const uri123 = process.env.URI_123;
-
+const userAgent = process.env.USER_AGENT;
 // ///////////////////////////////////////////////////
 // // Use Route to Retrieve an Auth Code
 // ///////////////////////////////////////////////////
@@ -171,7 +171,7 @@ app.get("/auth/callback/:code", async (req, res) => {
           "123LB-Correlation-Id": "123GADZ",
           "Content-Type": "application/json",
           "123LB-Api-Version": "1.3",
-          "User-Agent": "gadzconnect_dev",
+          "User-Agent": userAgent,
           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
           Authorization: `Bearer ${bearerToken}`,
         },
