@@ -131,9 +131,9 @@ app.get("/tokenreceiver", async (req, res) => {
 ///////////////////////////////////////////////////
 
 // or 2 and 3. Route to get authorization from params/query code and exchange it for access_token, then request loads from 123Loads
-app.get("/auth/callback/:code", async (req, res) => {
+app.get("/auth/callback/", async (req, res) => {
   try {
-    const authCode = req.params.code; // Get the code from the address bar
+    const authCode = req.query.code; // Get the code from the address bar
     console.log("Authorization Code:", authCode);
 
     // Step 2: Exchange authorization code for access token
