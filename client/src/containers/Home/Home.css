@@ -1,0 +1,40 @@
+.home-container {
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .welcome-text {
+    margin-bottom: 20px;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center; /* Centers the icons horizontally */
+    align-items: center; /* Centers the icons vertically */
+    margin: 40px 0; /* Adjusts spacing around the icons */
+  }
+  
+  .social-icons lord-icon {
+    margin: 0 20px; /* Adds spacing between icons */
+  }
+  
+  .jumbotron {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 40px;
+    transition: transform 0.3s;
+  }
+  
+  .jumbotron:hover {
+    transform: scale(1.02);
+  }
+  

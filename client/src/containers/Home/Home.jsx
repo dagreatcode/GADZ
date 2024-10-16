@@ -1,104 +1,73 @@
 import React from "react";
-// import {Link} from 'react-router-dom';
-// import LiveChat from '../../components/LiveChat/LiveChat';
-// import Comments from '../../components/Comments/Comments';
-// import { useSelector } from 'react-redux';
-
-// import realMeetsBW from "./images/realMeetsBW.jpeg"
+import './Home.css'; // Import your custom styles
 
 const Home = () => {
-  // const comments = useSelector((state) => state.comments);
   return (
-    <div className="container" style={{ textAlign: "center" }}>
+    <div className="container text-center home-container" style={{ padding: "40px" }}>
       <div className="row jumbotron">
-        <div className="display-4" style={{ padding: "40px" }}>
+        <div className="display-4 welcome-text">
           Welcome To GADZConnect!
         </div>
         <img
-          // sizes="(min-width: 650px) 50vw, 100vw"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          // src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670841/GADZ/Screenshot_2023-08-24_210910_apimba.webp"
           src="https://res.cloudinary.com/fashion-commit/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1726274331/GADZCo_ndr2y6.jpg"
           alt="Big World of Connections"
         />
         <div className="display-6" style={{ padding: "40px" }}>
-          The innovative solution revolutionizing the transportation and
-          logistics industry. We’re here to transform the way you manage your
-          logistics operations, offering a seamless platform that connects
-          buyers and sellers, carriers and shippers, and every player in
-          between!
+          The innovative solution revolutionizing the transportation and logistics industry. 
+          We’re here to transform the way you manage your logistics operations, offering a seamless platform that connects buyers and sellers, carriers and shippers, and every player in between!
         </div>
-        <div>
+        
+        <div className="social-icons">
           <lord-icon
             src="https://cdn.lordicon.com/tltikfri.json"
-            // trigger="hover"
             trigger="hover"
             state="loop-rotate"
-            // fetchpriority="high"
-            // delay="2000"
             style={{ width: "250px", height: "250px" }}
           ></lord-icon>
-        </div>
-        <div className="display-2">It's A New World</div>
-        <div style={{ textAlign: "center" }}>
-          <div className="row">
-            <div className="col-md-12">
-              <img
-                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670837/GADZ/Free-Photo-700x860-1660911398_fvksf2.webp"
-                style={{ width: "100%", height: "75%" }}
-                alt="Big Town top view"
-              />
-              <br />
-              <br />
-              <br />
-              <br />
-              <h1 className="jumbotron display-4">What We Offer?</h1>
-              <hr />
-              <br />
-              <br />
-              <p className="display-6">
-                You have the loads, we got the GADZ. Connect your assets and
-                manage them easily. Make loads available to the public or make
-                yourself assessable as a driver.
-              </p>
-            </div>
-          </div>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
+
           <lord-icon
             src="https://cdn.lordicon.com/hsrrkevt.json"
             trigger="hover"
             state="loop-cycle"
             style={{ width: "250px", height: "250px" }}
           ></lord-icon>
-          <br />
-          <br />
-          <br />
-          <br />
-          <div className="row">
-            <h1 className="jumbotron display-4">We are Global</h1>
+        </div>
+
+        <div className="display-2">It's A New World</div>
+
+        <div className="row">
+          <div className="col-md-12">
+            <img
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670837/GADZ/Free-Photo-700x860-1660911398_fvksf2.webp"
+              style={{ width: "100%", height: "75%", objectFit: "cover" }}
+              alt="Big Town top view"
+            />
+            <h1 className="jumbotron display-4">What We Offer?</h1>
             <hr />
-            <br />
-            <br />
-            <div className="col-md-6">
-              <p className="display-6">
-                At GADZCONNECT, we’re redefining the way businesses manage their
-                logistics operations. Say goodbye to the complexities and
-                inefficiencies of traditional logistics processes- and hello to
-                a world of seamless connectivity, real-time visibility, and
-                unparalleled efficiency.
-              </p>
-            </div>
-            <div className="col-md-6">
-              <img
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670842/GADZ/Screenshot_2023-08-24_211718_hjhizt.webp"
-                alt="Logistics"
-              />
-            </div>
+            <p className="display-6">
+              You have the loads, we got the GADZ. Connect your assets and manage them easily. 
+              Make loads available to the public or make yourself assessable as a driver.
+            </p>
+          </div>
+        </div>
+
+        <div className="row">
+          <h1 className="jumbotron display-4">We are Global</h1>
+          <hr />
+          <div className="col-md-6">
+            <p className="display-6">
+              At GADZCONNECT, we’re redefining the way businesses manage their logistics operations. 
+              Say goodbye to the complexities and inefficiencies of traditional logistics processes- 
+              and hello to a world of seamless connectivity, real-time visibility, and unparalleled efficiency.
+            </p>
+          </div>
+          <div className="col-md-6">
+            <img
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              src="https://res.cloudinary.com/fashion-commit/image/upload/v1713670842/GADZ/Screenshot_2023-08-24_211718_hjhizt.webp"
+              alt="Logistics"
+            />
           </div>
         </div>
       </div>
