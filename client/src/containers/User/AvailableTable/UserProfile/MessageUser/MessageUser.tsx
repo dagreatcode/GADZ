@@ -36,9 +36,7 @@ const MessageUser: React.FC = () => {
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get<Message[]>(
-          `${ServerPort}/api/message/cheat`
-        );
+        const res = await axios.get<Message[]>(`${ServerPort}/api/message/cheat`);
         if (Array.isArray(res.data)) {
           setMessages(res.data);
         } else {
@@ -95,10 +93,11 @@ const MessageUser: React.FC = () => {
     }
   };
 
-  // Filter messages for display
+  // Filter messages for display based on selected receiver
   const filteredMessages = messages.filter(
-    (msg) => 
-      (msg.sender === currentUserId || msg.receiver === currentUserId)
+    (msg) =>
+      (msg.sender === currentUserId && msg.receiver === receiverId) ||
+      (msg.receiver === currentUserId && msg.sender === receiverId)
   );
 
   return (
@@ -106,7 +105,10 @@ const MessageUser: React.FC = () => {
       <h2 className={styles.title}>Chat Application</h2>
       <select
         value={receiverId}
-        onChange={(e) => setReceiverId(e.target.value)}
+        onChange={(e) => {
+          setReceiverId(e.target.value);
+          setMessage(""); // Clear the message input when changing the user
+        }}
         className={styles.dropdown}
       >
         <option value="">Select a user to message</option>
