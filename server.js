@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
+const messageRouter = require("./controllers/MessageController.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +46,11 @@ io.on("connection", (socket) => {
   handleMessageSocket(io, socket);
 });
 
+// Middleware
+// app.use(express.json()); // To parse JSON bodies
+
+// Use the message routes
+app.use("/api/message", messageRouter);
 // Other routes...
 app.use("/api/agreement", require("./controllers/AgreementController.js"));
 app.use("/api/user", require("./controllers/UserAPIRoutes.js"));
@@ -54,7 +60,7 @@ app.use(
   "/api/employee-help",
   require("./controllers/EmployeeTicketController.js")
 );
-app.use("/api/message", require("./controllers/MessageController.js"));
+// app.use("/api/message", require("./controllers/MessageController.js"));
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 app.use(require("./routes"));
 

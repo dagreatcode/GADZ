@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import styles from "./MessageUser.module.css";
-import Snake from "./Snake";
 
 interface Message {
-  sender: string; // Updated to 'sender'
-  receiver: string; // Updated to 'receiver'
+  sender: string;
+  receiver: string;
   content: string;
 }
 
@@ -32,7 +31,7 @@ const MessageUser: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       setCurrentUserId(userId);
-      socket.emit("userJoined", userId); // Notify server of user join
+      socket.emit("userJoined Hi", userId); // Notify server of user join
     }
 
     const fetchMessages = async () => {
@@ -78,20 +77,29 @@ const MessageUser: React.FC = () => {
   const sendMessage = async () => {
     if (message.trim() && currentUserId && receiverId) {
       const newMessage: Message = {
-        sender: currentUserId, // Updated to 'sender'
-        receiver: receiverId, // Updated to 'receiver'
+        sender: currentUserId,
+        receiver: receiverId,
         content: message,
       };
 
       try {
-        socket.emit("sendMessage", newMessage); // Emit the new message
+        socket.emit("sendMessage", newMessage);
         setMessage(""); // Clear the message input
+        setError(""); // Clear any previous error messages
       } catch (error) {
         console.error("Error sending message:", error);
         setError("Failed to send message. Please try again.");
       }
+    } else {
+      setError("Please select a user and type a message.");
     }
   };
+
+  // Filter messages for display
+  const filteredMessages = messages.filter(
+    (msg) => 
+      (msg.sender === currentUserId || msg.receiver === currentUserId)
+  );
 
   return (
     <div className={styles.messageContainer}>
@@ -111,13 +119,18 @@ const MessageUser: React.FC = () => {
       <div className={styles.messageArea}>
         {loading && <div className={styles.loading}>Loading messages...</div>}
         {error && <div className={styles.error}>{error}</div>}
-        {!loading && !error && messages.length === 0 && (
+        {!loading && !error && filteredMessages.length === 0 && (
           <div>No messages to display.</div>
         )}
-        {messages.map((msg, index) => (
+        {filteredMessages.map((msg, index) => (
           <div key={index} className={styles.message}>
-            <strong>{msg.sender}:</strong> {msg.content}{" "}
-            {/* Updated to 'sender' */}
+            <strong>
+              {msg.sender === currentUserId ? "You" : users.find(user => user.id === msg.sender)?.email}:
+            </strong> 
+            {msg.content} 
+            <span className={styles.meta}>
+              {msg.receiver === currentUserId ? " (to you)" : ""}
+            </span>
           </div>
         ))}
       </div>
@@ -131,9 +144,6 @@ const MessageUser: React.FC = () => {
       <button onClick={sendMessage} className={styles.sendButton}>
         Send
       </button>
-      <div>
-        <Snake /> {/* Include the Snake game */}
-      </div>
     </div>
   );
 };

@@ -1,11 +1,11 @@
 module.exports = function (sequelize, DataTypes) {
   var Message = sequelize.define("Message", {
     sender: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER, // Change to INTEGER
       allowNull: false,
     },
     receiver: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER, // Change to INTEGER
       allowNull: false,
     },
     content: {
@@ -16,11 +16,8 @@ module.exports = function (sequelize, DataTypes) {
 
   // Associations
   Message.associate = (models) => {
-    Message.belongsTo(models.User, { foreignKey: "sender" });
-    Message.belongsTo(models.User, {
-      foreignKey: "receiver",
-      // as: "receiver",
-    });
+    Message.belongsTo(models.User, { foreignKey: "sender", as: "Sender" });
+    Message.belongsTo(models.User, { foreignKey: "receiver", as: "Receiver" });
   };
 
   return Message;
