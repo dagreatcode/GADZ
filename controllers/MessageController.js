@@ -27,21 +27,21 @@ router.get("/cheat", (req, res) => {
     });
 });
 
-// router.post("/", async (req, res) => {
-//   try {
-//     const { content, sender, receiver } = req.body;
+router.post("/", async (req, res) => {
+  try {
+    const { content, sender, receiver } = req.body;
 
-//     // Basic validation
-//     if (!content || !sender || !receiver) {
-//       return res.status(400).send("Bad Request: Missing required fields");
-//     }
+    // Basic validation
+    if (!content || !sender || !receiver) {
+      return res.status(400).send("Bad Request: Missing required fields");
+    }
 
-//     const newMessage = await db.Message.create({ content, sender, receiver });
-//     res.json(newMessage);
-//   } catch (error) {
-//     console.error("Error creating message:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
+    const newMessage = await db.Message.create({ content, sender, receiver });
+    res.json(newMessage);
+  } catch (error) {
+    console.error("Error creating message:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 module.exports = router;

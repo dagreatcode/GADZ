@@ -1,62 +1,71 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
+import styles from "./MessageUser.module.css";
+import Snake from "./Snake";
 
 interface Message {
-  sender: string;
-  receiver: string;
+  sender: string; // Updated to 'sender'
+  receiver: string; // Updated to 'receiver'
   content: string;
 }
 
-const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-// console.log("ENV",process.env.REACT_APP_SOCKET_IO_CLIENT_PORT);
+interface User {
+  id: string;
+  email: string;
+}
 
-const socket = io(
-  // "https://gadzconnect.com",
-  // "http://localhost:3001",
-  `${ServerPort}`,
-  {
-    secure: true,
-    rejectUnauthorized: false, // Only for self-signed certificates
-  }
-); // Backend Socket.IO server
-// const socket = io("http://localhost:3002"); // Backend Socket.IO server
+const ServerPort =
+  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+const socket = io(`${ServerPort}`, { secure: true, rejectUnauthorized: false });
 
 const MessageUser: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [username, setUsername] = useState<string>("");
-  const [receiver, setReceiver] = useState<string>(""); // Add receiver state
-
-  // Clean-up
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   fetchData().then((data) => {
-  //     if (isMounted) {
-  //       setData(data);
-  //     }
-  //   });
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+  const [users, setUsers] = useState<User[]>([]);
+  const [receiverId, setReceiverId] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [currentUserId, setCurrentUserId] = useState<string>("");
 
   useEffect(() => {
-    // Fetch previous messages from the server
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      setCurrentUserId(userId);
+      socket.emit("userJoined", userId); // Notify server of user join
+    }
+
     const fetchMessages = async () => {
       try {
         const res = await axios.get<Message[]>(
-          // "http://localhost:3001/messages"
-          "/messages"
+          `${ServerPort}/api/message/cheat`
         );
-        setMessages(res.data);
+        if (Array.isArray(res.data)) {
+          setMessages(res.data);
+        } else {
+          setError("Unexpected response format.");
+        }
       } catch (error) {
         console.error("Network error:", error);
+        setError("Failed to fetch messages. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchMessages();
 
-    // Listen for incoming messages from Socket.IO
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get<User[]>(`${ServerPort}/api/user/view`);
+        setUsers(res.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setError("Failed to fetch users.");
+      }
+    };
+
+    fetchMessages();
+    fetchUsers();
+
     socket.on("receiveMessage", (newMessage: Message) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
@@ -67,46 +76,48 @@ const MessageUser: React.FC = () => {
   }, []);
 
   const sendMessage = async () => {
-    if (message.trim() && username.trim() && receiver.trim()) {
+    if (message.trim() && currentUserId && receiverId) {
       const newMessage: Message = {
-        sender: username,
-        receiver: receiver,
+        sender: currentUserId, // Updated to 'sender'
+        receiver: receiverId, // Updated to 'receiver'
         content: message,
       };
 
       try {
-        // Send message to the server
-        await socket.emit("sendMessage", newMessage);
-
-        // Update the message locally (optimistic update)
-        setMessages([...messages, newMessage]);
-        setMessage("");
+        socket.emit("sendMessage", newMessage); // Emit the new message
+        setMessage(""); // Clear the message input
       } catch (error) {
         console.error("Error sending message:", error);
+        setError("Failed to send message. Please try again.");
       }
     }
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Enter your username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
-      />
-      <input
-        type="text"
-        placeholder="Enter receiver's username"
-        value={receiver}
-        onChange={(e) => setReceiver(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
-      />
-      <div style={{ margin: "20px 0" }}>
+    <div className={styles.messageContainer}>
+      <h2 className={styles.title}>Chat Application</h2>
+      <select
+        value={receiverId}
+        onChange={(e) => setReceiverId(e.target.value)}
+        className={styles.dropdown}
+      >
+        <option value="">Select a user to message</option>
+        {users.map((user) => (
+          <option key={user.id} value={user.id}>
+            {user.email}
+          </option>
+        ))}
+      </select>
+      <div className={styles.messageArea}>
+        {loading && <div className={styles.loading}>Loading messages...</div>}
+        {error && <div className={styles.error}>{error}</div>}
+        {!loading && !error && messages.length === 0 && (
+          <div>No messages to display.</div>
+        )}
         {messages.map((msg, index) => (
-          <div key={index} style={{ margin: "10px 0" }}>
-            <strong>{msg.sender}:</strong> {msg.content}
+          <div key={index} className={styles.message}>
+            <strong>{msg.sender}:</strong> {msg.content}{" "}
+            {/* Updated to 'sender' */}
           </div>
         ))}
       </div>
@@ -115,11 +126,14 @@ const MessageUser: React.FC = () => {
         placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
+        className={styles.inputField}
       />
-      <button onClick={sendMessage} style={{ padding: "10px 20px" }}>
+      <button onClick={sendMessage} className={styles.sendButton}>
         Send
       </button>
+      <div>
+        <Snake /> {/* Include the Snake game */}
+      </div>
     </div>
   );
 };

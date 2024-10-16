@@ -182,7 +182,7 @@ router.post("/signUp", async (req, res) => {
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  console.log("Req.Body", req.body);
+  // console.log("Req.Body", req.body);
   if (!email || !password) {
     return res.status(422).json({
       error: true,

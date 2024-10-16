@@ -1,127 +1,149 @@
-import { Link } from "react-router-dom";   
-// src/VideoChat.js
-// https://www.twilio.com/en-us/blog/video-chat-react-html
-import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
+import "./Meets.css"; // Importing the CSS file for styling
 
-const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT;
-
-const socket = io(`${ServerPort}`); // Replace with your server URL
-// const socket = io("https://gadzconnect.com"); // Backend Socket.IO server
-// const socket = io("https://gadzconnect.com"); // Backend Socket.IO server
+const ServerPort = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+const socket = io(ServerPort);
 
 const VideoChat = () => {
   const [stream, setStream] = useState(null);
-  const [receivingCall, setReceivingCall] = useState(false);
-  const [caller, setCaller] = useState("");
-  const [callerSignal, setCallerSignal] = useState(null);
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [idToCall, setIdToCall] = useState("");
-  const [callEnded, setCallEnded] = useState(false);
+  const [users, setUsers] = useState({});
   const [me, setMe] = useState("");
-
+  const [callEnded, setCallEnded] = useState(false);
   const myVideo = useRef();
-  const userVideo = useRef();
-  const connectionRef = useRef();
+  const connectionsRef = useRef({});
+  
+  // Initialize socket outside useEffect to prevent re-initialization
+  const socketRef = useRef(socket);
+
+  const joinRoom = useCallback(() => {
+    if (me) {
+      socketRef.current.emit("userJoined", me);
+    }
+  }, [me]);
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      setStream(stream);
-      myVideo.current.srcObject = stream;
-    });
+    const initializeStream = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: true,
+        });
+        setStream(mediaStream);
+        myVideo.current.srcObject = mediaStream;
+      } catch (err) {
+        console.error("Unable to access media devices:", err);
+      }
+    };
 
-    socket.on("me", (id) => {
+    initializeStream();
+
+    socketRef.current.on("me", (id) => {
       setMe(id);
+      joinRoom();
     });
 
-    socket.on("callUser", ({ from, name: callerName, signal }) => {
-      setReceivingCall(true);
-      setCaller(from);
-      setCallerSignal(signal);
+    socketRef.current.on("userJoined", (userId) => {
+      const peer = createPeer(userId, me, stream);
+      connectionsRef.current[userId] = peer;
+      setUsers((prev) => ({ ...prev, [userId]: userId }));
     });
-  }, []);
 
-  const callUser = (id) => {
+    socketRef.current.on("receiveSignal", ({ signal, from }) => {
+      const peer = connectionsRef.current[from];
+      if (peer) {
+        peer.signal(signal);
+      }
+    });
+
+    socketRef.current.on("userLeft", (userId) => {
+      if (connectionsRef.current[userId]) {
+        connectionsRef.current[userId].destroy();
+        delete connectionsRef.current[userId];
+      }
+      setUsers((prev) => {
+        const newUsers = { ...prev };
+        delete newUsers[userId];
+        return newUsers;
+      });
+    });
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      socketRef.current.disconnect();
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stream, joinRoom, me]);
+
+  const createPeer = (userId, callerId, stream) => {
     const peer = new Peer({
       initiator: true,
       trickle: false,
       stream: stream,
     });
 
-    peer.on("signal", (data) => {
-      socket.emit("callUser", { userToCall: id, signalData: data, from: me });
+    peer.on("signal", (signal) => {
+      socketRef.current.emit("sendSignal", { signal, to: userId });
     });
 
     peer.on("stream", (stream) => {
-      userVideo.current.srcObject = stream;
+      const userVideo = document.getElementById(userId);
+      if (userVideo) {
+        userVideo.srcObject = stream;
+      }
     });
 
-    socket.on("callAccepted", (signal) => {
-      setCallAccepted(true);
-      peer.signal(signal);
-    });
-
-    connectionRef.current = peer;
-  };
-
-  const answerCall = () => {
-    setCallAccepted(true);
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-    });
-
-    peer.on("signal", (data) => {
-      socket.emit("answerCall", { signal: data, to: caller });
-    });
-
-    peer.on("stream", (stream) => {
-      userVideo.current.srcObject = stream;
-    });
-
-    peer.signal(callerSignal);
-    connectionRef.current = peer;
+    return peer;
   };
 
   const leaveCall = () => {
     setCallEnded(true);
-    connectionRef.current.destroy();
+    for (const userId in connectionsRef.current) {
+      connectionsRef.current[userId].destroy();
+    }
+    connectionsRef.current = {};
+    socketRef.current.emit("leaveRoom", me);
+    setUsers({});
   };
 
   return (
-    <div>
-      <div>
-        <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />
-        {callAccepted && !callEnded ? (
-          <video playsInline ref={userVideo} autoPlay style={{ width: "300px" }} />
-        ) : null}
-      </div>
-      <div>
-        {receivingCall && !callAccepted ? (
-          <div>
-            <h1>{caller} is calling...</h1>
-            <button onClick={answerCall}>Answer</button>
-          </div>
-        ) : (
-          <div>
-            <input
-              type="text"
-              value={idToCall}
-              onChange={(e) => setIdToCall(e.target.value)}
-              placeholder="ID to call"
+    <div className="video-chat-container">
+      <h1 className="title">Video Chat Application</h1>
+      <div className="video-section">
+        <video playsInline muted ref={myVideo} autoPlay className="my-video" />
+        <div id="videoContainer" className="video-grid">
+          {Object.keys(users).map((userId) => (
+            <video
+              key={userId}
+              id={userId}
+              className="user-video"
+              autoPlay
+              playsInline
             />
-            <button onClick={() => callUser(idToCall)}>Call</button>
-          </div>
+          ))}
+        </div>
+      </div>
+      <div className="controls">
+        {!callEnded ? (
+          <>
+            <button className="button" onClick={joinRoom}>
+              Join Room
+            </button>
+            <button className="button" onClick={leaveCall}>
+              Leave Call
+            </button>
+          </>
+        ) : (
+          <h2>Call Ended</h2>
         )}
       </div>
-      <div>
-        {callAccepted && !callEnded ? (
-          <button onClick={leaveCall}>End Call</button>
-        ) : null}
-      </div>
-      <Link to="/Employee">Home</Link>
+      <Link to="/Employee" className="home-link">
+        Home
+      </Link>
     </div>
   );
 };

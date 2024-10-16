@@ -1,42 +1,48 @@
 import React, { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import "./TicketsCreated.css"; // Importing CSS for styling
 
-const TicketsCreated = () => {
-  const [data, setData] = useState([]);
-  const [data2, setData2] = useState([]);
+// Define the ticket type
+interface Ticket {
+  name?: string;
+  subject?: string;
+  description?: string;
+}
 
-  // const { id } = useParams();
+const TicketsCreated: React.FC = () => {
+  const [itTickets, setItTickets] = useState<Ticket[]>([]);
+  const [userTickets, setUserTickets] = useState<Ticket[]>([]);
 
-  const getData = async () => {
-    const { data } = await axios.get(`/api/it-help/view`);
-    setData(data);
+  const fetchItTickets = async () => {
+    try {
+      const { data } = await axios.get(`/api/it-help/view`);
+      setItTickets(data);
+    } catch (error) {
+      console.error("Error fetching IT tickets:", error);
+    }
   };
 
-  const getData2 = async () => {
-    const { data } = await axios.get(`/api/employee-help/view`);
-    setData2(data);
+  const fetchUserTickets = async () => {
+    try {
+      const { data } = await axios.get(`/api/employee-help/view`);
+      setUserTickets(data);
+    } catch (error) {
+      console.error("Error fetching user tickets:", error);
+    }
   };
 
   useEffect(() => {
-    getData();
-  }, []);
-  useEffect(() => {
-    getData2();
+    fetchItTickets();
+    fetchUserTickets();
   }, []);
 
-  return (
-    <>
-      <div>All Tickets</div>
-
-      <h1> View All Tickets Created for IT Issues</h1>
-
-      {/* {JSON.stringify(data)}<br /><br /> */}
+  const renderTickets = (tickets: Ticket[], title: string) => (
+    <div className="ticket-section">
+      <h1>{title}</h1>
       <table>
         <thead>
           <tr>
-            <th></th>
             <th>View Ticket</th>
             <th>Name</th>
             <th>Subject</th>
@@ -44,57 +50,34 @@ const TicketsCreated = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((r: any, id: any) => (
-            <tr key={id}>
-              <td>
-                {" "}
-                {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
-              </td>
-              <td>
-                <Link to="/AdminUserProfile">View </Link>
-              </td>
-              <td>{r.name ? r.name : "No Name"}</td>
-              <td>{r.subject ? r.subject : "No Subject"}</td>
-              <td>{r.description ? r.description : "No Information"}</td>
-              {/* <td>{r}</td> */}
+          {tickets.length > 0 ? (
+            tickets.map((ticket, index) => (
+              <tr key={index}>
+                <td>
+                  <Link to="/AdminUserProfile">View</Link>
+                </td>
+                <td>{ticket.name || "No Name"}</td>
+                <td>{ticket.subject || "No Subject"}</td>
+                <td>{ticket.description || "No Information"}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4}>No tickets available</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
-      <br />
-      <div>All Tickets to the Employees</div>
+    </div>
+  );
 
-<h1> View All Tickets Created for User Issues</h1>
-
-{/* {JSON.stringify(data)}<br /><br /> */}
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th>View Ticket</th>
-      <th>Name</th>
-      <th>Subject</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    {data2.map((r: any, id: any) => (
-      <tr key={id}>
-        <td>
-          {" "}
-          {/* <input onClick={handleID} type="submit" value={`${r.id}`} /> */}
-        </td>
-        <td>
-          <Link to="/AdminUserProfile">View </Link>
-        </td>
-        <td>{r.name ? r.name : "No Name"}</td>
-        <td>{r.subject ? r.subject : "No Subject"}</td>
-        <td>{r.description ? r.description : "No Information"}</td>
-        {/* <td>{r}</td> */}
-      </tr>
-    ))}
-  </tbody>
-</table>
+  return (
+    <>
+      <div className="tickets-header">
+        <h2>All Tickets</h2>
+      </div>
+      {renderTickets(itTickets, "View All Tickets Created for IT Issues")}
+      {renderTickets(userTickets, "View All Tickets Created for User Issues")}
       <Link to="/Admin">Home</Link>
     </>
   );

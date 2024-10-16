@@ -1,4 +1,3 @@
-// models/User.js
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define("User", {
     email: {
@@ -75,7 +74,6 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     loadReferences: {
-      // Renamed from 'loads' to 'loadReferences'
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -157,7 +155,15 @@ module.exports = function (sequelize, DataTypes) {
 
   // Associations
   User.associate = (models) => {
-    User.hasMany(models.Load, { foreignKey: "userId" }); // Keeping association name as 'loads'
+    User.hasMany(models.Message, {
+      foreignKey: "senderId",
+      as: "sentMessages",
+    });
+    User.hasMany(models.Message, {
+      foreignKey: "receiverId",
+      as: "receivedMessages",
+    });
+    User.hasMany(models.Load, { foreignKey: "userId", as: "loads" });
   };
 
   return User;

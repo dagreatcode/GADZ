@@ -1,0 +1,91 @@
+/* AvailableTable.module.css */
+.container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.header {
+  color: #2c3e50;
+  text-align: center;
+}
+
+.subHeader {
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+}
+
+.input {
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 10px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #1a66a0;
+}
+
+.loadTable {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  background-color: #34495e;
+  color: white;
+  padding: 10px;
+}
+
+.tableRow {
+  border: 1px solid #ddd;
+}
+
+.tableRow:hover {
+  background-color: #f1f1f1;
+}
+
+.tableCell {
+  padding: 10px;
+  text-align: left;
+}
+
+.mapContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.mapError {
+  color: red;
+  text-align: center;
+}
+
+.truckAnimation {
+  position: absolute;
+  width: 100px; /* Adjust size as needed */
+  animation: drive 5s linear infinite; /* Infinite animation */
+}
+
+@keyframes drive {
+  0% {
+    left: -100px;
+  } /* Start off screen */
+  100% {
+    left: 100%;
+  } /* Move across screen */
+}

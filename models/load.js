@@ -1,4 +1,3 @@
-// models/Load.js
 module.exports = function (sequelize, DataTypes) {
   const Load = sequelize.define("Load", {
     description: {
@@ -20,11 +19,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER, // Assuming User ID is an integer
       allowNull: false,
       references: {
-        model: "Users", // Matches the table name for the User model
+        model: "Users", // Correctly matches the table name for the User model
         key: "id", // Matches the primary key of the User model
       },
     },
-    // Additional fields can be added here
   });
 
   // Associations
