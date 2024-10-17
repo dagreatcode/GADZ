@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import axios from "axios";
 import styles from "./AvailableTable.module.css"; // Import CSS module
-
+import GADZTruck from "./GADZBoat.png"
 interface User {
   first: string;
   last: string;
@@ -152,7 +152,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
   return (
     <div className={styles.container}>
       <img
-        src="https://example.com/truck.png"
+        src={GADZTruck}
         alt="Truck Animation"
         className={styles.truckAnimation}
       />
@@ -219,17 +219,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         style={{ margin: "20px", textDecoration: "none", color: "#2980b9" }}
       >
         Home
-      </Link>
-
-      <Link
-        to="/UserProfile"
-        style={{
-          margin: "20px",
-          textDecoration: "none",
-          color: "#2980b9",
-        }}
-      >
-        Profile
       </Link>
 
       <div className={styles.mapContainer}>

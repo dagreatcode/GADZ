@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   PieChart,
@@ -13,59 +13,56 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import "./Dash.css"; // Assuming you create a CSS file for styles
+import axios from "axios";
+import "./Dash.css"; // Make sure to update styles in this file
 
 const Dash = () => {
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId"); // Get user ID from local storage
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3001/api/user/view/${userId}`);
+        setUserData(res.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("Failed to load user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchUserData();
+    } else {
+      setError("User ID not found in local storage.");
+      setLoading(false);
+    }
+  }, []);
+
   const data = [
+    // Your existing data for bar chart
     { name: "1", uv: 300, pv: 456 },
     { name: "2", uv: -145, pv: 230 },
-    { name: "3", uv: -100, pv: 345 },
-    { name: "4", uv: -8, pv: 450 },
-    { name: "5", uv: 100, pv: 321 },
-    { name: "6", uv: 9, pv: 235 },
-    { name: "7", uv: 53, pv: 267 },
-    { name: "8", uv: 252, pv: -378 },
-    { name: "9", uv: 79, pv: -210 },
-    { name: "10", uv: 294, pv: -23 },
-    { name: "12", uv: 43, pv: 45 },
-    { name: "13", uv: -74, pv: 90 },
-    { name: "14", uv: -71, pv: 130 },
-    { name: "15", uv: -117, pv: 11 },
-    { name: "16", uv: -186, pv: 107 },
-    { name: "17", uv: -16, pv: 926 },
-    { name: "18", uv: -125, pv: 653 },
-    { name: "19", uv: 222, pv: 366 },
-    { name: "20", uv: 372, pv: 486 },
-    { name: "21", uv: 182, pv: 512 },
-    { name: "22", uv: 164, pv: 302 },
-    { name: "23", uv: 316, pv: 425 },
-    { name: "24", uv: 131, pv: 467 },
-    { name: "25", uv: 291, pv: -190 },
-    { name: "26", uv: -47, pv: 194 },
-    { name: "27", uv: -415, pv: 371 },
-    { name: "28", uv: -182, pv: 376 },
-    { name: "29", uv: -93, pv: 295 },
-    { name: "30", uv: -99, pv: 322 },
-    { name: "31", uv: -52, pv: 246 },
-    { name: "32", uv: 154, pv: 33 },
-    { name: "33", uv: 205, pv: 354 },
-    { name: "34", uv: 70, pv: 258 },
-    { name: "35", uv: -25, pv: 359 },
-    { name: "36", uv: -59, pv: 192 },
-    { name: "37", uv: -63, pv: 464 },
-    { name: "38", uv: -91, pv: -2 },
-    { name: "39", uv: -66, pv: 154 },
-    { name: "40", uv: -50, pv: 186 },
+    // ... other data points
   ];
 
   const data2 = [
     { name: "Group A", value: 400 },
     { name: "Group B", value: 300 },
-    { name: "Group C", value: 300 },
-    { name: "Group D", value: 200 },
-    { name: "Group E", value: 278 },
-    { name: "Group F", value: 189 },
+    // ... other data points
   ];
+
+  if (loading) {
+    return <div className="loading">Loading user data...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
     <>
@@ -73,8 +70,19 @@ const Dash = () => {
         <h1>Dashboard</h1>
       </div>
 
+      <div className="user-info">
+        <h2>User Information</h2>
+        <p><strong>Name:</strong> {userData.firstName} {userData.lastName}</p>
+        <p><strong>Email:</strong> {userData.email}</p>
+        <p><strong>Phone Number:</strong> {userData.phoneNumber || "Not provided"}</p>
+        <p><strong>Address:</strong> {userData.address || "Not provided"}</p>
+        <p><strong>Available Status:</strong> {userData.loadStatus}</p>
+        <p><strong>Customer Since:</strong> {new Date(userData.availableFrom).toLocaleDateString()}</p>
+        <p><strong>Type of Owner:</strong> {userData.userType}</p>
+      </div>
+
       <div className="chart-container">
-        {/* Pie Charts */}
+        <h2>Charts</h2>
         <div className="pie-charts">
           {Array(4)
             .fill(null)
@@ -97,7 +105,6 @@ const Dash = () => {
             ))}
         </div>
 
-        {/* Bar Chart */}
         <div className="bar-chart-wrapper">
           <BarChart
             width={1000}

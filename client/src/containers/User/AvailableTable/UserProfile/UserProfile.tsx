@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import styles from "./UserProfile.module.css"; // Create a separate CSS file for styles
+import styles from "./UserProfile.module.css"; // Import your CSS styles
 
 const UserProfile = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -9,16 +9,27 @@ const UserProfile = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
+  interface Load {
+    id: number; // or string, depending on your database schema
+    description: string;
+    company: string;
+  }
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3001/api/user/view/${userId}`
-        );
-        setUserData(res.data);
+        const [userRes, loadsRes] = await Promise.all([
+          axios.get(`http://localhost:3001/api/user/view/${userId}`),
+          axios.get(`http://localhost:3001/api/loads/user/${userId}`), // Ensure this hits the new route
+        ]);
+
+        setUserData({
+          ...userRes.data,
+          loads: Array.isArray(loadsRes.data) ? loadsRes.data : [], // Make sure loads is an array
+        });
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError("Failed to load user data.");
+        console.error("Error fetching user profile data:", error);
+        setError("Failed to load user profile data.");
       } finally {
         setLoading(false);
       }
@@ -52,21 +63,27 @@ const UserProfile = () => {
           Name: {userData.firstName} {userData.lastName}
         </h2>
         <h2>
-          Customer Since:{" "}
-          {new Date(userData.availableFrom).toLocaleDateString()}
+          Customer Since: {new Date(userData.availableFrom).toLocaleDateString()}
         </h2>
         <h2>Type of Owner: {userData.userType}</h2>
         <h2>
-          All Services Available:{" "}
-          {userData.loadReferences
-            ? userData.loadReferences.split(",")
-            : "None"}
+          All Services Available: {userData.loadReferences ? userData.loadReferences.split(",") : "None"}
         </h2>
         <h2>
           Locations: {userData.location ? userData.location.split(",") : "None"}
         </h2>
         <h2>Phone Number: {userData.phoneNumber || "Not provided"}</h2>
         <h2>Address: {userData.address || "Not provided"}</h2>
+        <h2>
+          Loads ({userData.loads.length}): {Array.isArray(userData.loads) && userData.loads.length > 0 ? (
+            userData.loads.map((load: Load) => (
+              <div key={load.id} className={styles.loadItem}>
+                <h3>{load.description}</h3>
+                <p>Company: {load.company}</p>
+              </div>
+            ))
+          ) : "None"}
+        </h2>
       </div>
       <button
         className={styles.button}
@@ -80,8 +97,7 @@ const UserProfile = () => {
         <Link to="/AvailableTable" className={styles.button}>
           Home
         </Link>
-        <Link to={`/MessageUser`} className={styles.button}>
-        {/* <Link to={`/MessageUser/${userId}`} className={styles.button}> */}
+        <Link to={`/MessageUser/${userId}`} className={styles.button}>
           Message User
         </Link>
       </div>

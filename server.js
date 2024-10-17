@@ -64,6 +64,10 @@ app.use(
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 app.use(require("./routes"));
 
+// app.use("/api/loads", loadRoutes); // Add this line
+
+// Route to get all loads for a specific user
+app.get("/api/loads/user/:userId", loadController.getAllUserLoads);
 // Load routes
 app.get("/api/loads", loadController.getAllLoads); // Get all loads
 app.post("/api/loads", loadController.createLoad); // Create a new load

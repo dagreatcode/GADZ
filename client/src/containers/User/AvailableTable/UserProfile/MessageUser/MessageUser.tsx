@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import styles from "./MessageUser.module.css";
 import truckImage from "./GADZShip.png"; // Ensure you have an image
+import { Link } from "react-router-dom";
 
 interface Message {
   sender: string;
@@ -157,6 +158,9 @@ const MessageUser: React.FC = () => {
       <div className={styles.truckAnimation}>
         <img src={truckImage} alt="Truck" className={styles.truckImage} />
       </div>
+      <Link to="/User" className="home-link">
+        Home
+      </Link>
     </div>
   );
 };
