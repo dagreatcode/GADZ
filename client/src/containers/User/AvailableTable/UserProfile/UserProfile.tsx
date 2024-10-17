@@ -100,7 +100,8 @@ const UserProfile = () => {
         <Link to="/AvailableTable" className={styles.button}>
           Home
         </Link>
-        <Link to={`/MessageUser/${userId}`} className={styles.button}>
+        <Link to={`/MessageUser`} className={styles.button}>
+        {/* <Link to={`/MessageUser/${userId}`} className={styles.button}> */}
           Message User
         </Link>
       </div>
