@@ -16,6 +16,9 @@ import {
 import axios from "axios";
 import "./Dash.css"; // Make sure to update styles in this file
 
+const ServerPort =
+  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+
 const Dash = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,7 +28,7 @@ const Dash = () => {
     const userId = localStorage.getItem("userId"); // Get user ID from local storage
     const fetchUserData = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/user/view/${userId}`);
+        const res = await axios.get(`${ServerPort}/api/user/view/${userId}`);
         setUserData(res.data);
       } catch (error) {
         console.error("Error fetching user data:", error);

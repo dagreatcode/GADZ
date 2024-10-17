@@ -3,6 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./UserProfile.module.css"; // Import your CSS styles
 
+const ServerPort =
+  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+  
 const UserProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const [userData, setUserData] = useState<any>(null);
@@ -19,8 +22,8 @@ const UserProfile = () => {
     const fetchUserData = async () => {
       try {
         const [userRes, loadsRes] = await Promise.all([
-          axios.get(`http://localhost:3001/api/user/view/${userId}`),
-          axios.get(`http://localhost:3001/api/loads/user/${userId}`), // Ensure this hits the new route
+          axios.get(`${ServerPort}/api/user/view/${userId}`),
+          axios.get(`${ServerPort}/api/loads/user/${userId}`), // Ensure this hits the new route
         ]);
 
         setUserData({
