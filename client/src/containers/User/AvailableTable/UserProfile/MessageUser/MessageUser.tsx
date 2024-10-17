@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import styles from "./MessageUser.module.css";
+import truckImage from "./GADZShip.png"; // Ensure you have an image
 
 interface Message {
   sender: string;
@@ -81,7 +82,7 @@ const MessageUser: React.FC = () => {
     };
   }, []);
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (message.trim() && currentUserId && receiverId) {
       const newMessage: Message = {
         sender: currentUserId,
@@ -89,21 +90,15 @@ const MessageUser: React.FC = () => {
         content: message,
       };
 
-      try {
-        socket.emit("sendMessage", newMessage);
-        console.log("Message sent:", newMessage);
-        setMessage(""); // Clear the message input
-        setError(""); // Clear any previous error messages
-      } catch (error) {
-        console.error("Error sending message:", error);
-        setError("Failed to send message. Please try again.");
-      }
+      socket.emit("sendMessage", newMessage);
+      console.log("Message sent:", newMessage);
+      setMessage(""); // Clear the message input
+      setError(""); // Clear any previous error messages
     } else {
       setError("Please select a user and type a message.");
     }
   };
 
-  // Filter messages for display based on selected receiver
   const filteredMessages = messages.filter(
     (msg) =>
       (msg.sender === currentUserId && msg.receiver === receiverId) ||
@@ -118,7 +113,6 @@ const MessageUser: React.FC = () => {
         onChange={(e) => {
           setReceiverId(e.target.value);
           setMessage(""); // Clear the message input when changing the user
-          console.log("Selected receiver ID:", e.target.value);
         }}
         className={styles.dropdown}
       >
@@ -160,6 +154,9 @@ const MessageUser: React.FC = () => {
       <button onClick={sendMessage} className={styles.sendButton}>
         Send
       </button>
+      <div className={styles.truckAnimation}>
+        <img src={truckImage} alt="Truck" className={styles.truckImage} />
+      </div>
     </div>
   );
 };

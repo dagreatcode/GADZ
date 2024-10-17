@@ -201,7 +201,14 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
             <tr key={load.id} className={styles.tableRow}>
               <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>{load.company}</td>
+              <td className={styles.tableCell}>
+                <Link
+                  to={`/UserProfile/${load.userId}`} // Link to UserProfile with userId
+                  className={styles.loadLink}
+                >
+                  {load.company}
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -266,13 +273,12 @@ const Table: React.FC<{
         <th className={styles.tableHeader}>{title}</th>
         {isUser ? (
           <>
+            <th className={styles.tableHeader}>Handle</th>
             <th className={styles.tableHeader}>First</th>
             <th className={styles.tableHeader}>Last</th>
-            <th className={styles.tableHeader}>Handle</th>
           </>
         ) : (
           <>
-            {/* <th className={styles.tableHeader}>Load ID</th> */}
             <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
           </>
@@ -292,7 +298,14 @@ const Table: React.FC<{
             <>
               <td className={styles.tableCell}>{(item as Load).id}</td>
               <td className={styles.tableCell}>{(item as Load).description}</td>
-              <td className={styles.tableCell}>{(item as Load).company}</td>
+              <td className={styles.tableCell}>
+                <Link
+                  to={`/UserProfile/${(item as Load).userId}`} // Link to UserProfile with userId
+                  className={styles.loadLink}
+                >
+                  {(item as Load).company}
+                </Link>
+              </td>
             </>
           )}
         </tr>
