@@ -36,7 +36,9 @@ const MessageUser: React.FC = () => {
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get<Message[]>(`${ServerPort}/api/message/cheat`);
+        const res = await axios.get<Message[]>(
+          `${ServerPort}/api/message/cheat`
+        );
         if (Array.isArray(res.data)) {
           setMessages(res.data);
         } else {
@@ -63,12 +65,19 @@ const MessageUser: React.FC = () => {
     fetchMessages();
     fetchUsers();
 
+    // Socket listeners
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
     socket.on("receiveMessage", (newMessage: Message) => {
+      console.log("Message received:", newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
       socket.off("receiveMessage");
+      socket.off("connect");
     };
   }, []);
 
@@ -82,6 +91,7 @@ const MessageUser: React.FC = () => {
 
       try {
         socket.emit("sendMessage", newMessage);
+        console.log("Message sent:", newMessage);
         setMessage(""); // Clear the message input
         setError(""); // Clear any previous error messages
       } catch (error) {
@@ -108,6 +118,7 @@ const MessageUser: React.FC = () => {
         onChange={(e) => {
           setReceiverId(e.target.value);
           setMessage(""); // Clear the message input when changing the user
+          console.log("Selected receiver ID:", e.target.value);
         }}
         className={styles.dropdown}
       >
@@ -127,9 +138,12 @@ const MessageUser: React.FC = () => {
         {filteredMessages.map((msg, index) => (
           <div key={index} className={styles.message}>
             <strong>
-              {msg.sender === currentUserId ? "You" : users.find(user => user.id === msg.sender)?.email}:
-            </strong> 
-            {msg.content} 
+              {msg.sender === currentUserId
+                ? "You"
+                : users.find((user) => user.id === msg.sender)?.email}
+              :
+            </strong>
+            {msg.content}
             <span className={styles.meta}>
               {msg.receiver === currentUserId ? " (to you)" : ""}
             </span>
