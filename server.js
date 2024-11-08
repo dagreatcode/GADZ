@@ -210,7 +210,8 @@ app.get("/auth/callback/", async (req, res) => {
 
       const loadData = await loadResp.json();
       console.log("Load Response:", loadData);
-      res.send(loadData);
+      // res.send(loadData);
+      res.render("AvailableTable", { loadData });
     } else {
       console.error("Access token not found in response:", tokenData);
       res.status(400).send("Failed to retrieve access token.");
