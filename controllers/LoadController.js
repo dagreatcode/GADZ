@@ -34,6 +34,19 @@ const loadController = {
       res.status(500).json({ error: "Failed to create load" });
     }
   },
+
+  getAllUserLoads: async (req, res) => {
+    const { userId } = req.params;
+    try {
+      const userLoads = await db.Load.findAll({
+        where: { userId },
+      });
+      res.status(200).json(userLoads);
+    } catch (error) {
+      console.error("Error fetching user loads:", error);
+      res.status(500).json({ error: "Failed to fetch user loads" });
+    }
+  },
 };
 
 module.exports = loadController;

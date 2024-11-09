@@ -4,7 +4,7 @@ const handleMessageSocket = (io, socket) => {
   console.log("New client connected for messaging:", socket.id);
 
   socket.on("sendMessage", async (message) => {
-    const { sender, receiver, content } = message; // Keep using 'sender' and 'receiver'
+    const { sender, receiver, content } = message;
 
     if (!sender || !receiver || !content) {
       return socket.emit("error", "Missing required fields");
