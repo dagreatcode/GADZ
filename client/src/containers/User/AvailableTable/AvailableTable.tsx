@@ -3,14 +3,9 @@ import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
+import Table from "./Table"; // Update the path as needed
 
 // Types
-interface User {
-  first: string;
-  last: string;
-  handle: string;
-}
-
 interface Load {
   mileage: number;
   numberOfStops: number;
@@ -20,15 +15,16 @@ interface Load {
   userId: string;
 }
 
+interface Driver {
+  description: string;
+  company: string;
+}
+
 interface LoadboardData {
   loads: Load[];
 }
 
-interface AvailableTableProps {
-  drivers?: User[];
-}
-
-const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
+const AvailableTable: React.FC = () => {
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
@@ -40,6 +36,11 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     company: "",
     userId: "",
   });
+  const [newDriver, setNewDriver] = useState<Driver>({
+    description: "",
+    company: "",
+  });
+  const [driverList, setDriverList] = useState<Driver[]>([]);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -70,6 +71,17 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     }
   };
 
+  const fetchDrivers = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
+      );
+      setDriverList(response.data);
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+    }
+  };
+
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
@@ -86,9 +98,12 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
   };
 
+  const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewDriver({ ...newDriver, [e.target.name]: e.target.value });
+  };
+
   const handleSubmitLoad = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const userId = localStorage.getItem("userId");
     if (!userId) {
       console.error("User ID not found in local storage");
@@ -114,13 +129,40 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
       );
       setLoads(updatedResponse.data);
-
       const filteredLoads = updatedResponse.data.filter(
         (load: Load) => load.userId === userId
       );
       setUserLoads(filteredLoads);
     } catch (error) {
       console.error("Error creating load:", error);
+    }
+  };
+
+  const handleSubmitDriver = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID not found in local storage");
+      return;
+    }
+
+    try {
+      const requestData = {
+        description: newDriver.description,
+        company: newDriver.company,
+        userId,
+      };
+      await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`,
+        requestData
+      );
+      setNewDriver({
+        description: "",
+        company: "",
+      });
+      fetchDrivers();
+    } catch (error) {
+      console.error("Error creating driver:", error);
     }
   };
 
@@ -140,10 +182,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         className={styles.truckAnimation}
       />
       <h1 className={styles.header}>Available Table / Load Board</h1>
-      <h5 className={styles.subHeader}>
-        This is where we can see the Load Board and click on a company to do
-        business with or add to cart.
-      </h5>
       <Link to="/User" className={styles.homeLink}>
         Home
       </Link>
@@ -157,10 +195,20 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         Fetch My Loads
       </button>
 
-      <Table data={drivers} title="Drivers" isUser={true} />
+      <button
+        onClick={fetchDrivers}
+        className={`${styles.button} ${styles.fetchButton}`}
+        aria-label="Fetch my drivers"
+      >
+        Fetch Drivers
+      </button>
+
+      {/* Driver Table */}
+      <Table data={driverList} title="Drivers" isUser={true} />
       <br />
       <hr />
 
+      {/* Load Table */}
       <Table
         data={loads}
         title="All Loads"
@@ -196,6 +244,15 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         </tbody>
       </table>
 
+      <h3>Your Drivers</h3>
+      <Table
+        data={driverList} // Pass the list of drivers
+        title="Drivers"
+        isUser={true} // Set to true because we are displaying user data (drivers in this case)
+        showCompanyLink={false} // You don't need to link to the company for drivers
+      />
+
+      {/* New Load Form */}
       <form className={styles.form} onSubmit={handleSubmitLoad}>
         <input
           className={styles.input}
@@ -220,6 +277,31 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         </button>
       </form>
 
+      {/* New Driver Form */}
+      <form className={styles.form} onSubmit={handleSubmitDriver}>
+        <input
+          className={styles.input}
+          type="text"
+          name="description"
+          placeholder="Driver Description"
+          value={newDriver.description}
+          onChange={handleDriverInputChange}
+          required
+        />
+        <input
+          className={styles.input}
+          type="text"
+          name="company"
+          placeholder="Company"
+          value={newDriver.company}
+          onChange={handleDriverInputChange}
+          required
+        />
+        <button className={styles.button} type="submit">
+          Add Driver
+        </button>
+      </form>
+
       <h3>123Loadboard Table</h3>
       <button
         onClick={handleAuthorizeNavigation}
@@ -235,13 +317,11 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
       >
         Fetch 123Loadboard Data
       </button>
-
-      <table className={styles.loadTable}>
+      <table className={styles.loadboardTable}>
         <thead>
           <tr>
             <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Mileage</th>
-            <th className={styles.tableHeader}>Number Of Stops</th>
+            <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
           </tr>
         </thead>
@@ -249,8 +329,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           {loadboardData.map((load) => (
             <tr key={load.id} className={styles.tableRow}>
               <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.mileage}</td>
-              <td className={styles.tableCell}>{load.numberOfStops}</td>
+              <td className={styles.tableCell}>{load.description}</td>
               <td className={styles.tableCell}>{load.company}</td>
             </tr>
           ))}
@@ -259,65 +338,5 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     </div>
   );
 };
-
-interface TableProps {
-  data: User[] | Load[];
-  title: string;
-  isUser: boolean;
-  showCompanyLink?: boolean;
-}
-
-const Table: React.FC<TableProps> = ({
-  data,
-  title,
-  isUser,
-  showCompanyLink = false,
-}) => (
-  <div>
-    <h3>{title}</h3>
-    <table className={styles.loadTable}>
-      <thead>
-        <tr>
-          <th className={styles.tableHeader}>Name</th>
-          <th className={styles.tableHeader}>Handle</th>
-          <th className={styles.tableHeader}>Company</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item: User | Load) => {
-          if (isUser) {
-            const user = item as User;
-            return (
-              <tr key={user.handle}>
-                <td
-                  className={styles.tableCell}
-                >{`${user.first} ${user.last}`}</td>
-                <td className={styles.tableCell}>{user.handle}</td>
-                <td className={styles.tableCell}>N/A</td>
-              </tr>
-            );
-          }
-          const load = item as Load;
-          return (
-            <tr key={load.id}>
-              <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>{load.userId}</td>
-              <td className={styles.tableCell}>
-                {showCompanyLink && (
-                  <Link
-                    to={`/UserProfile/${load.userId}`}
-                    className={styles.loadLink}
-                  >
-                    {load.company}
-                  </Link>
-                )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-);
 
 export default AvailableTable;
