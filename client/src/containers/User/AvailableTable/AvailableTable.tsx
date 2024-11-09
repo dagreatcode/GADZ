@@ -71,9 +71,10 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     fetchLoads();
   }, []);
 
+
   const fetchLoadboardData = async () => {
     try {
-      const response = await axios.get("/auth/callback");
+      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback`);
       setLoadboardData(response.data);
     } catch (error) {
       console.error("Error fetching 123Loadboard data:", error);
