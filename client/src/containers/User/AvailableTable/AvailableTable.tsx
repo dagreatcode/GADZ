@@ -159,8 +159,17 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     }
   };
 
+  // const handleAuthorizeNavigation = () => {
+  //   window.location.href = 'https://www.example.com/authorize'; // Replace with your external URL
+  // };
+  
   const handleAuthorizeNavigation = () => {
-    navigate("/authorize");
+    const baseUrl =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3001/authorize" // Localhost URL (adjust port if needed)
+        : "https://gadzconnect.com/authorize"; // Production URL
+  
+    window.location.href = baseUrl;
   };
 
   return (
