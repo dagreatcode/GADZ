@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
+const messageRouter = require("./controllers/MessageController.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +46,11 @@ io.on("connection", (socket) => {
   handleMessageSocket(io, socket);
 });
 
+// Middleware
+// app.use(express.json()); // To parse JSON bodies
+
+// Use the message routes
+app.use("/api/message", messageRouter);
 // Other routes...
 app.use("/api/agreement", require("./controllers/AgreementController.js"));
 app.use("/api/user", require("./controllers/UserAPIRoutes.js"));
@@ -54,10 +60,14 @@ app.use(
   "/api/employee-help",
   require("./controllers/EmployeeTicketController.js")
 );
-app.use("/api/message", require("./controllers/MessageController.js"));
+// app.use("/api/message", require("./controllers/MessageController.js"));
 app.use("/api/mail/", require("./config/nodeMailer/nodeMailer.js"));
 app.use(require("./routes"));
 
+// app.use("/api/loads", loadRoutes); // Add this line
+
+// Route to get all loads for a specific user
+app.get("/api/loads/user/:userId", loadController.getAllUserLoads);
 // Load routes
 app.get("/api/loads", loadController.getAllLoads); // Get all loads
 app.post("/api/loads", loadController.createLoad); // Create a new load
@@ -201,6 +211,7 @@ app.get("/auth/callback/", async (req, res) => {
       const loadData = await loadResp.json();
       console.log("Load Response:", loadData);
       res.send(loadData);
+      // res.render("AvailableTable", { loadData });
     } else {
       console.error("Access token not found in response:", tokenData);
       res.status(400).send("Failed to retrieve access token.");

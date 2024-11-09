@@ -20,12 +20,12 @@ router.use(
 router.get("/view", (req, res) => {
   db.User.findAll().then((allUsers) => {
     res.send(allUsers);
-    console.log(allUsers);
+    // console.log(allUsers);
   });
 });
 
 router.get("/view/:id", (req, res) => {
-  console.log(`Fetching user with ID: ${req.params.id}`);
+  // console.log(`Fetching user with ID: ${req.params.id}`);
 
   db.User.findOne({
     where: {
@@ -36,26 +36,26 @@ router.get("/view/:id", (req, res) => {
       if (!foundUser) {
         return res.status(404).send("User not found");
       }
-      console.log("Found User", foundUser);
+      // console.log("Found User", foundUser);
       res.send(foundUser);
     })
     .catch((error) => {
-      console.error("Error fetching user:", error);
+      // console.error("Error fetching user:", error);
       res.status(500).send("Internal Server Error");
     });
 });
 
 router.put("/update/:id", async (req, res) => {
-  console.log("Updating user...");
+  // console.log("Updating user...");
 
   try {
-    console.log("Request Body:", req.body);
+    // console.log("Request Body:", req.body);
 
     // Fetch the user using findByPk
     const user = await db.User.findByPk(req.params.id);
 
     if (!user) {
-      console.log("User not found");
+      // console.log("User not found");
       return res
         .status(404)
         .send({ success: false, message: "User not found" });
@@ -78,7 +78,7 @@ router.put("/update/:id", async (req, res) => {
     });
 
     if (updatedRows === 0) {
-      console.log("No rows updated");
+      // console.log("No rows updated");
       return res
         .status(404)
         .send({ success: false, message: "No updates made" });
@@ -87,7 +87,7 @@ router.put("/update/:id", async (req, res) => {
     // Fetch the updated user to return
     const updatedUser = await db.User.findByPk(req.params.id);
 
-    console.log(`User with ID ${req.params.id} updated successfully.`);
+    // console.log(`User with ID ${req.params.id} updated successfully.`);
     res.status(200).send({
       success: true,
       message: "User updated successfully",
@@ -162,7 +162,7 @@ router.post("/signUp", async (req, res) => {
       message: "Successfully signed up.",
     });
   } catch (error) {
-    console.error("Error during signup:", error);
+    // console.error("Error during signup:", error);
 
     // Handle specific error cases
     if (error.response) {
@@ -193,7 +193,7 @@ router.post("/login", (req, res) => {
 
   db.User.findOne({ where: { email } })
     .then((foundUser) => {
-      console.log("foundUser Data", foundUser);
+      // console.log("foundUser Data", foundUser);
       if (!foundUser) {
         return res.status(401).json({
           error: true,
@@ -227,7 +227,7 @@ router.post("/login", (req, res) => {
       });
     })
     .catch((error) => {
-      console.error("Error during login:", error);
+      // console.error("Error during login:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
     });
 });
@@ -268,14 +268,14 @@ router.put("/user/update/:userId", async (req, res) => {
     // Fetch the updated user to return
     const updatedUser = await db.User.findByPk(req.params.userId);
 
-    console.log(`User with ID ${req.params.userId} updated successfully.`);
+    // console.log(`User with ID ${req.params.userId} updated successfully.`);
     res.status(200).send({
       success: true,
       message: "User updated successfully",
       user: updatedUser, // Return updated user data
     });
   } catch (error) {
-    console.error("Error updating user:", error);
+    // console.error("Error updating user:", error);
     res.status(500).send({ success: false, message: "Internal Server Error" });
   }
 });

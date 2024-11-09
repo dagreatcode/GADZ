@@ -19,7 +19,7 @@ router.get("/allAdmins", (req, res) => {
 router.get("/viewAdmin", (req, res) => {
   db.Admin.findAll().then((allAdmins) => {
     res.send(allAdmins);
-    console.log(allAdmins);
+    // console.log(allAdmins);
   });
 });
 
@@ -27,7 +27,7 @@ router.post("/adminLogin", (req, res) => {
   const data = req.body;
   const email = data.email;
   const password = data.password;
-  console.log("Req.Body", req.body);
+  // console.log("Req.Body", req.body);
   if (!email || !password) {
     return res.status(422).json({
       error: true,

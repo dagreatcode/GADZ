@@ -112,7 +112,7 @@ function App() {
         <Route path="/Tickets" element={<Tickets />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/AvailableTable" element={<AvailableTable />} />
-        <Route path="/UserProfile" element={<UserProfile />} />
+        <Route path="/UserProfile/:userId" element={<UserProfile />} />
         <Route path="/MessageUser" element={<MessageUser />} />
         <Route path="/Checkout" element={<Checkout />} />
         <Route path="/CreateTicket" element={<CreateTicket />} />
