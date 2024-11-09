@@ -4,7 +4,7 @@ import axios from "axios";
 import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
 
-// User and Load types
+// Types
 interface User {
   first: string;
   last: string;
@@ -27,7 +27,6 @@ interface AvailableTableProps {
 }
 
 const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
-  // State hooks
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
@@ -37,28 +36,29 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     company: "",
     userId: "",
   });
-  
-  // Extracting the code from URL params
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const code = queryParams.get('code');
-  
+  const code = queryParams.get("code");
+
   useEffect(() => {
     if (code) {
-      // Send the authorization code to the backend API
       fetchLoadboardData(code);
     }
   }, [code]);
 
-  // Fetching loads from the backend
   const fetchLoads = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+      );
       setLoads(response.data);
 
       const userId = localStorage.getItem("userId");
       if (userId) {
-        const filteredLoads = response.data.filter((load: Load) => load.userId === userId);
+        const filteredLoads = response.data.filter(
+          (load: Load) => load.userId === userId
+        );
         setUserLoads(filteredLoads);
       }
     } catch (error) {
@@ -66,7 +66,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     }
   };
 
-  // Fetch 123Loadboard data after receiving the authorization code
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
@@ -79,12 +78,10 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     }
   };
 
-  // Handling input changes for new load
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
   };
 
-  // Submitting a new load
   const handleSubmitLoad = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -96,20 +93,26 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
 
     try {
       const requestData = { ...newLoad, userId };
-      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`, requestData);
+      await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`,
+        requestData
+      );
       setNewLoad({ id: 0, description: "", company: "", userId });
 
-      const updatedResponse = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`);
+      const updatedResponse = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+      );
       setLoads(updatedResponse.data);
 
-      const filteredLoads = updatedResponse.data.filter((load: Load) => load.userId === userId);
+      const filteredLoads = updatedResponse.data.filter(
+        (load: Load) => load.userId === userId
+      );
       setUserLoads(filteredLoads);
     } catch (error) {
       console.error("Error creating load:", error);
     }
   };
 
-  // Redirect to authorization
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
@@ -120,24 +123,41 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
 
   return (
     <div className={styles.container}>
-      <img src={GADZTruck} alt="Truck Animation" className={styles.truckAnimation} />
+      <img
+        src={GADZTruck}
+        alt="Truck Animation"
+        className={styles.truckAnimation}
+      />
       <h1 className={styles.header}>Available Table / Load Board</h1>
       <h5 className={styles.subHeader}>
         This is where we can see the Load Board and click on a company to do
         business with or add to cart.
       </h5>
-      <Link to="/User" style={{ margin: "20px", textDecoration: "none", color: "#2980b9" }}>
+      <Link to="/User" className={styles.homeLink}>
         Home
       </Link>
+
       <h3>GADZConnect Table</h3>
-      <button onClick={fetchLoads} className={styles.button}>
+      <button
+        onClick={fetchLoads}
+        className={`${styles.button} ${styles.fetchButton}`}
+        aria-label="Fetch my loads"
+      >
         Fetch My Loads
       </button>
+
       <Table data={drivers} title="Drivers" isUser={true} />
       <br />
       <hr />
-      <Table data={loads} title="All Loads" isUser={false} showCompanyLink={true} />
+
+      <Table
+        data={loads}
+        title="All Loads"
+        isUser={false}
+        showCompanyLink={true}
+      />
       <br />
+
       <h3>Your Loads</h3>
       <table className={styles.loadTable}>
         <thead>
@@ -153,7 +173,10 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
               <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
               <td className={styles.tableCell}>
-                <Link to={`/UserProfile/${load.userId}`} className={styles.loadLink}>
+                <Link
+                  to={`/UserProfile/${load.userId}`}
+                  className={styles.loadLink}
+                >
                   {load.company}
                 </Link>
               </td>
@@ -161,6 +184,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           ))}
         </tbody>
       </table>
+
       <form className={styles.form} onSubmit={handleSubmitLoad}>
         <input
           className={styles.input}
@@ -184,14 +208,23 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           Add Load
         </button>
       </form>
-      <br />
+
       <h3>123Loadboard Table</h3>
-      <button onClick={handleAuthorizeNavigation} className={styles.button}>
+      <button
+        onClick={handleAuthorizeNavigation}
+        className={`${styles.button} ${styles.authorizeButton}`}
+        aria-label="Authorize with 123Loadboard"
+      >
         Authorize
       </button>
-      <button onClick={() => fetchLoadboardData(code || "")} className={styles.button}>
+      <button
+        onClick={() => fetchLoadboardData(code || "")}
+        className={`${styles.button} ${styles.fetchButton}`}
+        aria-label="Fetch 123Loadboard data"
+      >
         Fetch 123Loadboard Data
       </button>
+
       <table className={styles.loadTable}>
         <thead>
           <tr>
@@ -210,7 +243,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           ))}
         </tbody>
       </table>
-      <br />
     </div>
   );
 };
@@ -222,7 +254,12 @@ interface TableProps {
   showCompanyLink?: boolean;
 }
 
-const Table: React.FC<TableProps> = ({ data, title, isUser, showCompanyLink = false }) => (
+const Table: React.FC<TableProps> = ({
+  data,
+  title,
+  isUser,
+  showCompanyLink = false,
+}) => (
   <div>
     <h3>{title}</h3>
     <table className={styles.loadTable}>
@@ -252,7 +289,10 @@ const Table: React.FC<TableProps> = ({ data, title, isUser, showCompanyLink = fa
               <td className={styles.tableCell}>{load.userId}</td>
               <td className={styles.tableCell}>
                 {showCompanyLink && (
-                  <Link to={`/Company/${load.userId}`} className={styles.loadLink}>
+                  <Link
+                    to={`/Company/${load.userId}`}
+                    className={styles.loadLink}
+                  >
                     {load.company}
                   </Link>
                 )}
