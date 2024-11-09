@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   GoogleMap,
   LoadScript,
@@ -7,8 +7,9 @@ import {
   DirectionsRenderer,
 } from "@react-google-maps/api";
 import axios from "axios";
-import styles from "./AvailableTable.module.css"; // Import CSS module
-import GADZTruck from "./GADZBoat.png"
+import styles from "./AvailableTable.module.css";
+import GADZTruck from "./GADZBoat.png";
+
 interface User {
   first: string;
   last: string;
@@ -27,6 +28,7 @@ interface AvailableTableProps {
 }
 
 const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
+  const navigate = useNavigate();
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
     lng: number;
@@ -41,6 +43,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     company: "",
     userId: "",
   });
+  const [loadboardData, setLoadboardData] = useState<Load[]>([]);
 
   useEffect(() => {
     const fetchLoads = async () => {
@@ -65,6 +68,15 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     fetchLoads();
   }, []);
 
+  const fetchLoadboardData = async () => {
+    try {
+      const response = await axios.get("/auth/callback");
+      setLoadboardData(response.data);
+    } catch (error) {
+      console.error("Error fetching 123Loadboard data:", error);
+    }
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -75,7 +87,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           };
           setCurrentLocation(location);
           if (mapLoaded) {
-            fetchDirections(location, { lat: 37.8199, lng: -122.4783 }); // Golden Gate Bridge
+            fetchDirections(location, { lat: 37.8199, lng: -122.4783 });
           }
         },
         (error) => {
@@ -133,13 +145,11 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
       );
       setNewLoad({ id: 0, description: "", company: "", userId });
 
-      // Fetch updated loads after adding a new load
       const updatedResponse = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
       );
       setLoads(updatedResponse.data);
 
-      // Update user's loads after adding a new load
       const filteredLoads = updatedResponse.data.filter(
         (load: Load) => load.userId === userId
       );
@@ -147,6 +157,10 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
     } catch (error) {
       console.error("Error creating load:", error);
     }
+  };
+
+  const handleAuthorizeNavigation = () => {
+    navigate("/authorize");
   };
 
   return (
@@ -161,8 +175,46 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         This is where we can see the Load Board and click on a company to do
         business with or add to cart.
       </h5>
+      <Link
+        to="/User"
+        style={{ margin: "20px", textDecoration: "none", color: "#2980b9" }}
+      >
+        Home
+      </Link>
+
+      <h3>GADZConnect Table</h3>
       <Table data={drivers} title="Drivers" isUser={true} />
-      <Table data={loads} title="All Loads" isUser={false} />
+      <br />
+      <hr />
+      <Table data={loads} title="All Loads" isUser={false} showCompanyLink={true} /> {/* Pass prop to show company links */}
+      <br />
+
+      <h3>Your Loads</h3>
+      <table className={styles.loadTable}>
+        <thead>
+          <tr>
+            <th className={styles.tableHeader}>Load ID</th>
+            <th className={styles.tableHeader}>Description</th>
+            <th className={styles.tableHeader}>Company</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userLoads.map((load) => (
+            <tr key={load.id} className={styles.tableRow}>
+              <td className={styles.tableCell}>{load.id}</td>
+              <td className={styles.tableCell}>{load.description}</td>
+              <td className={styles.tableCell}>
+                <Link
+                  to={`/UserProfile/${load.userId}`}
+                  className={styles.loadLink}
+                >
+                  {load.company}
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <form className={styles.form} onSubmit={handleSubmitLoad}>
         <input
           className={styles.input}
@@ -186,8 +238,16 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           Add Load
         </button>
       </form>
+      <br />
 
-      <h3>Your Loads</h3>
+      <h3>123Loadboard Table</h3>
+      <button onClick={handleAuthorizeNavigation} className={styles.button}>
+        Authorize
+      </button>
+      <button onClick={fetchLoadboardData} className={styles.button}>
+        Fetch Loadboard Data
+      </button>
+      
       <table className={styles.loadTable}>
         <thead>
           <tr>
@@ -197,29 +257,16 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           </tr>
         </thead>
         <tbody>
-          {userLoads.map((load) => (
+          {loadboardData.map((load) => (
             <tr key={load.id} className={styles.tableRow}>
               <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>
-                <Link
-                  to={`/UserProfile/${load.userId}`} // Link to UserProfile with userId
-                  className={styles.loadLink}
-                >
-                  {load.company}
-                </Link>
-              </td>
+              <td className={styles.tableCell}>{load.company}</td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <Link
-        to="/User"
-        style={{ margin: "20px", textDecoration: "none", color: "#2980b9" }}
-      >
-        Home
-      </Link>
+      <br />
 
       <div className={styles.mapContainer}>
         {process.env.REACT_APP_API_KEY_MAP ? (
@@ -230,7 +277,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
             <GoogleMap
               zoom={10}
               mapContainerStyle={{ width: "100vw", height: "100vh" }}
-              center={currentLocation || { lat: 37.8199, lng: -122.4783 }} // Default to Golden Gate Bridge
+              center={currentLocation || { lat: 37.8199, lng: -122.4783 }}
               options={{ gestureHandling: "greedy", disableDefaultUI: true }}
             >
               {currentLocation && (
@@ -244,7 +291,7 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
             </GoogleMap>
           </LoadScript>
         ) : (
-          <div className={styles.mapError}>Map API key is missing.</div>
+          <p>Google Map API key not set.</p>
         )}
       </div>
     </div>
@@ -255,52 +302,61 @@ const Table: React.FC<{
   data: User[] | Load[];
   title: string;
   isUser: boolean;
-}> = ({ data, title, isUser }) => (
-  <table className={styles.loadTable}>
-    <thead>
-      <tr>
-        <th className={styles.tableHeader}>{title}</th>
-        {isUser ? (
-          <>
-            <th className={styles.tableHeader}>Handle</th>
-            <th className={styles.tableHeader}>First</th>
-            <th className={styles.tableHeader}>Last</th>
-          </>
-        ) : (
-          <>
-            <th className={styles.tableHeader}>Description</th>
-            <th className={styles.tableHeader}>Company</th>
-          </>
-        )}
-      </tr>
-    </thead>
-    <tbody>
-      {data.map((item, index) => (
-        <tr key={index} className={styles.tableRow}>
-          {isUser ? (
-            <>
-              <td className={styles.tableCell}>{(item as User).handle}</td>
-              <td className={styles.tableCell}>{(item as User).first}</td>
-              <td className={styles.tableCell}>{(item as User).last}</td>
-            </>
-          ) : (
-            <>
-              <td className={styles.tableCell}>{(item as Load).id}</td>
-              <td className={styles.tableCell}>{(item as Load).description}</td>
-              <td className={styles.tableCell}>
-                <Link
-                  to={`/UserProfile/${(item as Load).userId}`} // Link to UserProfile with userId
-                  className={styles.loadLink}
-                >
-                  {(item as Load).company}
-                </Link>
-              </td>
-            </>
+  showCompanyLink?: boolean; // Add prop for showing company link
+}> = ({ data, title, isUser, showCompanyLink }) => {
+  return (
+    <div>
+      <h2>{title}</h2>
+      <table className={styles.loadTable}>
+        <thead>
+          <tr>
+            {isUser ? (
+              <>
+                <th className={styles.tableHeader}>First</th>
+                <th className={styles.tableHeader}>Last</th>
+                <th className={styles.tableHeader}>Handle</th>
+              </>
+            ) : (
+              <>
+                <th className={styles.tableHeader}>ID</th>
+                <th className={styles.tableHeader}>Description</th>
+                <th className={styles.tableHeader}>Company</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item) =>
+            isUser ? (
+              <tr key={(item as User).handle}>
+                <td className={styles.tableCell}>{(item as User).first}</td>
+                <td className={styles.tableCell}>{(item as User).last}</td>
+                <td className={styles.tableCell}>{(item as User).handle}</td>
+              </tr>
+            ) : (
+              <tr key={(item as Load).id}>
+                <td className={styles.tableCell}>{(item as Load).id}</td>
+                <td className={styles.tableCell}>{(item as Load).description}</td>
+                <td className={styles.tableCell}>
+                  {/* Conditionally render the link if showCompanyLink is true */}
+                  {showCompanyLink ? (
+                    <Link
+                      to={`/UserProfile/${(item as Load).userId}`}
+                      className={styles.loadLink}
+                    >
+                      {(item as Load).company}
+                    </Link>
+                  ) : (
+                    (item as Load).company
+                  )}
+                </td>
+              </tr>
+            )
           )}
-        </tr>
-      ))}
-    </tbody>
-  </table>
-);
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export default AvailableTable;
