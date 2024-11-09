@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  // useNavigate
+} from "react-router-dom";
 import {
   GoogleMap,
   LoadScript,
@@ -28,7 +31,7 @@ interface AvailableTableProps {
 }
 
 const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
     lng: number;
@@ -162,13 +165,13 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
   // const handleAuthorizeNavigation = () => {
   //   window.location.href = 'https://www.example.com/authorize'; // Replace with your external URL
   // };
-  
+
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3001/authorize" // Localhost URL (adjust port if needed)
         : "https://gadzconnect.com/authorize"; // Production URL
-  
+
     window.location.href = baseUrl;
   };
 
@@ -190,14 +193,18 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
       >
         Home
       </Link>
-
       <h3>GADZConnect Table</h3>
       <Table data={drivers} title="Drivers" isUser={true} />
       <br />
       <hr />
-      <Table data={loads} title="All Loads" isUser={false} showCompanyLink={true} /> {/* Pass prop to show company links */}
+      <Table
+        data={loads}
+        title="All Loads"
+        isUser={false}
+        showCompanyLink={true}
+      />{" "}
+      {/* Pass prop to show company links */}
       <br />
-
       <h3>Your Loads</h3>
       <table className={styles.loadTable}>
         <thead>
@@ -248,7 +255,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         </button>
       </form>
       <br />
-
       <h3>123Loadboard Table</h3>
       <button onClick={handleAuthorizeNavigation} className={styles.button}>
         Authorize
@@ -256,7 +262,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
       <button onClick={fetchLoadboardData} className={styles.button}>
         Fetch Loadboard Data
       </button>
-      
       <table className={styles.loadTable}>
         <thead>
           <tr>
@@ -276,7 +281,6 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         </tbody>
       </table>
       <br />
-
       <div className={styles.mapContainer}>
         {process.env.REACT_APP_API_KEY_MAP ? (
           <LoadScript
@@ -345,7 +349,9 @@ const Table: React.FC<{
             ) : (
               <tr key={(item as Load).id}>
                 <td className={styles.tableCell}>{(item as Load).id}</td>
-                <td className={styles.tableCell}>{(item as Load).description}</td>
+                <td className={styles.tableCell}>
+                  {(item as Load).description}
+                </td>
                 <td className={styles.tableCell}>
                   {/* Conditionally render the link if showCompanyLink is true */}
                   {showCompanyLink ? (
