@@ -290,7 +290,7 @@ const Table: React.FC<TableProps> = ({
               <td className={styles.tableCell}>
                 {showCompanyLink && (
                   <Link
-                    to={`/Company/${load.userId}`}
+                    to={`/UserProfile/${load.userId}`}
                     className={styles.loadLink}
                   >
                     {load.company}
