@@ -1,40 +1,55 @@
+/* UserProfile.module.css */
 .userProfile {
   padding: 20px;
-  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
-.profileSection {
-  margin: 20px 0;
+.profileSection, .loadsSection {
+  margin-bottom: 30px;
 }
 
-.profileImage {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 20px;
+.loadItem {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
 }
 
-.button {
-  margin: 10px;
-  padding: 10px 20px;
-  background-color: #2980b9;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.loadLink {
+  color: #007bff;
   text-decoration: none;
 }
 
+.loadLink:hover {
+  text-decoration: underline;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
 .button:hover {
-  background-color: #1a6b8f;
+  background-color: #0056b3;
 }
 
-.loading {
-  font-size: 20px;
-  color: #2980b9;
+.loading, .error {
+  font-size: 16px;
+  color: #ff0000;
 }
 
-.error {
-  color: red;
-  font-size: 18px;
+.profileImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
 }

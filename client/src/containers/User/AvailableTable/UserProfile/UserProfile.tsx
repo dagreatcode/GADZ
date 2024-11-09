@@ -5,7 +5,7 @@ import styles from "./UserProfile.module.css"; // Import your CSS styles
 
 const ServerPort =
   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
-  
+
 const UserProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const [userData, setUserData] = useState<any>(null);
@@ -13,7 +13,7 @@ const UserProfile = () => {
   const [error, setError] = useState<string>("");
 
   interface Load {
-    id: number; // or string, depending on your database schema
+    id: number;
     description: string;
     company: string;
   }
@@ -23,12 +23,12 @@ const UserProfile = () => {
       try {
         const [userRes, loadsRes] = await Promise.all([
           axios.get(`${ServerPort}/api/user/view/${userId}`),
-          axios.get(`${ServerPort}/api/loads/user/${userId}`), // Ensure this hits the new route
+          axios.get(`${ServerPort}/api/loads/user/${userId}`), // Fetch loads related to the user
         ]);
 
         setUserData({
           ...userRes.data,
-          loads: Array.isArray(loadsRes.data) ? loadsRes.data : [], // Make sure loads is an array
+          loads: Array.isArray(loadsRes.data) ? loadsRes.data : [], // Ensure loads is an array
         });
       } catch (error) {
         console.error("Error fetching user profile data:", error);
@@ -52,6 +52,8 @@ const UserProfile = () => {
   return (
     <div className={styles.userProfile}>
       <h1>User Profile</h1>
+
+      {/* Driver Details Section */}
       <div className={styles.profileSection}>
         <h2>Available Status: {userData.loadStatus}</h2>
         <h2>Images:</h2>
@@ -77,31 +79,44 @@ const UserProfile = () => {
         </h2>
         <h2>Phone Number: {userData.phoneNumber || "Not provided"}</h2>
         <h2>Address: {userData.address || "Not provided"}</h2>
-        <h2>
-          Loads ({userData.loads.length}): {Array.isArray(userData.loads) && userData.loads.length > 0 ? (
-            userData.loads.map((load: Load) => (
-              <div key={load.id} className={styles.loadItem}>
-                <h3>{load.description}</h3>
-                <p>Company: {load.company}</p>
-              </div>
-            ))
-          ) : "None"}
-        </h2>
       </div>
+
+      {/* Loads Section */}
+      <div className={styles.loadsSection}>
+        <h2>Loads ({userData.loads.length}):</h2>
+        {Array.isArray(userData.loads) && userData.loads.length > 0 ? (
+          userData.loads.map((load: Load) => (
+            <div key={load.id} className={styles.loadItem}>
+              <h3>{load.description}</h3>
+              <p>Company: {load.company}</p>
+              {/* Adding link to UserProfile from Load's userId */}
+              <Link to={`/UserProfile/${userData.userId}`} className={styles.loadLink}>
+                View Driver Profile
+              </Link>
+            </div>
+          ))
+        ) : (
+          <p>No loads available</p>
+        )}
+      </div>
+
+      {/* "Add Business" Button */}
       <button
         className={styles.button}
         onClick={() => {
-          /* Function to save business */
+          /* Add your logic for saving or adding a business */
+          console.log("Business added!");
         }}
       >
         Add Business
       </button>
+
+      {/* Navigation buttons */}
       <div className={styles.buttonContainer}>
         <Link to="/AvailableTable" className={styles.button}>
           Home
         </Link>
-        <Link to={`/MessageUser`} className={styles.button}>
-        {/* <Link to={`/MessageUser/${userId}`} className={styles.button}> */}
+        <Link to={`/MessageUser/${userId}`} className={styles.button}>
           Message User
         </Link>
       </div>
