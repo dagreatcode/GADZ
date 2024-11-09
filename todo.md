@@ -1,15 +1,15 @@
-Hook up routes to the frontend and bcrypt amd JWT
-MOCHA & CHAI
-Cypress
-Connect all forms from backend 
-let users set product to live or not to sell
-finish contact page and about me and the home page
-Add mini nav for signed on user or admin
+TODO: 
+[ ] MOCHA & CHAI
 
+[ ] Cypress
+
+[√] Finish Mailing System Featured on the Contact Us page.
 
 Name	Miracle Klein
 Username	miracle.klein39@ethereal.email
 Password	kfQ5hpaGK7g3VFGYJj
+
+---
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -38,3 +38,5 @@ Port	995
 Security	TLS
 Username	miracle.klein39@ethereal.email
 Password	kfQ5hpaGK7g3VFGYJj
+
+---
