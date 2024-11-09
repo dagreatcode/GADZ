@@ -12,6 +12,8 @@ interface User {
 }
 
 interface Load {
+  mileage: number;
+  numberOfStops: number;
   id: number;
   description: string;
   company: string;
@@ -32,6 +34,8 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
   const [newLoad, setNewLoad] = useState<Load>({
     id: 0,
+    mileage: 0,
+    numberOfStops: 0,
     description: "",
     company: "",
     userId: "",
@@ -97,7 +101,14 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`,
         requestData
       );
-      setNewLoad({ id: 0, description: "", company: "", userId });
+      setNewLoad({
+        id: 0,
+        mileage: 0,
+        numberOfStops: 0,
+        description: "",
+        company: "",
+        userId,
+      });
 
       const updatedResponse = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
@@ -229,7 +240,8 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
         <thead>
           <tr>
             <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Description</th>
+            <th className={styles.tableHeader}>Mileage</th>
+            <th className={styles.tableHeader}>Number Of Stops</th>
             <th className={styles.tableHeader}>Company</th>
           </tr>
         </thead>
@@ -237,7 +249,8 @@ const AvailableTable: React.FC<AvailableTableProps> = ({ drivers = [] }) => {
           {loadboardData.map((load) => (
             <tr key={load.id} className={styles.tableRow}>
               <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.description}</td>
+              <td className={styles.tableCell}>{load.mileage}</td>
+              <td className={styles.tableCell}>{load.numberOfStops}</td>
               <td className={styles.tableCell}>{load.company}</td>
             </tr>
           ))}
@@ -276,7 +289,9 @@ const Table: React.FC<TableProps> = ({
             const user = item as User;
             return (
               <tr key={user.handle}>
-                <td className={styles.tableCell}>{`${user.first} ${user.last}`}</td>
+                <td
+                  className={styles.tableCell}
+                >{`${user.first} ${user.last}`}</td>
                 <td className={styles.tableCell}>{user.handle}</td>
                 <td className={styles.tableCell}>N/A</td>
               </tr>
