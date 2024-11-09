@@ -21,6 +21,8 @@ In order to follow all of the updates to this site, please visit [GADZWiki](http
 - [Tests](#tests)
 - [Installation](#installation)
 
+---
+
 ## Description
 
 ### Project Board
@@ -149,7 +151,7 @@ Additional Features:
 - Allow user customization options (e.g., color scheme, font size etc.)
 
 <!-- ![Wireframe Diagram](./public/images/wireframe.png)    -->
-
+## WireFrame Diagram
 [Click here for Updated Wireframe](https://www.figma.com/file/7PcocRrzw7YuI8ZW5jeRt5/GADZ-Wireframe?type=design&node-id=0%3A1&mode=design&t=Zz7JU1VePBFylgey-1)
 
 ![image](./assets/GADZWireframe.png)
@@ -162,10 +164,6 @@ of the app. On the right side you have the content area where different pages wi
 of the app. On the right side you have the content area where different pages will be displayed.
 Each page has its own URL which can be accessed directly from the browser address bar.
 
-## WireFrame Diagram
-
-![image](./assets/GADZWireframe.png)
-
 ## Database Diagram
 
 ![image](./db/daDiagram.drawio.png)
@@ -173,6 +171,8 @@ Each page has its own URL which can be accessed directly from the browser addres
 If you're new to Markdown, read the GitHub guide on [Mastering Markdown](https://guides.github.com/features/mastering-markdown/).
 
 If you need an example of a good README, check out [the VSCode repository](https://github.com/microsoft/vscode).
+
+---
 
 ## To Dos
 
@@ -222,16 +222,7 @@ Test Driven Error driven Data Driven...
     [ ] Finish server routes and controllers.
     [ ] Integrate React into Project.
 
-[![NodeJS](https://img.shields.io/badge/-Nodejs-green?style=flat&logo=node.js)](http://nodejs.org/)
-[![React](https://img.shields.io/badge/-React-blue?style=flat&logo=react)](https://reactjs.org/)
-[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](https://expressjs.com/)
-[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](http://expressjs.com/)
-[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](https://expressjs.com/)
-[![Express](https://img.shields.io/badge/-Express-lightgrey?style=flat&logo=express)](https://expressjs.com/)
-[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](http://expressjs.com/)
-[![Express](https://img.shields.io/badge/-Express-red?style=flat&logo=express)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/-MongoDB-yellow?style=flat&logo=mongodb)](https://www.mongodb.com/)  
-[![Redux](https://img.shields.io/badge/-Redux-purple?style=flat&logo=redux)](https://redux.js.org/)
+---
 
 ## Usage
 
@@ -268,15 +259,9 @@ package.json - list of dependencies needed by the project. You can add new packa
 
 javascripts/app.js - is a main js file which initializes our app. It uses require.js to load other scripts asynchronously.
 
-javascripts/app.js - connects Vue to our Express server. It also sets up Vue Router which handles routes.
-
 server.js - main server file. Contains express setup and middleware functions. Includes body parser and method override which helps us
 
-server.js - main server file. Contains setup for express server and connection with MongoDB database.
-
 package.json - list of dependencies needed by the project. You can add new packages there using npm i <name>.
-
-.eslintrc.json - configuration file for ESLint. It's a tool for checking code quality and enforcing coding standards. More about ESLint can be found
 
 .eslintrc.json - configuration file for ESLint tool. It helps keep code clean and follows best practices.
 
@@ -290,21 +275,22 @@ To start working on a feature create new file inside features directory and add 
 When adding new dependencies make sure they have license compatible with our company policy. If not contact legal department.
 When you finish creating a feature make a pull request so I can merge it into master branch.
 
-If there's an error please describe what exactly went wrong and how did you fix it. If possible provide screenshots or gifs
+If there's an error please describe what exactly went wrong and how did you fix it.<br/> If possible provide screenshots or gifs<br/>
 If there's an error please provide as much information about this issue as possible - what were you doing when the error occurred, which part of
-If there's an error please describe what exactly went wrong and how you fixed it. If possible provide code examples.
-
-If we are working on this project together, clone this project and ask for access.
-
-If you are working on this on your own, fork this project and continue to the next steps.
+<br/>If there's an error please describe what exactly went wrong and how you fixed it. If possible provide code examples.
+<br/>If we are working on this project together with (Solutions Architect) Mr. Vincent Kendrick, clone this project and ask for access.
+<br/>If you are working on this on your own, fork this project and continue to the next steps.
 
 #### Please see examples and screenshots below.
 
 Folder
 |
 |-- app.js
+
 |-- controllers
+
 | |-- server.js
+
 | |-- userController.js
 etc...
 
@@ -312,57 +298,95 @@ etc...
 
 ## Tools
 
-DevOps{
-Development: render.com
-Production: Oracle Cloud Infrastructure
+Software Name: GADZConnect Created
+
+Programming Language: JavaScript used on the Frontend and Backend of the project.
+
+Frontend JS Library (Client Facing): React.JS [The View/ UX/UI/ Design]
+
+Server Side JS Runtime environment Language: Node.js [ The Algorithms/Code]
+
+Cloud/DevOps{
+
+Development: render.com Free Tier (Take 30 Sec to spin up when sleep)
+
+Production: Oracle Cloud Infrastructure Always Free Tier (1 Sec to spin up when sleep)
+
 }
+
+## Small Tools
 CI/CD: GitHut Actions
+
 Monitoring: New Relic
+
 Logging: Splunk
-Security: OWASP
+
+Security: OWASP, Redhat
+
 Testing: Jest Mocha Chia
+
 Code Review: GitHub Code Review
+
 Code Analysis: SonarQube
+
 Code Formatting: Prettier
+
 Code Linting: ESLint
+
 ContactUs Page: nodeMailer
+
 Upload Image: Multer
+
 Save Image: Cloudinary
 ORM: sequelize
+
 Graphs: react-signature-canvas
+
 Icons: lordicon
-Database: postgreSQL
+
+Database: postgreSQL - Future Oracle Cloud SQL
+
+[Used to Navigate from page to page. React Router](https://reactrouter.com/core/guides/quickstart)
 
 Oracle is the Cloud we are choosing for the future.
+
 React Client view TypeScript ReactTypes
+
 Bootstrap for CSS Frontend look.
-Express RESTful API Routes/handlebars-Node Server Side TypeScript Sequelize CLI
-planetscale.com SQL MySQL TimeScale n CockRoachDB Cloud PostgreSQL
+
+Express RESTful API Routes/handlebars-Node Server Side 
+
+TypeScript Sequelize 
+
+planetscale.com SQL MySQL TimeScale n CockRoachDB Cloud
+
+PostgreSQL
+
 Clerk.com User Auth JWT Bcrypt
+
 Cloudanry.com Uploaded images and files
+
 Redis caching
-Redux State Management react-thunk plugin https://redux.js.org/tutorials/typescript-quick-start
+
+[Redux State Management react-thunk plugin](https://redux.js.org/tutorials/typescript-quick-start)
+
 CI/CD GitHub Action Cypress Testing
+
 Mocha&Chi Server Testing
+
 Jest Client testing
+
 Axios Front n Back
+
 React-Router-Dom Client nav routes to pages
+
 lint prittier
+
 SEO
 
 <br>
 
 ### Impotent Links.
-
-[React Router](https://reactrouter.com/core/guides/quickstart)
-
-[Material UI Theme Editor](https://material-ui.com/store/item/the-theme-editor/)
-
-[Material UI Icons](https://fonts.google.com/icons?selected=Assignment&category=action)
-
-[PostgreSQLRasPi](https://pimylifeup.com/raspberry-pi-postgresql/)
-
-[PostgreSQL Blog](https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c275731207f)
 
 [Our DB for Development](https://www.cockroachlabs.com/docs/stable/connect-to-the-database?filters=javascript&filters=sequelize&filters=linux)
 
@@ -380,52 +404,7 @@ Users must enter their username and password to access any other part of the sit
 
 #### Dashboard Page
 
-Once logged in, users will see the dashboard page as default. This page contains links to all available functionalities.
-Once logged in, users will see the dashboard page as default. This page contains links to all available features.
-Once logged in, users will see the dashboard page as default. This page contains links to all available features.
-Once logged in, the user will see the dashboard page. This is the homepage of the application.
-It contains links to all available features.
-
-#### Features Pages
-
-There are three types of feature pages:
-
-1. List View - These views show data in a list format. They allow filtering, sorting, pagination and exporting to CSV
-1. List View - These pages show data in a list format. They allow filtering by specific criteria and sorting by columns.
-1. List - These pages display data from the server as a list. They allow filtering, sorting and pagination.
-1. Show - These pages show detailed information about a specific item (e.g., shipment).
-1. List - These pages display multiple records at once. They use a data table component to show this information.
-1. **List** - These pages display a list of records. The number of records shown per page can be set by the user.
-1. List View - These views show a list of resources (e.g., Assets, Jobs).
-1. Detail View - When clicking on an item in the list view, the detail view opens up with more information about this specific resource
-1. Detail View - When clicking on an item in a ListView, the user will be taken to a Detail View
-   which displays more information about this specific resource when clicked.
-1. Create/Edit View - These views allow creating or editing a new resource.
-1. Show View – Displays detailed information about one single resource.
-
-In each view, there is a button at the top right corner labeled "Create". Clicking on it opens up an edit form with3. Show View - The Show view displays detailed3. Show View – These views display detailed information3. Show View - The show view displays detailed3. Show View – These view display detailed information3. Show View – These views display detailed information3. Show View - These views display detailed information3. Show View - The show view displays detailed3. Show View - The show view displays detailed3. Show View - These views display detailed information3. Show View - The show view displays detailed3. Show View – These view display detailed information3. Show View – These views display detailed information3. Show View - The show view displays detailed3. Show View – These view display detailed information3. Show View - The show view displays detailed3. Show View – These views display detailed information3. Show View – These views display detailed information3. Show View – Displays detailed information about3. Show View – These view display detailed information3. Show View – These view display detailed information3. Show View - The show view displays detailed3. Show View – These views display detailed information3. Show View – These view display detailed information3. Show View – These views display detailed information3. Show View - The show view displays detailed
-In both cases, the top section of the screen contains buttons for adding a new item or refreshing the view.
-Below that, there is a search bar at the top of each list view. When typing into the search bar,
-the results below update with relevant data based on what was typed. The search functionality works for both names and IDs.
-the results below will update according to what was typed. The search function works for both names
-and IDs of assets/jobs. The system will filter down the results showing only those with matching IDs.
-
-In addition to these standard CRUD operations, there are also some custom actions:
-
-- Searching for assets by name or tag.
-- Filtering assets based on status (Active, Inactive, All).
-- Sorting assets by various criteria such as Name, Status, Created At etc.
-
-The create/edit forms include validation checks to ensure data integrity. If an invalid entry is made, an error message will appear below the input field.
-On the create/edit forms, there is an 'Add Tag' button next to the Tags input field.
-Clicking on this button opens a modal window with a form prefilled with relevant data.
-This allows quick creation of new records if needed.
-
-On the Edit View, similar functionality exists but applies to updating existing records instead.
-
-The dashboard shows counts of different entities across the system. For example,
-the number of active jobs, completed projects, open tickets, etc.
-These numbers can be used to gauge overall health and productivity within the company.
+Once logged in, users will see the Users Homepage page as default. Click Available This page contains links to all available functionalities.
 
 ### Authentication & Authorization
 
@@ -482,7 +461,11 @@ https://medium.com/@datatec.studio/remote-access-postgresql-in-raspberry-pi-2c27
 https://www.cockroachlabs.com/docs/stable/connect-to-the-database?filters=javascript&filters=sequelize&filters=linux
 https://cockroachlabs.cloud/cluster/320f50d5-4817-4fcb-b79c-470fea12b02c/overview?cluster-type=serverless
 
+---
+
 ## License
+
+https://choosealicense.com/appendix/
 
 MIT License
 
@@ -514,14 +497,29 @@ SOFTWARE. [https://choosealicense.com/](https://choosealicense.com/)
 
 ![GADZConnect](https://img.shields.io/github/languages/top/dagreatcode/gadz)
 
+[![NodeJS](https://img.shields.io/badge/-Nodejs-green?style=flat&logo=node.js)](http://nodejs.org/)
+[![React](https://img.shields.io/badge/-React-blue?style=flat&logo=react)](https://reactjs.org/)
+[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](https://expressjs.com/)
+[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](http://expressjs.com/)
+[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](https://expressjs.com/)
+[![Express](https://img.shields.io/badge/-Express-lightgrey?style=flat&logo=express)](https://expressjs.com/)
+[![Express](https://img.shields.io/badge/-Express-brightgreen?style=flat&logo=express)](http://expressjs.com/)
+[![Express](https://img.shields.io/badge/-Express-red?style=flat&logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/-MongoDB-yellow?style=flat&logo=mongodb)](https://www.mongodb.com/)  
+[![Redux](https://img.shields.io/badge/-Redux-purple?style=flat&logo=redux)](https://redux.js.org/)
+
 Badges aren't _necessary_, per se, but they demonstrate street cred. Badges let other developers know that you know what you're doing. Check out the badges hosted by [shields.io](https://shields.io/). You may not understand what they all represent now, but you will in time.
 
 shields.io is used here to create badges that indicate things like version number and build status.
 markdownlint is used to ensure consistency across the readme file.
 
+---
+
 ## Contributing
 
 If you created an application or package and would like other developers to contribute it, you will want to add guidelines for how to do so. The [Contributor Covenant](https://www.contributor-covenant.org/) is an industry standard, but you can always write your own.
+
+---
 
 # Developer Section
 
@@ -542,6 +540,8 @@ Run this command to test the backend server files/routes/algorithms/plugins with
 npm run test
 
 ```
+
+---
 
 ## Installation
 
