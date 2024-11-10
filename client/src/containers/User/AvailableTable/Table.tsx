@@ -24,6 +24,7 @@ const Table: React.FC<TableProps> = ({
             {isUser ? (
               // Display driver-related headers
               <>
+                <th className={styles.tableHeader}>Driver ID</th>
                 <th className={styles.tableHeader}>Description</th>
                 <th className={styles.tableHeader}>Company</th>
               </>
@@ -41,8 +42,9 @@ const Table: React.FC<TableProps> = ({
           {data.map((item) => (
             <tr key={item.id} className={styles.tableRow}>
               {isUser ? (
-                // Render driver data (no ID, just description and company)
+                // Render driver data with ID, description, and company
                 <>
+                  <td className={styles.tableCell}>{item.id}</td>
                   <td className={styles.tableCell}>{item.description}</td>
                   <td className={styles.tableCell}>
                     <Link
@@ -54,7 +56,7 @@ const Table: React.FC<TableProps> = ({
                   </td>
                 </>
               ) : (
-                // Render load data (with ID, description, and company)
+                // Render load data with ID, description, and company
                 <>
                   <td className={styles.tableCell}>{item.id}</td>
                   <td className={styles.tableCell}>{item.description}</td>
