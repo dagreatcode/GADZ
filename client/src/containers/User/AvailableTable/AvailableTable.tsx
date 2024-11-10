@@ -210,7 +210,7 @@ const AvailableTable: React.FC = () => {
         className={`${styles.button} ${styles.fetchButton}`}
         aria-label="Fetch my loads"
       >
-        Fetch My Loads
+        Fetch Loads
       </button>
 
       <button
@@ -222,7 +222,7 @@ const AvailableTable: React.FC = () => {
       </button>
 
       {/* Driver Table */}
-      <Table data={driverList} title="Drivers" isUser={true} />
+      <Table data={driverList} title="All Drivers" isUser={true} />
       <br />
       <hr />
 
@@ -261,11 +261,12 @@ const AvailableTable: React.FC = () => {
           ))}
         </tbody>
       </table>
-
-      <h3>Your Drivers</h3>
+      <br />
+      <hr />
+      {/* <h3>Your Drivers</h3> */}
       <Table
         data={driverList} // Pass the list of drivers
-        title="Drivers"
+        title="Your Drivers"
         isUser={true} // Set to true because we are displaying user data (drivers in this case)
         showCompanyLink={false} // You don't need to link to the company for drivers
       />
@@ -319,7 +320,10 @@ const AvailableTable: React.FC = () => {
           Add Driver
         </button>
       </form>
-
+      <br />
+      <br />
+      <br />
+      <hr />
       <h3>123Loadboard Table</h3>
       <button
         onClick={handleAuthorizeNavigation}
