@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
+const driverController = require("./controllers/DriverController.js");
 const messageRouter = require("./controllers/MessageController.js");
 
 const app = express();
@@ -68,9 +69,12 @@ app.use(require("./routes"));
 
 // Route to get all loads for a specific user
 app.get("/api/loads/user/:userId", loadController.getAllUserLoads);
+app.get("/api/drivers/user/:userId", driverController.getAllUserDrivers);
 // Load routes
 app.get("/api/loads", loadController.getAllLoads); // Get all loads
+app.get("/api/drivers", driverController.getAllDrivers); // Get all drivers
 app.post("/api/loads", loadController.createLoad); // Create a new load
+app.post("/api/drivers", driverController.createDriver); // Create a new driver
 
 // // Retrieve loads ////////////////////////////////////
 const fetch = require("node-fetch");

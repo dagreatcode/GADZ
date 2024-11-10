@@ -113,7 +113,8 @@ function App() {
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/AvailableTable" element={<AvailableTable />} />
         <Route path="/UserProfile/:userId" element={<UserProfile />} />
-        <Route path="/MessageUser" element={<MessageUser />} />
+        {/* <Route path="/MessageUser" element={<MessageUser />} /> */}
+        <Route path="/MessageUser/:userId" element={<MessageUser />} />
         <Route path="/Checkout" element={<Checkout />} />
         <Route path="/CreateTicket" element={<CreateTicket />} />
         <Route path="/Profile" element={<Profile />} />
