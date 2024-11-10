@@ -220,12 +220,23 @@ const AvailableTable: React.FC = () => {
       >
         Fetch Drivers
       </button>
-
+      <br />
+      <br />
       {/* Driver Table */}
       <Table data={driverList} title="All Drivers" isUser={true} />
       <br />
+      <br />
       <hr />
-
+      {/* <h3>Your Drivers</h3> */}
+      <Table
+        data={driverList} // Pass the list of drivers
+        title="Your Drivers"
+        isUser={true} // Set to true because we are displaying user data (drivers in this case)
+        showCompanyLink={false} // You don't need to link to the company for drivers
+      />
+      <br />
+      <br />
+      <hr />
       {/* Load Table */}
       <Table
         data={loads}
@@ -234,7 +245,7 @@ const AvailableTable: React.FC = () => {
         showCompanyLink={true}
       />
       <br />
-
+      <br />
       <h3>Your Loads</h3>
       <table className={styles.loadTable}>
         <thead>
@@ -263,14 +274,6 @@ const AvailableTable: React.FC = () => {
       </table>
       <br />
       <hr />
-      {/* <h3>Your Drivers</h3> */}
-      <Table
-        data={driverList} // Pass the list of drivers
-        title="Your Drivers"
-        isUser={true} // Set to true because we are displaying user data (drivers in this case)
-        showCompanyLink={false} // You don't need to link to the company for drivers
-      />
-
       {/* New Load Form */}
       <form className={styles.form} onSubmit={handleSubmitLoad}>
         <input
@@ -295,7 +298,6 @@ const AvailableTable: React.FC = () => {
           Add Load
         </button>
       </form>
-
       {/* New Driver Form */}
       <form className={styles.form} onSubmit={handleSubmitDriver}>
         <input
@@ -339,6 +341,8 @@ const AvailableTable: React.FC = () => {
       >
         Fetch 123Loadboard Data
       </button>
+      <br />
+      <h3>Default Loads Search</h3>
       <table className={styles.loadboardTable}>
         <thead>
           <tr>
