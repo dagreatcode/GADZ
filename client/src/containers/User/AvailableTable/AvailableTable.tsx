@@ -7,6 +7,11 @@ import Table from "./Table"; // Update the path as needed
 
 // Types
 interface Load {
+  numberOfLoads: number;
+  pickupDateTimes: number;
+  equipmentInfo: string;
+  privateLoadNote: string;
+  status: string;
   deliveryDateTimeUtc: number;
   mileage: number;
   numberOfStops: number;
@@ -31,6 +36,11 @@ const AvailableTable: React.FC = () => {
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
   const [newLoad, setNewLoad] = useState<Load>({
     id: 0,
+    numberOfLoads: 0,
+    pickupDateTimes: 0,
+    equipmentInfo: "",
+    privateLoadNote: "",
+    status: "",
     deliveryDateTimeUtc: 0,
     mileage: 0,
     numberOfStops: 0,
@@ -120,6 +130,11 @@ const AvailableTable: React.FC = () => {
       );
       setNewLoad({
         id: 0,
+        numberOfLoads: 0,
+        pickupDateTimes: 0,
+        equipmentInfo: "",
+        privateLoadNote: "",
+        status: "",
         deliveryDateTimeUtc: 0,
         mileage: 0,
         numberOfStops: 0,
@@ -326,9 +341,14 @@ const AvailableTable: React.FC = () => {
             <th className={styles.tableHeader}>Load ID</th>
             <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
-            <th className={styles.tableHeader}>Delivery Date TimeUtc</th>
+            <th className={styles.tableHeader}>Delivery Date Time Utc</th>
             <th className={styles.tableHeader}>Number Of Stops</th>
             <th className={styles.tableHeader}>Mileage</th>
+            <th className={styles.tableHeader}>Number Of Loads</th>
+            <th className={styles.tableHeader}>Pickup Date Times</th>
+            <th className={styles.tableHeader}>Equipment Info</th>
+            <th className={styles.tableHeader}>Private LoadNote</th>
+            <th className={styles.tableHeader}>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -340,6 +360,11 @@ const AvailableTable: React.FC = () => {
               <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
               <td className={styles.tableCell}>{load.numberOfStops}</td>
               <td className={styles.tableCell}>{load.mileage}</td>
+              <td className={styles.tableCell}>{load.numberOfLoads}</td>
+              <td className={styles.tableCell}>{load.pickupDateTimes}</td>
+              <td className={styles.tableCell}>{load.equipmentInfo}</td>
+              <td className={styles.tableCell}>{load.privateLoadNote}</td>
+              <td className={styles.tableCell}>{load.status}</td>
             </tr>
           ))}
         </tbody>
