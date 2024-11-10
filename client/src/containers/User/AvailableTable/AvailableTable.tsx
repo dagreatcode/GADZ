@@ -7,6 +7,7 @@ import Table from "./Table"; // Update the path as needed
 
 // Types
 interface Load {
+  deliveryDateTimeUtc: number;
   mileage: number;
   numberOfStops: number;
   id: number;
@@ -30,6 +31,7 @@ const AvailableTable: React.FC = () => {
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
   const [newLoad, setNewLoad] = useState<Load>({
     id: 0,
+    deliveryDateTimeUtc: 0,
     mileage: 0,
     numberOfStops: 0,
     description: "",
@@ -118,6 +120,7 @@ const AvailableTable: React.FC = () => {
       );
       setNewLoad({
         id: 0,
+        deliveryDateTimeUtc: 0,
         mileage: 0,
         numberOfStops: 0,
         description: "",
@@ -323,6 +326,9 @@ const AvailableTable: React.FC = () => {
             <th className={styles.tableHeader}>Load ID</th>
             <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
+            <th className={styles.tableHeader}>Delivery Date TimeUtc</th>
+            <th className={styles.tableHeader}>Number Of Stops</th>
+            <th className={styles.tableHeader}>Mileage</th>
           </tr>
         </thead>
         <tbody>
@@ -331,6 +337,9 @@ const AvailableTable: React.FC = () => {
               <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
               <td className={styles.tableCell}>{load.company}</td>
+              <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
+              <td className={styles.tableCell}>{load.numberOfStops}</td>
+              <td className={styles.tableCell}>{load.mileage}</td>
             </tr>
           ))}
         </tbody>
