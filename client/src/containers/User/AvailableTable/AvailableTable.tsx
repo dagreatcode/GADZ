@@ -24,7 +24,7 @@ interface Load {
 interface Driver {
   description: string;
   company: string;
-  userId: string;  // Add userId for filtering
+  userId: string; // Add userId for filtering
 }
 
 interface LoadboardData {
@@ -191,7 +191,7 @@ const AvailableTable: React.FC = () => {
         company: "",
         userId: "",
       });
-      fetchDrivers();  // Fetch drivers after adding a new one
+      fetchDrivers(); // Fetch drivers after adding a new one
     } catch (error) {
       console.error("Error creating driver:", error);
     }
@@ -343,6 +343,62 @@ const AvailableTable: React.FC = () => {
           Create Driver
         </button>
       </form>
+
+      <br />
+      <br />
+      <br />
+      <hr />
+      <h3>123Loadboard Table</h3>
+      <button
+        onClick={handleAuthorizeNavigation}
+        className={`${styles.button} ${styles.authorizeButton}`}
+        aria-label="Authorize with 123Loadboard"
+      >
+        Authorize
+      </button>
+      <button
+        onClick={() => fetchLoadboardData(code || "")}
+        className={`${styles.button} ${styles.fetchButton}`}
+        aria-label="Fetch 123Loadboard data"
+      >
+        Fetch 123Loadboard Data
+      </button>
+      <br />
+      <h3>Default Loads Search</h3>
+      <table className={styles.loadboardTable}>
+        <thead>
+          <tr>
+            <th className={styles.tableHeader}>Load ID</th>
+            <th className={styles.tableHeader}>Description</th>
+            <th className={styles.tableHeader}>Company</th>
+            <th className={styles.tableHeader}>Delivery Date Time Utc</th>
+            <th className={styles.tableHeader}>Number Of Stops</th>
+            <th className={styles.tableHeader}>Mileage</th>
+            <th className={styles.tableHeader}>Number Of Loads</th>
+            <th className={styles.tableHeader}>Pickup Date Times</th>
+            <th className={styles.tableHeader}>Equipment Info</th>
+            <th className={styles.tableHeader}>Private LoadNote</th>
+            <th className={styles.tableHeader}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loadboardData.map((load) => (
+            <tr key={load.id} className={styles.tableRow}>
+              <td className={styles.tableCell}>{load.id}</td>
+              <td className={styles.tableCell}>{load.description}</td>
+              <td className={styles.tableCell}>{load.company}</td>
+              <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
+              <td className={styles.tableCell}>{load.numberOfStops}</td>
+              <td className={styles.tableCell}>{load.mileage}</td>
+              <td className={styles.tableCell}>{load.numberOfLoads}</td>
+              <td className={styles.tableCell}>{load.pickupDateTimes}</td>
+              <td className={styles.tableCell}>{load.equipmentInfo}</td>
+              <td className={styles.tableCell}>{load.privateLoadNote}</td>
+              <td className={styles.tableCell}>{load.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
