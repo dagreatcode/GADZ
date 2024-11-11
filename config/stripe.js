@@ -20,7 +20,7 @@ router.post("/create-subscription", async (req, res) => {
 
     // Create a Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.SOCKET_IO_SERVER_PORT}/User`,
+      success_url: `${process.env.SOCKET_IO_SERVER_PORT}/Checkout`,
       cancel_url: `${process.env.SOCKET_IO_SERVER_PORT}/Canceled`,
       line_items: [
         {
