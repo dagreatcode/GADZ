@@ -1,59 +1,32 @@
 import React, { useState } from "react";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import axios from "axios";
 
 interface SubscriptionResponse {
-  clientSecret: string;
+  url: string;
 }
 
 const CheckoutForm: React.FC = () => {
-  const userId = localStorage.getItem("userId"); // Get userId from localStorage
-  const stripe = useStripe();
-  const elements = useElements();
+  const userId = localStorage.getItem("userId");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubscription = async () => {
     setLoading(true);
-    setSuccess(false);
-
-    if (!stripe || !elements) {
-      setError("Stripe.js has not loaded yet.");
-      setLoading(false);
-      return;
-    }
-
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      setError("Please enter your card details.");
-      setLoading(false);
-      return;
-    }
+    setError(null);
 
     try {
       // Send a request to create the subscription
       const { data }: { data: SubscriptionResponse } = await axios.post(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/stripe/create-subscription`,
-        { userId } // Pass userId as part of the request body
+        { userId }
       );
 
-      // Confirm the payment using the client secret from the backend
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        data.clientSecret,
-        {
-          payment_method: {
-            card: cardElement,
-          },
-        }
-      );
-
-      if (error) {
-        setError(error.message || "Payment failed");
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        setSuccess(true);
-        alert("Subscription successful! Welcome aboard!");
+      // Redirect the user to the session URL from the response
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No URL returned from server");
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to create subscription");
@@ -63,36 +36,48 @@ const CheckoutForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: "16px",
-              color: "#333",
-              "::placeholder": {
-                color: "#aab7c4",
-              },
-            },
-            invalid: {
-              color: "#fa755a",
-              iconColor: "#fa755a",
-            },
-          },
-        }}
-      />
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      {success && (
-        <div style={{ color: "green" }}>Subscription successful!</div>
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "0 auto",
+        textAlign: "center",
+        padding: "20px",
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+      }}
+    >
+      <h2>Subscribe to Our Service</h2>
+      <p style={{ color: "#555" }}>
+        Enjoy full access to all features with our subscription plan.
+      </p>
+
+      {error && (
+        <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
       )}
+      {success && (
+        <div style={{ color: "green", marginBottom: "10px" }}>
+          Subscription successful! Welcome aboard!
+        </div>
+      )}
+
       <button
-        type="submit"
-        disabled={!stripe || loading}
-        style={{ marginTop: "20px" }}
+        type="button"
+        disabled={loading}
+        onClick={handleSubscription}
+        style={{
+          padding: "10px 20px",
+          fontSize: "16px",
+          backgroundColor: "#4CAF50",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          marginTop: "20px",
+        }}
       >
         {loading ? "Processing..." : "Subscribe"}
       </button>
-    </form>
+    </div>
   );
 };
 

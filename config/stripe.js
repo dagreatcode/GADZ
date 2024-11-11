@@ -32,7 +32,7 @@ router.post("/create-subscription", async (req, res) => {
     });
 
     console.log("Session created with ID: ", session.id);
-
+    console.log(session);
     // Update user's subscription session ID
     const [updatedRows] = await db.User.update(
       { sessionId: session.id, subscribed: true },
