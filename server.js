@@ -77,6 +77,8 @@ app.use(
   require("./controllers/EmployeeTicketController")
 );
 app.use("/api/mail", require("./config/nodeMailer/nodeMailer"));
+app.use("/api/stripe", require("./config/stripe"));
+
 app.use(require("./routes"));
 
 // Load and driver routes

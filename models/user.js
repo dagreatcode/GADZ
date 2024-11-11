@@ -156,6 +156,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    sessionId: {
+      type: DataTypes.STRING,
+      AllowNull: true,
+    },
   });
 
   // Associations

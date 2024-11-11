@@ -7,6 +7,7 @@ interface SubscriptionResponse {
 }
 
 const CheckoutForm: React.FC = () => {
+  const userId = localStorage.getItem("userId"); // Get userId from localStorage
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -16,27 +17,29 @@ const CheckoutForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    setSuccess(false); // Reset success message
+    setSuccess(false);
 
     if (!stripe || !elements) {
       setError("Stripe.js has not loaded yet.");
+      setLoading(false);
       return;
     }
 
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
-      setError("Card details not entered.");
+      setError("Please enter your card details.");
+      setLoading(false);
       return;
     }
 
     try {
+      // Send a request to create the subscription
       const { data }: { data: SubscriptionResponse } = await axios.post(
-        "/api/create-subscription",
-        {
-          priceId: "your-price-id", // The price ID for the subscription plan
-        }
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/stripe/create-subscription`,
+        { userId } // Pass userId as part of the request body
       );
 
+      // Confirm the payment using the client secret from the backend
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         data.clientSecret,
         {
@@ -49,11 +52,11 @@ const CheckoutForm: React.FC = () => {
       if (error) {
         setError(error.message || "Payment failed");
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        setSuccess(true); // Set success state
+        setSuccess(true);
         alert("Subscription successful! Welcome aboard!");
       }
-    } catch (err) {
-      setError("Failed to create subscription");
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to create subscription");
     } finally {
       setLoading(false);
     }
