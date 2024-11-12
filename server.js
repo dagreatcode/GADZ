@@ -92,8 +92,7 @@ app.get("/api/drivers", driverController.getAllDrivers);
 app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
-// API endpoint to handle the POST request
-app.post("/api/load-search", async (req, res) => {
+app.post("/api/load-search/:code", async (req, res) => {
   const {
     originCity,
     originState,
@@ -109,10 +108,10 @@ app.post("/api/load-search", async (req, res) => {
   } = req.body;
 
   try {
-    // Get the access token from the request headers or session (depending on your app)
-    // const bearerToken = req.headers.authorization?.split(" ")[1];
-    const authCode = req.query.code;
+    // Get the authorization code from the URL parameters
+    const authCode = req.params.code; // Using params to fetch the 'code' from URL
     console.log("Authorization Code:", authCode);
+
     if (!authCode) {
       return res.status(400).send("Authorization token is missing");
     }
@@ -157,7 +156,7 @@ app.post("/api/load-search", async (req, res) => {
           "123LB-Api-Version": "1.3",
           "User-Agent": USER_AGENT,
           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-          Authorization: `Bearer ${bearerToken}`, // Pass the bearer token
+          Authorization: `Bearer ${authCode}`, // Use the authCode from params
         },
         body: JSON.stringify(requestBody),
       }
@@ -176,6 +175,91 @@ app.post("/api/load-search", async (req, res) => {
     res.status(500).json({ error: "An error occurred during load search" });
   }
 });
+
+// API endpoint to handle the POST request
+// app.post("/api/load-search/:code", async (req, res) => {
+//   const {
+//     originCity,
+//     originState,
+//     radius,
+//     destinationType,
+//     equipmentTypes,
+//     minWeight,
+//     maxMileage,
+//     pickupDate,
+//     companyRating,
+//     modifiedStartDate,
+//     modifiedEndDate,
+//   } = req.body;
+
+//   try {
+//     // Get the access token from the request headers or session (depending on your app)
+//     // const bearerToken = req.headers.authorization?.split(" ")[1];
+//     const authCode = req.query.code;
+//     console.log("Authorization Code:", authCode);
+//     if (!authCode) {
+//       return res.status(400).send("Authorization token is missing");
+//     }
+
+//     // Structure the request body for the load search API
+//     const requestBody = {
+//       metadata: {
+//         limit: 10,
+//         sortBy: { field: "Origin", direction: "Ascending" },
+//         fields: "all",
+//         type: "Regular",
+//       },
+//       includeWithGreaterPickupDates: true,
+//       origin: {
+//         city: originCity,
+//         states: [originState],
+//         radius: radius,
+//         type: "City",
+//       },
+//       destination: {
+//         type: destinationType,
+//       },
+//       equipmentTypes: equipmentTypes,
+//       minWeight: minWeight,
+//       maxMileage: maxMileage,
+//       pickupDates: [pickupDate],
+//       company: {
+//         minRating: companyRating,
+//       },
+//       modifiedOnStart: modifiedStartDate,
+//       modifiedOnEnd: modifiedEndDate,
+//     };
+
+//     // Send the structured request to the external API
+//     const loadResp = await fetch(
+//       "https://api.dev.123loadboard.com/loads/search",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "123LB-Correlation-Id": "123GADZ",
+//           "123LB-Api-Version": "1.3",
+//           "User-Agent": USER_AGENT,
+//           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+//           Authorization: `Bearer ${bearerToken}`, // Pass the bearer token
+//         },
+//         body: JSON.stringify(requestBody),
+//       }
+//     );
+
+//     const loadData = await loadResp.json();
+
+//     if (loadResp.ok) {
+//       return res.json(loadData);
+//     } else {
+//       console.error("Load Search API Error:", loadData);
+//       return res.status(400).json({ error: "Failed to fetch load data" });
+//     }
+//   } catch (error) {
+//     console.error("Error during load search:", error);
+//     res.status(500).json({ error: "An error occurred during load search" });
+//   }
+// });
 
 // OAuth Flow - Authorization Route
 app.get("/authorize", async (req, res) => {
