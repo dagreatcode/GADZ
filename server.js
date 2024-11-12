@@ -19,7 +19,7 @@ const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 const messageRouter = require("./controllers/MessageController");
 
 // Environment variables
-const { PORT = 3001, SOCKET_IO_SERVER_PORT } = process.env;
+const { PORT = 3001, SOCKET_IO_SERVER_PORT, URI_123 } = process.env;
 
 // Initialize express app and HTTP server
 const app = express();
@@ -164,6 +164,101 @@ app.post("/api/load-search", async (req, res) => {
   } catch (error) {
     console.error("Error during load search:", error);
     res.status(500).json({ error: "An error occurred during load search" });
+  }
+});
+
+// OAuth Flow - Authorization Route
+app.get("/authorize", async (req, res) => {
+  const query = new URLSearchParams({
+    response_type: "code",
+    client_id: `${process.env.CLIENT_ID}`,
+    redirect_uri: `${process.env.DEV_URI}`,
+    scope: "loadsearching",
+    state: "string",
+    login_hint: "gadzconnect_dev",
+  }).toString();
+
+  res.redirect(`${URI_123}/authorize?${query}`);
+});
+
+// Route to handle token exchange and fetch loads
+app.get("/auth/callback", async (req, res) => {
+  try {
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
+
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (tokenData.access_token) {
+      const bearerToken = tokenData.access_token;
+
+      // Use access token to fetch loads
+      const loadResp = await fetch(`${URI_123}/loads/search`, {
+        method: "POST",
+        headers: {
+          "123LB-Correlation-Id": "123GADZ",
+          "Content-Type": "application/json",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify({
+          metadata: {
+            limit: 10,
+            sortBy: { field: "Origin", direction: "Ascending" },
+            fields: "all",
+            type: "Regular",
+          },
+          includeWithGreaterPickupDates: true,
+          origin: {
+            states: ["IL"],
+            city: "Chicago",
+            radius: 100,
+            type: "City",
+          },
+          destination: {
+            type: "Anywhere",
+          },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"],
+          includeLoadsWithoutWeight: true,
+          includeLoadsWithoutLength: true,
+        }),
+      });
+
+      const loadData = await loadResp.json();
+      console.log("Load Response:", loadData);
+      res.send(loadData);
+    } else {
+      console.error("Access token not found in response:", tokenData);
+      res.status(400).send("Failed to retrieve access token.");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred during the process.");
   }
 });
 
