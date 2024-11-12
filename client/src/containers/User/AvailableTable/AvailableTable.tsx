@@ -106,10 +106,11 @@ const AvailableTable: React.FC = () => {
     }
   };
 
+  //TODO: Fix This
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/123Loads/auth/callback/`,
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
         { params: { code: authCode } }
       );
       setLoadboardData(response.data.loads);
