@@ -15,20 +15,11 @@ const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
 const driverController = require("./controllers/DriverController");
+const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 const messageRouter = require("./controllers/MessageController");
 
 // Environment variables
-const {
-  PORT = 3001,
-  SOCKET_IO_SERVER_PORT,
-  CLIENT_ID,
-  CLIENT_SECRET,
-  TOKEN_123,
-  BEARER_123,
-  URI_123,
-  DEV_URI,
-  USER_AGENT,
-} = process.env;
+const { PORT = 3001, SOCKET_IO_SERVER_PORT } = process.env;
 
 // Initialize express app and HTTP server
 const app = express();
@@ -63,6 +54,9 @@ io.on("connection", (socket) => {
   handleMessageSocket(io, socket);
 });
 
+// 123Loads API route
+app.use("/api/123Loads", LoadsRouter);
+
 // Message API route
 app.use("/api/message", messageRouter);
 
@@ -89,124 +83,69 @@ app.get("/api/drivers", driverController.getAllDrivers);
 app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
-// app.post("/pay", (req, res) => {
-//   console.log(req.body);
-//   db.Newsletter.create(req.body)
-//     .then((newLetter) => {
-//       res.json({
-//         error: false,
-//         data: newLetter,
-//         message: "Successfully created a new News Letter.",
-//       });
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(500).json({
-//         error: true,
-//         data: null,
-//         message: "Unable to create new ticket.",
-//       });
-//     });
-// });
+// API endpoint to handle the POST request
+app.post("/api/load-search", async (req, res) => {
+  const {
+    originCity,
+    originState,
+    radius,
+    destinationType,
+    equipmentTypes,
+    minWeight,
+    maxMileage,
+    pickupDate,
+    companyRating,
+    modifiedStartDate,
+    modifiedEndDate,
+  } = req.body;
 
-// app.post("/pay", (req, res) => {
-//   db.NewsLetter.create(req.body).then((newAdmin) => {
-//     res.json(newAdmin);
-//   });
-// });
+  // Structure the request data as needed
+  const requestBody = {
+    metadata: {
+      limit: 10,
+      sortBy: { field: "Origin", direction: "Ascending" },
+      fields: "all",
+      type: "Regular",
+    },
+    includeWithGreaterPickupDates: true,
+    origin: {
+      city: originCity,
+      states: [originState],
+      radius: radius,
+      type: "City",
+    },
+    destination: {
+      type: destinationType,
+    },
+    equipmentTypes: equipmentTypes,
+    minWeight: minWeight,
+    maxMileage: maxMileage,
+    pickupDates: [pickupDate],
+    company: {
+      minRating: companyRating,
+    },
+    modifiedOnStart: modifiedStartDate,
+    modifiedOnEnd: modifiedEndDate,
+  };
 
-// OAuth Flow - Authorization Route
-app.get("/authorize", async (req, res) => {
-  const query = new URLSearchParams({
-    response_type: "code",
-    client_id: CLIENT_ID,
-    redirect_uri: DEV_URI,
-    scope: "loadsearching",
-    state: "string",
-    login_hint: "gadzconnect_dev",
-  }).toString();
-
-  res.redirect(`${URI_123}/authorize?${query}`);
-});
-
-// Route to handle token exchange and fetch loads
-app.get("/auth/callback", async (req, res) => {
   try {
-    const authCode = req.query.code;
-    console.log("Authorization Code:", authCode);
-
-    // Exchange authorization code for access token
-    const formData = new URLSearchParams({
-      grant_type: "authorization_code",
-      code: authCode,
-      client_id: CLIENT_ID,
-      redirect_uri: DEV_URI,
-    }).toString();
-
-    const tokenResp = await fetch(`${URI_123}/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "123LB-Api-Version": "1.3",
-        "User-Agent": "gadzconnect_dev",
-        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-        Authorization:
-          "Basic " +
-          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
-      },
-      body: formData,
-    });
-
-    const tokenData = await tokenResp.json();
-    console.log("Access Token Response:", tokenData);
-
-    if (tokenData.access_token) {
-      const bearerToken = tokenData.access_token;
-
-      // Use access token to fetch loads
-      const loadResp = await fetch(`${URI_123}/loads/search`, {
+    // Send the structured request to the external API or perform internal logic
+    const response = await fetch(
+      "https://api.dev.123loadboard.com/loads/search",
+      {
         method: "POST",
         headers: {
-          "123LB-Correlation-Id": "123GADZ",
           "Content-Type": "application/json",
-          "123LB-Api-Version": "1.3",
-          "User-Agent": USER_AGENT,
-          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-          Authorization: `Bearer ${bearerToken}`,
+          Authorization: "Bearer <YOUR_TOKEN_HERE>",
         },
-        body: JSON.stringify({
-          metadata: {
-            limit: 10,
-            sortBy: { field: "Origin", direction: "Ascending" },
-            fields: "all",
-            type: "Regular",
-          },
-          includeWithGreaterPickupDates: true,
-          origin: {
-            states: ["IL"],
-            city: "Chicago",
-            radius: 100,
-            type: "City",
-          },
-          destination: {
-            type: "Anywhere",
-          },
-          equipmentTypes: ["Van", "Flatbed", "Reefer"],
-          includeLoadsWithoutWeight: true,
-          includeLoadsWithoutLength: true,
-        }),
-      });
+        body: JSON.stringify(requestBody),
+      }
+    );
 
-      const loadData = await loadResp.json();
-      console.log("Load Response:", loadData);
-      res.send(loadData);
-    } else {
-      console.error("Access token not found in response:", tokenData);
-      res.status(400).send("Failed to retrieve access token.");
-    }
+    const data = await response.json();
+    res.json(data);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred during the process.");
+    res.status(500).json({ error: "Error fetching loads data" });
   }
 });
 
