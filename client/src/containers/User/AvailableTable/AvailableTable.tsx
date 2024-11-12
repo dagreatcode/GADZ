@@ -240,86 +240,86 @@ const AvailableTable: React.FC = () => {
       <br />
       <br />
       <hr />
-      {/* Your Drivers Table */}
-      <div className="table-container">
-        <Table
-          data={userDrivers} // Display only the user's drivers
-          title="Your Drivers"
-          isUser={true} // Set to true because we are displaying user data (drivers)
-          showCompanyLink={false} // No company link for drivers
-        />
-      </div>
-      <br />
-      <hr />
-      {/* Load Table */}
-      <div className="table-container">
-        <Table
-          data={loads}
-          title="All Loads"
-          isUser={false}
-          showCompanyLink={true}
-        />
-      </div>
-      <br />
-      <br />
-      <h3>Your Loads</h3>
-      <div className="table-container">
-        <table className={styles.loadTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>Load ID</th>
-              <th className={styles.tableHeader}>Description</th>
-              <th className={styles.tableHeader}>Company</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userLoads.map((load) => (
-              <tr key={load.id} className={styles.tableRow}>
-                <td className={styles.tableCell}>{load.id}</td>
-                <td className={styles.tableCell}>{load.description}</td>
-                <td className={styles.tableCell}>
-                  <Link
-                    to={`/UserProfile/${load.userId}`}
-                    className={styles.loadLink}
-                  >
-                    {load.company}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <br />
-      <hr />
-      {/* New Load Form */}
-      <form className={styles.form} onSubmit={handleSubmitLoad}>
-        <input
-          className={styles.input}
-          type="text"
-          name="description"
-          placeholder="Load Description"
-          value={newLoad.description}
-          onChange={handleLoadInputChange}
-          required
-        />
-        <input
-          className={styles.input}
-          type="text"
-          name="company"
-          placeholder="Company"
-          value={newLoad.company}
-          onChange={handleLoadInputChange}
-          required
-        />
-        {/* Add more fields as needed */}
-        <button
-          type="submit"
-          className={`${styles.button} ${styles.submitButton}`}
-        >
-          Create Load
-        </button>
-      </form>
+{/* Your Drivers Table */}
+<div className="table-container">
+  <Table
+    data={userDrivers} // Display only the user's drivers
+    title="Your Drivers"
+    isUser={true} // Set to true because we are displaying user data (drivers)
+    showCompanyLink={false} // No company link for drivers
+  />
+</div>
+<br />
+<hr />
+{/* Load Table */}
+<div className="table-container">
+  <Table
+    data={loads}
+    title="All Loads"
+    isUser={false}
+    showCompanyLink={true}
+  />
+</div>
+<br />
+<br />
+<h3>Your Loads</h3>
+<div className="table-container">
+  <table className={styles.loadTable}>
+    <thead>
+      <tr>
+        <th className={styles.tableHeader}>Load ID</th>
+        <th className={styles.tableHeader}>Description</th>
+        <th className={styles.tableHeader}>Company</th>
+      </tr>
+    </thead>
+    <tbody>
+      {userLoads.map((load) => (
+        <tr key={load.id} className={styles.tableRow}>
+          <td className={styles.tableCell}>{load.id}</td>
+          <td className={styles.tableCell}>{load.description}</td>
+          <td className={styles.tableCell}>
+            <Link
+              to={`/UserProfile/${load.userId}`}
+              className={styles.loadLink}
+            >
+              {load.company}
+            </Link>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<br />
+<hr />
+{/* New Load Form */}
+<form className={styles.form} onSubmit={handleSubmitLoad}>
+  <input
+    className={styles.input}
+    type="text"
+    name="description"
+    placeholder="Load Description"
+    value={newLoad.description}
+    onChange={handleLoadInputChange}
+    required
+  />
+  <input
+    className={styles.input}
+    type="text"
+    name="company"
+    placeholder="Company"
+    value={newLoad.company}
+    onChange={handleLoadInputChange}
+    required
+  />
+  {/* Add more fields as needed */}
+  <button
+    type="submit"
+    className={`${styles.button} ${styles.submitButton}`}
+  >
+    Create Load
+  </button>
+</form>
 
       <br />
       {/* New Driver Form */}
