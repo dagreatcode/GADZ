@@ -109,7 +109,7 @@ const AvailableTable: React.FC = () => {
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/123Loads/auth/callback/`,
         { params: { code: authCode } }
       );
       setLoadboardData(response.data.loads);
@@ -200,8 +200,8 @@ const AvailableTable: React.FC = () => {
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3001/authorize"
-        : "https://gadzconnect.com/authorize";
+        ? "http://localhost:3001/api/123Loads/authorize"
+        : "https://gadzconnect.com/api/123Loads/authorize";
     window.location.href = baseUrl;
   };
 
