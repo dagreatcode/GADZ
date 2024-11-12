@@ -34,6 +34,7 @@ interface LoadboardData {
 const AvailableTable: React.FC = () => {
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
   const [newLoad, setNewLoad] = useState<Load>({
     id: 0,
@@ -301,7 +302,6 @@ const AvailableTable: React.FC = () => {
           placeholder="Load Description"
           value={newLoad.description}
           onChange={handleLoadInputChange}
-          required
         />
         <input
           className={styles.input}
@@ -310,18 +310,12 @@ const AvailableTable: React.FC = () => {
           placeholder="Company"
           value={newLoad.company}
           onChange={handleLoadInputChange}
-          required
         />
-        {/* Add more fields as needed */}
-        <button
-          type="submit"
-          className={`${styles.button} ${styles.submitButton}`}
-        >
-          Create Load
+        <button type="submit" className={styles.button}>
+          Add Load
         </button>
       </form>
 
-      <br />
       {/* New Driver Form */}
       <form className={styles.form} onSubmit={handleSubmitDriver}>
         <input
@@ -331,7 +325,6 @@ const AvailableTable: React.FC = () => {
           placeholder="Driver Description"
           value={newDriver.description}
           onChange={handleDriverInputChange}
-          required
         />
         <input
           className={styles.input}
@@ -340,71 +333,15 @@ const AvailableTable: React.FC = () => {
           placeholder="Company"
           value={newDriver.company}
           onChange={handleDriverInputChange}
-          required
         />
-        <button
-          type="submit"
-          className={`${styles.button} ${styles.submitButton}`}
-        >
-          Create Driver
+        <button type="submit" className={styles.button}>
+          Add Driver
         </button>
       </form>
 
-      <br />
-      <br />
-      <br />
-      <hr />
-      <h3>123Loadboard Table</h3>
-      <button
-        onClick={handleAuthorizeNavigation}
-        className={`${styles.button} ${styles.authorizeButton}`}
-        aria-label="Authorize with 123Loadboard"
-      >
+      <button onClick={handleAuthorizeNavigation} className={styles.button}>
         Authorize
       </button>
-      <button
-        onClick={() => fetchLoadboardData(code || "")}
-        className={`${styles.button} ${styles.fetchButton}`}
-        aria-label="Fetch 123Loadboard data"
-      >
-        Fetch 123Loadboard Data
-      </button>
-      <br />
-      <h3>Default Loads Search</h3>
-      <table className={styles.loadboardTable}>
-        <thead>
-          <tr>
-            <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Description</th>
-            <th className={styles.tableHeader}>Company</th>
-            <th className={styles.tableHeader}>Delivery Date Time Utc</th>
-            <th className={styles.tableHeader}>Number Of Stops</th>
-            <th className={styles.tableHeader}>Mileage</th>
-            <th className={styles.tableHeader}>Number Of Loads</th>
-            <th className={styles.tableHeader}>Pickup Date Times</th>
-            <th className={styles.tableHeader}>Equipment Info</th>
-            <th className={styles.tableHeader}>Private LoadNote</th>
-            <th className={styles.tableHeader}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loadboardData.map((load) => (
-            <tr key={load.id} className={styles.tableRow}>
-              <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>{load.company}</td>
-              <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
-              <td className={styles.tableCell}>{load.numberOfStops}</td>
-              <td className={styles.tableCell}>{load.mileage}</td>
-              <td className={styles.tableCell}>{load.numberOfLoads}</td>
-              <td className={styles.tableCell}>{load.pickupDateTimes}</td>
-              <td className={styles.tableCell}>{load.equipmentInfo}</td>
-              <td className={styles.tableCell}>{load.privateLoadNote}</td>
-              <td className={styles.tableCell}>{load.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 };

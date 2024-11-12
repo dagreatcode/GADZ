@@ -22,18 +22,16 @@ const Table: React.FC<TableProps> = ({
         <thead>
           <tr>
             {isUser ? (
-              // Display driver-related headers
               <>
-                <th className={styles.tableHeader}>Driver ID</th>
-                <th className={styles.tableHeader}>Description</th>
-                <th className={styles.tableHeader}>Company</th>
+                <th className={styles.tableHeader} scope="col">Driver ID</th>
+                <th className={styles.tableHeader} scope="col">Description</th>
+                <th className={styles.tableHeader} scope="col">Company</th>
               </>
             ) : (
-              // Display load-related headers
               <>
-                <th className={styles.tableHeader}>Load ID</th>
-                <th className={styles.tableHeader}>Description</th>
-                <th className={styles.tableHeader}>Company</th>
+                <th className={styles.tableHeader} scope="col">Load ID</th>
+                <th className={styles.tableHeader} scope="col">Description</th>
+                <th className={styles.tableHeader} scope="col">Company</th>
               </>
             )}
           </tr>
@@ -42,21 +40,19 @@ const Table: React.FC<TableProps> = ({
           {data.map((item) => (
             <tr key={item.id} className={styles.tableRow}>
               {isUser ? (
-                // Render driver data with ID, description, and company
                 <>
                   <td className={styles.tableCell}>{item.id}</td>
                   <td className={styles.tableCell}>{item.description}</td>
                   <td className={styles.tableCell}>
                     <Link
                       to={`/UserProfile/${item.userId}`} // Link to user profile page using the driver's userId
-                      className={styles.loadLink}
+                      className={styles.tableLink}
                     >
                       {item.company}
                     </Link>
                   </td>
                 </>
               ) : (
-                // Render load data with ID, description, and company
                 <>
                   <td className={styles.tableCell}>{item.id}</td>
                   <td className={styles.tableCell}>{item.description}</td>
@@ -64,7 +60,7 @@ const Table: React.FC<TableProps> = ({
                     {showCompanyLink ? (
                       <Link
                         to={`/UserProfile/${item.userId}`} // Link to driver profile using the load's userId
-                        className={styles.loadLink}
+                        className={styles.tableLink}
                       >
                         {item.company}
                       </Link>

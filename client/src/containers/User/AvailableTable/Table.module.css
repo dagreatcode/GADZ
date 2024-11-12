@@ -10,6 +10,9 @@
   padding: 12px;
   font-weight: bold;
   text-align: left;
+  position: sticky;
+  top: 0; /* Keep header at the top when scrolling */
+  z-index: 1; /* Ensure the header stays on top of the table rows */
 }
 
 .tableRow {
@@ -33,4 +36,32 @@
 
 .tableLink:hover {
   text-decoration: underline;
+}
+
+/* Make tables scrollable on smaller screens */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* For smoother scrolling on mobile */
+  margin-bottom: 20px;
+}
+
+/* Ensure responsiveness on mobile */
+@media (max-width: 768px) {
+  .table {
+    width: 100%;
+    font-size: 14px; /* Adjust text size for smaller screens */
+  }
+
+  .tableHeader,
+  .tableCell {
+    padding: 8px; /* Adjust padding for smaller screens */
+  }
+
+  .tableRow {
+    font-size: 12px; /* Smaller text size for mobile */
+  }
+
+  .tableLink {
+    font-size: 12px;
+  }
 }
