@@ -1,16 +1,20 @@
-/* AvailableTable.module.css */
 .container {
   font-family: Arial, sans-serif;
   padding: 20px;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .header {
   color: #2c3e50;
   text-align: center;
+  font-size: 2rem;
 }
 
 .subHeader {
   text-align: center;
+  font-size: 1rem;
+  color: #7f8c8d;
 }
 
 .form {
@@ -19,24 +23,45 @@
   margin: 20px 0;
 }
 
+.form .input {
+  margin-bottom: 15px; /* Increase spacing between input fields */
+}
+
 .input {
-  padding: 10px;
+  padding: 12px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+/* General button styles for consistency */
 .button {
-  padding: 10px;
-  background-color: #2980b9;
+  padding: 12px;
+  background-color: #2980b9; /* Same color as other buttons */
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:focus {
+  outline: 2px solid #1a66a0;
+  outline-offset: 2px;
 }
 
 .button:hover {
   background-color: #1a66a0;
+}
+
+.button:active {
+  background-color: #156b8c; /* Darker shade for active state */
+  transform: scale(0.98); /* Slight scale-down effect on click */
+}
+
+/* Optional: Add spacing for button groups */
+.form .button {
+  margin-top: 15px;
 }
 
 .loadTable {
@@ -45,10 +70,17 @@
   border-collapse: collapse;
 }
 
+.loadTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.loadTable tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
 .tableHeader {
   background-color: #34495e;
   color: white;
-  padding: 10px;
+  padding: 12px;
 }
 
 .tableRow {
@@ -60,32 +92,81 @@
 }
 
 .tableCell {
-  padding: 10px;
+  padding: 12px;
   text-align: left;
-}
-
-.mapContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.mapError {
-  color: red;
-  text-align: center;
 }
 
 .truckAnimation {
   position: absolute;
-  width: 100px; /* Adjust size as needed */
-  animation: drive 5s linear infinite; /* Infinite animation */
+  width: 120px;
+  animation: drive 5s linear infinite;
 }
 
 @keyframes drive {
   0% {
-    left: -100px;
-  } /* Start off screen */
+    left: -120px;
+  }
   100% {
     left: 100%;
-  } /* Move across screen */
+  }
+}
+
+.homeLink {
+  margin: 20px;
+  text-decoration: none;
+  color: #2980b9;
+}
+
+.fetchButton,
+.authorizeButton {
+  margin: 10px;
+}
+
+.loadLink {
+  color: #2980b9;
+}
+
+.loadLink:hover {
+  text-decoration: underline;
+}
+
+/* Make tables scrollable */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* For smoother scrolling on mobile */
+  margin-bottom: 20px;
+}
+
+/* Optional: Add max-width for responsive tables */
+.loadTable, .loadboardTable {
+  min-width: 800px; /* Adjust as needed */
+  table-layout: fixed;
+}
+
+.loadTable th, .loadboardTable th {
+  position: sticky;
+  top: 0;
+  background-color: #34495e;
+  z-index: 1; /* Make sure the header stays above table rows */
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    margin: 0;
+    padding: 0 10px;
+  }
+
+  .loadTable {
+    min-width: 600px;
+  }
+
+  .loadTable .tableCell {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .button {
+    padding: 10px;
+    font-size: 14px;
+  }
 }

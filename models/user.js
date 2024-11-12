@@ -156,6 +156,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    sessionId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   });
 
   // Associations
@@ -169,6 +173,7 @@ module.exports = function (sequelize, DataTypes) {
       as: "receivedMessages",
     });
     User.hasMany(models.Load, { foreignKey: "userId", as: "loads" });
+    User.hasMany(models.Driver, { foreignKey: "userId", as: "userDrivers" });
   };
 
   return User;

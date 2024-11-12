@@ -1,0 +1,46 @@
+/* NewsLetters.module.css */
+
+.modalButton {
+    margin-top: 1.5rem;
+  }
+  
+  .modalTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .modalContent {
+    padding: 1rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 1rem;
+  }
+  
+  .formLabel {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  .formInput {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+  }
+  
+  .formTextArea {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 1rem;
+  }
+  

@@ -15,6 +15,8 @@ const Admin = () => {
     },
     { name: "All Users", path: "/AdminAllUsers", icon: <Icon.PeopleFill /> },
     { name: "Agreements", path: "/Agreements", icon: <Icon.EmojiHeartEyes /> },
+    // New section added
+    { name: "Create A News Letter", path: "/Newsletters", icon: <Icon.Pencil /> },
   ];
 
   return (

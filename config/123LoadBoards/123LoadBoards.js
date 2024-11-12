@@ -1,5 +1,7 @@
 // Retrieve loads
 const fetch = require("node-fetch");
+const express = require("express");
+const router = express.Router();
 
 // After you navigate to http://localhost:3000/authorize, the following steps should occur:
 
@@ -36,119 +38,128 @@ const fetch = require("node-fetch");
 // Observe the auth/callback URL for the authorization code.
 // Check your server console for the access token response.
 
-// Authorization
-async function getAuthorized123() {
+// Constants (Move these to a config file if preferred)
+const CLIENT_ID = `${process.env.CLIENT_ID}`;
+const CLIENT_SECRET = `${process.env.CLIENT_SECRET}`;
+const DEV_URI = `${process.env.DEV_URI}`;
+const URI_123 = `${process.env.URI_123}`;
+const USER_AGENT = "gadzconnect_dev";
+
+// Authorization route function
+async function authorize(req, res) {
   const query = new URLSearchParams({
     response_type: "code",
-    client_id: clientID,
-    redirect_uri: devURI,
+    client_id: CLIENT_ID,
+    redirect_uri: DEV_URI,
     scope: "loadsearching",
     state: "string",
-    login_hint: "string",
+    login_hint: "gadzconnect_dev",
   }).toString();
 
-  const resp = await fetch(
-    `https://api.dev.123loadboard.com/authorize?${query}`,
-    {
-      method: "GET",
-      headers: { "User-Agent": "string" },
-    }
-  );
-
-  const data = await resp.text();
-  console.log(data);
+  res.redirect(`${URI_123}/authorize?${query}`);
 }
 
-// ///////////////////////////////////////////////////
-// // Use Auth Code to Retrieve an access token (and optionally a refresh token)
-// ///////////////////////////////////////////////////
-// Token
-async function getToken123() {
-  const formData = {
-    grant_type: "authorization_code",
-    code: token123,
-    client_id: clientID,
-    redirect_uri: devURI,
-  };
+// Callback route function
+async function authCallback(req, res) {
+  try {
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
 
-  const resp = await fetch(`${uri123}/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "123LB-Api-Version": "1.3",
-      "User-Agent": "gadzconnect_dev",
-      "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-      Authorization:
-        "Basic " +
-        Buffer.from(
-          "72278287103759907927:TSIw67aehxj4earHoFTTi6MZ62eJT9ARFmmmERHQ"
-        ).toString("base64"),
-    },
-    body: new URLSearchParams(formData).toString(),
-  });
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
 
-  const data = await resp.text();
-  console.log(data);
-}
-// /////////////////////////////////////////////////////
-// Use access code above in the bearer to make call
-// POST /loads  //**GET /loads/{id} */
-async function getLoads123() {
-  const resp = await fetch(`${uri123}/loads/search`, {
-    method: "POST",
-    headers: {
-      "123LB-Correlation-Id": "123GADZ",
-      "Content-Type": "application/json",
-      "123LB-Api-Version": "1.3",
-      "User-Agent": "gadzconnect_dev",
-      "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-      Authorization: `bearer ${bearer123}`,
-    },
-    body: JSON.stringify({
-      metadata: {
-        nextToken: "string",
-        limit: 1,
-        sortBy: {
-          field: "Origin",
-          direction: "Ascending",
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT,
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (tokenData.access_token) {
+      const bearerToken = tokenData.access_token;
+
+      // Use access token to fetch loads
+      const loadResp = await fetch(`${URI_123}/loads/search`, {
+        method: "POST",
+        headers: {
+          "123LB-Correlation-Id": "123GADZ",
+          "Content-Type": "application/json",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`,
         },
-        fields: "string",
-        type: "Regular",
-      },
-      equipmentSpecifications: "None",
-      includeWithGreaterPickupDates: true,
-      maxAge: 2147483647,
-      maxExtraDrops: 2147483647,
-      hasTeam: true,
-      hasRate: true,
-      origin: {
-        states: ["string"],
-        city: "string",
-        zipCode: "string",
-        longitude: 0,
-        latitude: 0,
-        radius: 0,
-        type: "City",
-      },
-      destination: {
-        states: ["string"],
-        city: "string",
-        zipCode: "string",
-        longitude: 0,
-        latitude: 0,
-        radius: 0,
-        type: "Anywhere",
-      },
-      equipmentTypes: ["Van"],
-      pickupDates: ["2019-08-24T14:15:22Z"],
-      loadSize: "Tl",
-      weight: 0,
-      includeLoadsWithoutWeight: true,
-      length: 0,
-      includeLoadsWithoutLength: true,
-    }),
-  });
+        body: JSON.stringify({
+          metadata: {
+            limit: 10,
+            sortBy: { field: "Origin", direction: "Ascending" },
+            fields: "all", // Including all available fields in the response
+            type: "Regular", // Type of load
+          },
+          includeWithGreaterPickupDates: true, // Include loads with greater pickup dates
+          origin: {
+            states: ["IL"], // Filter loads from Illinois
+            city: "Chicago", // Filter loads originating in Chicago
+            radius: 100, // Search within a 100-mile radius
+            type: "City", // Origin type
+          },
+          destination: {
+            type: "Anywhere", // Destination type (Anywhere)
+          },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"], // Types of equipment you're interested in
+          includeLoadsWithoutWeight: true, // Include loads without weight information
+          includeLoadsWithoutLength: true, // Include loads without length information
+          company: {
+            name: "ExampleCompany", // Name of the company (replace with actual)
+            types: "None", // Type of company (None as a placeholder)
+            minRating: 5, // Minimum rating of the company
+            isFavorite: true, // Whether the company is a favorite
+            isFactorable: true, // Whether the load is factorable
+            isTiaMember: true, // Whether the company is a TIA member
+            isTiaCertified: true, // Whether the company is TIA certified
+          },
+          modifiedOnStart: "2023-01-01T00:00:00Z", // Modified date range start
+          modifiedOnEnd: "2023-12-31T23:59:59Z", // Modified date range end
+          minMileage: 100, // Minimum mileage for the load
+          maxMileage: 500, // Maximum mileage for the load
+          weight: 10000, // Minimum weight for the load
+          includeLoadsWithoutWeight: true, // Include loads without weight
+          length: 40, // Minimum length of the load
+          includeLoadsWithoutLength: true, // Include loads without length
+          pickupDates: ["2023-12-01T00:00:00Z"], // Specify the pickup date
+        }),
+      });
 
-  const data = await resp.json();
-  console.log(data);
+      const loadData = await loadResp.json();
+      console.log("Load Response:", loadData);
+      res.send(loadData);
+    } else {
+      console.error("Access token not found in response:", tokenData);
+      res.status(400).send("Failed to retrieve access token.");
+    }
+  } catch (error) {
+    console.error("Error during callback:", error);
+    res.status(500).send("An error occurred during the process.");
+  }
 }
+
+// Define routes
+router.get("/authorize", authorize);
+router.get("/auth/callback", authCallback);
+
+module.exports = router;

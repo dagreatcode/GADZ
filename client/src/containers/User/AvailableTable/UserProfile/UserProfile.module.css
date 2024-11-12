@@ -1,40 +1,96 @@
-.userProfile {
-  padding: 20px;
+/* UserProfile.module.css */
+
+.userProfileContainer {
   font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  color: #333;
 }
 
-.profileSection {
-  margin: 20px 0;
+.contentWrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  gap: 20px;
 }
 
-.profileImage {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 20px;
+.loadsSection, .profileSection, .driversSection {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  flex: 1;
+  min-width: 280px; /* Minimum width to improve responsiveness */
 }
 
-.button {
-  margin: 10px;
-  padding: 10px 20px;
-  background-color: #2980b9;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.loadsSection {
+  max-width: 400px;
+}
+
+.loadItem, .driverItem {
+  background-color: #fff;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.loadLink, .buttonLink {
+  color: #2980b9;
   text-decoration: none;
 }
 
+.loadLink:hover, .buttonLink:hover {
+  text-decoration: underline;
+}
+
+.profileSection {
+  flex: 2;
+}
+
+.profileImage {
+  width: 150px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  margin: 5px 0;
+  display: inline-block;
+}
+
 .button:hover {
-  background-color: #1a6b8f;
+  background-color: #1a66a0;
 }
 
-.loading {
-  font-size: 20px;
-  color: #2980b9;
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
 }
 
+.loading,
 .error {
-  color: red;
-  font-size: 18px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    flex-direction: column; /* Stack sections vertically on smaller screens */
+  }
+  .buttonContainer {
+    flex-direction: column; /* Stack buttons vertically */
+  }
 }
