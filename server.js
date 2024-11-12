@@ -92,7 +92,7 @@ app.get("/api/drivers", driverController.getAllDrivers);
 app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
-app.post("/api/load-search/:code", async (req, res) => {
+app.post("/api/load-search", async (req, res) => {
   const {
     originCity,
     originState,
@@ -109,7 +109,7 @@ app.post("/api/load-search/:code", async (req, res) => {
 
   try {
     // Get the authorization code from the URL parameters
-    const authCode = req.params.code; // Using params to fetch the 'code' from URL
+    const authCode = req.query.code; // Using params to fetch the 'code' from URL
     console.log("Authorization Code:", authCode);
 
     if (!authCode) {
