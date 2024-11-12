@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import styles from "./MessageUser.module.css";
-import truckImage from "./GADZShip.png"; // Ensure you have an image
-import { Link } from "react-router-dom";
+import truckImage from "./GADZShip.png";
+import { Link, useParams } from "react-router-dom";
 
 interface Message {
   sender: string;
@@ -21,10 +21,11 @@ const ServerPort =
 const socket = io(`${ServerPort}`, { secure: true, rejectUnauthorized: false });
 
 const MessageUser: React.FC = () => {
+  const { userId: initialReceiverId } = useParams<{ userId: string }>();
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [receiverId, setReceiverId] = useState<string>("");
+  const [receiverId, setReceiverId] = useState<string>(initialReceiverId || "");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [currentUserId, setCurrentUserId] = useState<string>("");
@@ -33,19 +34,13 @@ const MessageUser: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       setCurrentUserId(userId);
-      socket.emit("userJoined Hi", userId); // Notify server of user join
+      socket.emit("userJoined Hi", userId);
     }
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get<Message[]>(
-          `${ServerPort}/api/message/cheat`
-        );
-        if (Array.isArray(res.data)) {
-          setMessages(res.data);
-        } else {
-          setError("Unexpected response format.");
-        }
+        const res = await axios.get<Message[]>(`${ServerPort}/api/message/cheat`);
+        setMessages(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Network error:", error);
         setError("Failed to fetch messages. Please try again.");
@@ -67,21 +62,14 @@ const MessageUser: React.FC = () => {
     fetchMessages();
     fetchUsers();
 
-    // Socket listeners
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-    });
-
     socket.on("receiveMessage", (newMessage: Message) => {
-      console.log("Message received:", newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
       socket.off("receiveMessage");
-      socket.off("connect");
     };
-  }, []);
+  }, [currentUserId]);
 
   const sendMessage = () => {
     if (message.trim() && currentUserId && receiverId) {
@@ -92,9 +80,8 @@ const MessageUser: React.FC = () => {
       };
 
       socket.emit("sendMessage", newMessage);
-      console.log("Message sent:", newMessage);
-      setMessage(""); // Clear the message input
-      setError(""); // Clear any previous error messages
+      setMessage("");
+      setError("");
     } else {
       setError("Please select a user and type a message.");
     }
@@ -113,7 +100,7 @@ const MessageUser: React.FC = () => {
         value={receiverId}
         onChange={(e) => {
           setReceiverId(e.target.value);
-          setMessage(""); // Clear the message input when changing the user
+          setMessage("");
         }}
         className={styles.dropdown}
       >
@@ -139,9 +126,6 @@ const MessageUser: React.FC = () => {
               :
             </strong>
             {msg.content}
-            <span className={styles.meta}>
-              {msg.receiver === currentUserId ? " (to you)" : ""}
-            </span>
           </div>
         ))}
       </div>

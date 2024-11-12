@@ -1,55 +1,96 @@
 /* UserProfile.module.css */
-.userProfile {
+
+.userProfileContainer {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: auto;
   padding: 20px;
+  color: #333;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  gap: 20px;
+}
+
+.loadsSection, .profileSection, .driversSection {
   background-color: #f9f9f9;
+  padding: 15px;
   border-radius: 8px;
-}
-
-.profileSection, .loadsSection {
-  margin-bottom: 30px;
-}
-
-.loadItem {
-  padding: 10px;
   border: 1px solid #ddd;
-  margin-bottom: 10px;
+  flex: 1;
+  min-width: 280px; /* Minimum width to improve responsiveness */
 }
 
-.loadLink {
-  color: #007bff;
+.loadsSection {
+  max-width: 400px;
+}
+
+.loadItem, .driverItem {
+  background-color: #fff;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.loadLink, .buttonLink {
+  color: #2980b9;
   text-decoration: none;
 }
 
-.loadLink:hover {
+.loadLink:hover, .buttonLink:hover {
   text-decoration: underline;
 }
 
-.buttonContainer {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-.button:hover {
-  background-color: #0056b3;
-}
-
-.loading, .error {
-  font-size: 16px;
-  color: #ff0000;
+.profileSection {
+  flex: 2;
 }
 
 .profileImage {
   width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  margin: 5px 0;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: #1a66a0;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    flex-direction: column; /* Stack sections vertically on smaller screens */
+  }
+  .buttonContainer {
+    flex-direction: column; /* Stack buttons vertically */
+  }
 }

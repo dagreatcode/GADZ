@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe("your-publishable-key-here");
+const stripePromise = loadStripe(`${process.env.STRIPE_PK}`);
 
 const Checkout: React.FC = () => {
   return (

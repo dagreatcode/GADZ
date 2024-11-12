@@ -1,4 +1,3 @@
-/* AvailableTable.module.css */
 .container {
   font-family: Arial, sans-serif;
   padding: 20px;
@@ -102,4 +101,17 @@
 
 .loadLink:hover {
   text-decoration: underline;
+}
+
+/* Make tables scrollable */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* For smoother scrolling on mobile */
+  margin-bottom: 20px;
+}
+
+/* Optional: Add max-width for responsive tables */
+.loadTable, .loadboardTable {
+  min-width: 800px; /* Adjust as needed */
+  table-layout: fixed;
 }

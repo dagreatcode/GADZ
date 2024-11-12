@@ -1,29 +1,36 @@
-/* Table.module.css */
-.tableContainer {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .tableHeader {
-    background-color: #f2f2f2;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  .tableRow {
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .tableCell {
-    padding: 8px;
-  }
-  
-  .tableLink {
-    color: blue;
-    text-decoration: none;
-  }
-  
-  .tableLink:hover {
-    text-decoration: underline;
-  }
-  
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tableHeader {
+  background-color: #34495e;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.tableRow {
+  border: 1px solid #ddd;
+  transition: background-color 0.3s;
+}
+
+.tableRow:hover {
+  background-color: #f1f1f1;
+}
+
+.tableCell {
+  padding: 12px;
+  text-align: left;
+}
+
+.tableLink {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.tableLink:hover {
+  text-decoration: underline;
+}

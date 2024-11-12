@@ -7,6 +7,12 @@ import Table from "./Table"; // Update the path as needed
 
 // Types
 interface Load {
+  numberOfLoads: number;
+  pickupDateTimes: number;
+  equipmentInfo: string;
+  privateLoadNote: string;
+  status: string;
+  deliveryDateTimeUtc: number;
   mileage: number;
   numberOfStops: number;
   id: number;
@@ -18,6 +24,7 @@ interface Load {
 interface Driver {
   description: string;
   company: string;
+  userId: string; // Add userId for filtering
 }
 
 interface LoadboardData {
@@ -30,6 +37,12 @@ const AvailableTable: React.FC = () => {
   const [loadboardData, setLoadboardData] = useState<Load[]>([]);
   const [newLoad, setNewLoad] = useState<Load>({
     id: 0,
+    numberOfLoads: 0,
+    pickupDateTimes: 0,
+    equipmentInfo: "",
+    privateLoadNote: "",
+    status: "",
+    deliveryDateTimeUtc: 0,
     mileage: 0,
     numberOfStops: 0,
     description: "",
@@ -39,8 +52,10 @@ const AvailableTable: React.FC = () => {
   const [newDriver, setNewDriver] = useState<Driver>({
     description: "",
     company: "",
+    userId: "",
   });
   const [driverList, setDriverList] = useState<Driver[]>([]);
+  const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -77,6 +92,15 @@ const AvailableTable: React.FC = () => {
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
       );
       setDriverList(response.data);
+
+      // Filter drivers based on current user ID
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        const filteredDrivers = response.data.filter(
+          (driver: Driver) => driver.userId === userId
+        );
+        setUserDrivers(filteredDrivers);
+      }
     } catch (error) {
       console.error("Error fetching drivers:", error);
     }
@@ -85,7 +109,7 @@ const AvailableTable: React.FC = () => {
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/123Loads/auth/callback/`,
         { params: { code: authCode } }
       );
       setLoadboardData(response.data.loads);
@@ -118,6 +142,12 @@ const AvailableTable: React.FC = () => {
       );
       setNewLoad({
         id: 0,
+        numberOfLoads: 0,
+        pickupDateTimes: 0,
+        equipmentInfo: "",
+        privateLoadNote: "",
+        status: "",
+        deliveryDateTimeUtc: 0,
         mileage: 0,
         numberOfStops: 0,
         description: "",
@@ -159,8 +189,9 @@ const AvailableTable: React.FC = () => {
       setNewDriver({
         description: "",
         company: "",
+        userId: "",
       });
-      fetchDrivers();
+      fetchDrivers(); // Fetch drivers after adding a new one
     } catch (error) {
       console.error("Error creating driver:", error);
     }
@@ -169,8 +200,8 @@ const AvailableTable: React.FC = () => {
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3001/authorize"
-        : "https://gadzconnect.com/authorize";
+        ? "http://localhost:3001/api/123Loads/authorize"
+        : "https://gadzconnect.com/api/123Loads/authorize";
     window.location.href = baseUrl;
   };
 
@@ -192,7 +223,7 @@ const AvailableTable: React.FC = () => {
         className={`${styles.button} ${styles.fetchButton}`}
         aria-label="Fetch my loads"
       >
-        Fetch My Loads
+        Fetch Loads
       </button>
 
       <button
@@ -202,56 +233,65 @@ const AvailableTable: React.FC = () => {
       >
         Fetch Drivers
       </button>
-
+      <br />
+      <br />
       {/* Driver Table */}
-      <Table data={driverList} title="Drivers" isUser={true} />
+      <Table data={driverList} title="All Drivers" isUser={true} />
+      <br />
       <br />
       <hr />
-
-      {/* Load Table */}
-      <Table
-        data={loads}
-        title="All Loads"
-        isUser={false}
-        showCompanyLink={true}
-      />
+      {/* Your Drivers Table */}
+      <div className="table-container">
+        <Table
+          data={userDrivers} // Display only the user's drivers
+          title="Your Drivers"
+          isUser={true} // Set to true because we are displaying user data (drivers)
+          showCompanyLink={false} // No company link for drivers
+        />
+      </div>
       <br />
-
+      <hr />
+      {/* Load Table */}
+      <div className="table-container">
+        <Table
+          data={loads}
+          title="All Loads"
+          isUser={false}
+          showCompanyLink={true}
+        />
+      </div>
+      <br />
+      <br />
       <h3>Your Loads</h3>
-      <table className={styles.loadTable}>
-        <thead>
-          <tr>
-            <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Description</th>
-            <th className={styles.tableHeader}>Company</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userLoads.map((load) => (
-            <tr key={load.id} className={styles.tableRow}>
-              <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>
-                <Link
-                  to={`/UserProfile/${load.userId}`}
-                  className={styles.loadLink}
-                >
-                  {load.company}
-                </Link>
-              </td>
+      <div className="table-container">
+        <table className={styles.loadTable}>
+          <thead>
+            <tr>
+              <th className={styles.tableHeader}>Load ID</th>
+              <th className={styles.tableHeader}>Description</th>
+              <th className={styles.tableHeader}>Company</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h3>Your Drivers</h3>
-      <Table
-        data={driverList} // Pass the list of drivers
-        title="Drivers"
-        isUser={true} // Set to true because we are displaying user data (drivers in this case)
-        showCompanyLink={false} // You don't need to link to the company for drivers
-      />
-
+          </thead>
+          <tbody>
+            {userLoads.map((load) => (
+              <tr key={load.id} className={styles.tableRow}>
+                <td className={styles.tableCell}>{load.id}</td>
+                <td className={styles.tableCell}>{load.description}</td>
+                <td className={styles.tableCell}>
+                  <Link
+                    to={`/UserProfile/${load.userId}`}
+                    className={styles.loadLink}
+                  >
+                    {load.company}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <br />
+      <hr />
       {/* New Load Form */}
       <form className={styles.form} onSubmit={handleSubmitLoad}>
         <input
@@ -272,11 +312,16 @@ const AvailableTable: React.FC = () => {
           onChange={handleLoadInputChange}
           required
         />
-        <button className={styles.button} type="submit">
-          Add Load
+        {/* Add more fields as needed */}
+        <button
+          type="submit"
+          className={`${styles.button} ${styles.submitButton}`}
+        >
+          Create Load
         </button>
       </form>
 
+      <br />
       {/* New Driver Form */}
       <form className={styles.form} onSubmit={handleSubmitDriver}>
         <input
@@ -297,11 +342,18 @@ const AvailableTable: React.FC = () => {
           onChange={handleDriverInputChange}
           required
         />
-        <button className={styles.button} type="submit">
-          Add Driver
+        <button
+          type="submit"
+          className={`${styles.button} ${styles.submitButton}`}
+        >
+          Create Driver
         </button>
       </form>
 
+      <br />
+      <br />
+      <br />
+      <hr />
       <h3>123Loadboard Table</h3>
       <button
         onClick={handleAuthorizeNavigation}
@@ -317,12 +369,22 @@ const AvailableTable: React.FC = () => {
       >
         Fetch 123Loadboard Data
       </button>
+      <br />
+      <h3>Default Loads Search</h3>
       <table className={styles.loadboardTable}>
         <thead>
           <tr>
             <th className={styles.tableHeader}>Load ID</th>
             <th className={styles.tableHeader}>Description</th>
             <th className={styles.tableHeader}>Company</th>
+            <th className={styles.tableHeader}>Delivery Date Time Utc</th>
+            <th className={styles.tableHeader}>Number Of Stops</th>
+            <th className={styles.tableHeader}>Mileage</th>
+            <th className={styles.tableHeader}>Number Of Loads</th>
+            <th className={styles.tableHeader}>Pickup Date Times</th>
+            <th className={styles.tableHeader}>Equipment Info</th>
+            <th className={styles.tableHeader}>Private LoadNote</th>
+            <th className={styles.tableHeader}>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -331,6 +393,14 @@ const AvailableTable: React.FC = () => {
               <td className={styles.tableCell}>{load.id}</td>
               <td className={styles.tableCell}>{load.description}</td>
               <td className={styles.tableCell}>{load.company}</td>
+              <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
+              <td className={styles.tableCell}>{load.numberOfStops}</td>
+              <td className={styles.tableCell}>{load.mileage}</td>
+              <td className={styles.tableCell}>{load.numberOfLoads}</td>
+              <td className={styles.tableCell}>{load.pickupDateTimes}</td>
+              <td className={styles.tableCell}>{load.equipmentInfo}</td>
+              <td className={styles.tableCell}>{load.privateLoadNote}</td>
+              <td className={styles.tableCell}>{load.status}</td>
             </tr>
           ))}
         </tbody>
