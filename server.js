@@ -15,11 +15,20 @@ const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
 const driverController = require("./controllers/DriverController");
-const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 const messageRouter = require("./controllers/MessageController");
 
 // Environment variables
-const { PORT = 3001, SOCKET_IO_SERVER_PORT } = process.env;
+const {
+  PORT = 3001,
+  SOCKET_IO_SERVER_PORT,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  TOKEN_123,
+  BEARER_123,
+  URI_123,
+  DEV_URI,
+  USER_AGENT,
+} = process.env;
 
 // Initialize express app and HTTP server
 const app = express();
@@ -53,9 +62,6 @@ io.on("connection", (socket) => {
   handleVideoSocket(io, socket);
   handleMessageSocket(io, socket);
 });
-
-// 123Loads API route
-app.use("/api/123Loads", LoadsRouter);
 
 // Message API route
 app.use("/api/message", messageRouter);
@@ -99,53 +105,170 @@ app.post("/api/load-search", async (req, res) => {
     modifiedEndDate,
   } = req.body;
 
-  // Structure the request data as needed
-  const requestBody = {
-    metadata: {
-      limit: 10,
-      sortBy: { field: "Origin", direction: "Ascending" },
-      fields: "all",
-      type: "Regular",
-    },
-    includeWithGreaterPickupDates: true,
-    origin: {
-      city: originCity,
-      states: [originState],
-      radius: radius,
-      type: "City",
-    },
-    destination: {
-      type: destinationType,
-    },
-    equipmentTypes: equipmentTypes,
-    minWeight: minWeight,
-    maxMileage: maxMileage,
-    pickupDates: [pickupDate],
-    company: {
-      minRating: companyRating,
-    },
-    modifiedOnStart: modifiedStartDate,
-    modifiedOnEnd: modifiedEndDate,
-  };
-
   try {
-    // Send the structured request to the external API or perform internal logic
-    const response = await fetch(
+    // Get the access token from the request headers or session (depending on your app)
+    const bearerToken = req.headers.authorization?.split(" ")[1];
+
+    if (!bearerToken) {
+      return res.status(400).send("Authorization token is missing");
+    }
+
+    // Structure the request body for the load search API
+    const requestBody = {
+      metadata: {
+        limit: 10,
+        sortBy: { field: "Origin", direction: "Ascending" },
+        fields: "all",
+        type: "Regular",
+      },
+      includeWithGreaterPickupDates: true,
+      origin: {
+        city: originCity,
+        states: [originState],
+        radius: radius,
+        type: "City",
+      },
+      destination: {
+        type: destinationType,
+      },
+      equipmentTypes: equipmentTypes,
+      minWeight: minWeight,
+      maxMileage: maxMileage,
+      pickupDates: [pickupDate],
+      company: {
+        minRating: companyRating,
+      },
+      modifiedOnStart: modifiedStartDate,
+      modifiedOnEnd: modifiedEndDate,
+    };
+
+    // Send the structured request to the external API
+    const loadResp = await fetch(
       "https://api.dev.123loadboard.com/loads/search",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer <YOUR_TOKEN_HERE>",
+          "123LB-Correlation-Id": "123GADZ",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`, // Pass the bearer token
         },
         body: JSON.stringify(requestBody),
       }
     );
 
-    const data = await response.json();
-    res.json(data);
+    const loadData = await loadResp.json();
+
+    if (loadResp.ok) {
+      return res.json(loadData);
+    } else {
+      console.error("Load Search API Error:", loadData);
+      return res.status(400).json({ error: "Failed to fetch load data" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Error fetching loads data" });
+    console.error("Error during load search:", error);
+    res.status(500).json({ error: "An error occurred during load search" });
+  }
+});
+
+const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
+// 123Loads API route
+app.use("/api/123Loads", LoadsRouter);
+
+// OAuth Flow - Authorization Route
+app.get("/authorize", async (req, res) => {
+  const query = new URLSearchParams({
+    response_type: "code",
+    client_id: CLIENT_ID,
+    redirect_uri: DEV_URI,
+    scope: "loadsearching",
+    state: "string",
+    login_hint: "gadzconnect_dev",
+  }).toString();
+
+  res.redirect(`${URI_123}/authorize?${query}`);
+});
+
+// Route to handle token exchange and fetch loads
+app.get("/auth/callback", async (req, res) => {
+  try {
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
+
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (tokenData.access_token) {
+      const bearerToken = tokenData.access_token;
+
+      // Use access token to fetch loads
+      const loadResp = await fetch(`${URI_123}/loads/search`, {
+        method: "POST",
+        headers: {
+          "123LB-Correlation-Id": "123GADZ",
+          "Content-Type": "application/json",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify({
+          metadata: {
+            limit: 10,
+            sortBy: { field: "Origin", direction: "Ascending" },
+            fields: "all",
+            type: "Regular",
+          },
+          includeWithGreaterPickupDates: true,
+          origin: {
+            states: ["IL"],
+            city: "Chicago",
+            radius: 100,
+            type: "City",
+          },
+          destination: {
+            type: "Anywhere",
+          },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"],
+          includeLoadsWithoutWeight: true,
+          includeLoadsWithoutLength: true,
+        }),
+      });
+
+      const loadData = await loadResp.json();
+      console.log("Load Response:", loadData);
+      res.send(loadData);
+    } else {
+      console.error("Access token not found in response:", tokenData);
+      res.status(400).send("Failed to retrieve access token.");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred during the process.");
   }
 });
 

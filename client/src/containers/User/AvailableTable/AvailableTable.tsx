@@ -24,7 +24,7 @@ interface Load {
 interface Driver {
   description: string;
   company: string;
-  userId: string; // Add userId for filtering
+  userId: string;  // Add userId for filtering
 }
 
 interface LoadboardData {
@@ -109,7 +109,7 @@ const AvailableTable: React.FC = () => {
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/123Loads/auth/callback/`,
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
         { params: { code: authCode } }
       );
       setLoadboardData(response.data.loads);
@@ -191,7 +191,7 @@ const AvailableTable: React.FC = () => {
         company: "",
         userId: "",
       });
-      fetchDrivers(); // Fetch drivers after adding a new one
+      fetchDrivers();  // Fetch drivers after adding a new one
     } catch (error) {
       console.error("Error creating driver:", error);
     }
@@ -200,8 +200,8 @@ const AvailableTable: React.FC = () => {
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3001/api/123Loads/authorize"
-        : "https://gadzconnect.com/api/123Loads/authorize";
+        ? "http://localhost:3001/authorize"
+        : "https://gadzconnect.com/authorize";
     window.location.href = baseUrl;
   };
 
@@ -241,55 +241,50 @@ const AvailableTable: React.FC = () => {
       <br />
       <hr />
       {/* Your Drivers Table */}
-      <div className="table-container">
-        <Table
-          data={userDrivers} // Display only the user's drivers
-          title="Your Drivers"
-          isUser={true} // Set to true because we are displaying user data (drivers)
-          showCompanyLink={false} // No company link for drivers
-        />
-      </div>
+      <Table
+        data={userDrivers} // Display only the user's drivers
+        title="Your Drivers"
+        isUser={true} // Set to true because we are displaying user data (drivers)
+        showCompanyLink={false} // No company link for drivers
+      />
+      <br />
       <br />
       <hr />
       {/* Load Table */}
-      <div className="table-container">
-        <Table
-          data={loads}
-          title="All Loads"
-          isUser={false}
-          showCompanyLink={true}
-        />
-      </div>
+      <Table
+        data={loads}
+        title="All Loads"
+        isUser={false}
+        showCompanyLink={true}
+      />
       <br />
       <br />
       <h3>Your Loads</h3>
-      <div className="table-container">
-        <table className={styles.loadTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>Load ID</th>
-              <th className={styles.tableHeader}>Description</th>
-              <th className={styles.tableHeader}>Company</th>
+      <table className={styles.loadTable}>
+        <thead>
+          <tr>
+            <th className={styles.tableHeader}>Load ID</th>
+            <th className={styles.tableHeader}>Description</th>
+            <th className={styles.tableHeader}>Company</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userLoads.map((load) => (
+            <tr key={load.id} className={styles.tableRow}>
+              <td className={styles.tableCell}>{load.id}</td>
+              <td className={styles.tableCell}>{load.description}</td>
+              <td className={styles.tableCell}>
+                <Link
+                  to={`/UserProfile/${load.userId}`}
+                  className={styles.loadLink}
+                >
+                  {load.company}
+                </Link>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {userLoads.map((load) => (
-              <tr key={load.id} className={styles.tableRow}>
-                <td className={styles.tableCell}>{load.id}</td>
-                <td className={styles.tableCell}>{load.description}</td>
-                <td className={styles.tableCell}>
-                  <Link
-                    to={`/UserProfile/${load.userId}`}
-                    className={styles.loadLink}
-                  >
-                    {load.company}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
       <br />
       <hr />
       {/* New Load Form */}
@@ -320,7 +315,6 @@ const AvailableTable: React.FC = () => {
           Create Load
         </button>
       </form>
-
       <br />
       {/* New Driver Form */}
       <form className={styles.form} onSubmit={handleSubmitDriver}>
