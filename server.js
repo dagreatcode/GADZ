@@ -15,11 +15,20 @@ const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
 const driverController = require("./controllers/DriverController");
-const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 const messageRouter = require("./controllers/MessageController");
 
 // Environment variables
-const { PORT = 3001, SOCKET_IO_SERVER_PORT, URI_123 } = process.env;
+const {
+  PORT = 3001,
+  SOCKET_IO_SERVER_PORT,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  TOKEN_123,
+  BEARER_123,
+  URI_123,
+  DEV_URI,
+  USER_AGENT,
+} = process.env;
 
 // Initialize express app and HTTP server
 const app = express();
@@ -53,9 +62,6 @@ io.on("connection", (socket) => {
   handleVideoSocket(io, socket);
   handleMessageSocket(io, socket);
 });
-
-// 123Loads API route
-app.use("/api/123Loads", LoadsRouter);
 
 // Message API route
 app.use("/api/message", messageRouter);
@@ -167,12 +173,16 @@ app.post("/api/load-search", async (req, res) => {
   }
 });
 
+const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
+// 123Loads API route
+app.use("/api/123Loads", LoadsRouter);
+
 // OAuth Flow - Authorization Route
 app.get("/authorize", async (req, res) => {
   const query = new URLSearchParams({
     response_type: "code",
-    client_id: `${process.env.CLIENT_ID}`,
-    redirect_uri: `${process.env.DEV_URI}`,
+    client_id: CLIENT_ID,
+    redirect_uri: DEV_URI,
     scope: "loadsearching",
     state: "string",
     login_hint: "gadzconnect_dev",
