@@ -4,6 +4,7 @@ import axios from "axios";
 import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
 import Table from "./Table"; // Update the path as needed
+import LoadSearchModal from "./LoadSearchModal"; // Update path as necessary
 
 // Types
 interface Load {
@@ -24,7 +25,7 @@ interface Load {
 interface Driver {
   description: string;
   company: string;
-  userId: string;  // Add userId for filtering
+  userId: string; // Add userId for filtering
 }
 
 interface LoadboardData {
@@ -56,6 +57,7 @@ const AvailableTable: React.FC = () => {
   });
   const [driverList, setDriverList] = useState<Driver[]>([]);
   const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -192,7 +194,7 @@ const AvailableTable: React.FC = () => {
         company: "",
         userId: "",
       });
-      fetchDrivers();  // Fetch drivers after adding a new one
+      fetchDrivers(); // Fetch drivers after adding a new one
     } catch (error) {
       console.error("Error creating driver:", error);
     }
@@ -364,6 +366,16 @@ const AvailableTable: React.FC = () => {
       >
         Fetch 123Loadboard Data
       </button>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className={`${styles.button} ${styles.fetchButton}`}
+      >
+        Open Load Search
+      </button>
+      <LoadSearchModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+      />
       <br />
       <h3>Default Loads Search</h3>
       <table className={styles.loadboardTable}>

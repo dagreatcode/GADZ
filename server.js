@@ -110,9 +110,10 @@ app.post("/api/load-search", async (req, res) => {
 
   try {
     // Get the access token from the request headers or session (depending on your app)
-    const bearerToken = req.headers.authorization?.split(" ")[1];
-
-    if (!bearerToken) {
+    // const bearerToken = req.headers.authorization?.split(" ")[1];
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
+    if (!authCode) {
       return res.status(400).send("Authorization token is missing");
     }
 
