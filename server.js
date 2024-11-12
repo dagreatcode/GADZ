@@ -99,53 +99,71 @@ app.post("/api/load-search", async (req, res) => {
     modifiedEndDate,
   } = req.body;
 
-  // Structure the request data as needed
-  const requestBody = {
-    metadata: {
-      limit: 10,
-      sortBy: { field: "Origin", direction: "Ascending" },
-      fields: "all",
-      type: "Regular",
-    },
-    includeWithGreaterPickupDates: true,
-    origin: {
-      city: originCity,
-      states: [originState],
-      radius: radius,
-      type: "City",
-    },
-    destination: {
-      type: destinationType,
-    },
-    equipmentTypes: equipmentTypes,
-    minWeight: minWeight,
-    maxMileage: maxMileage,
-    pickupDates: [pickupDate],
-    company: {
-      minRating: companyRating,
-    },
-    modifiedOnStart: modifiedStartDate,
-    modifiedOnEnd: modifiedEndDate,
-  };
-
   try {
-    // Send the structured request to the external API or perform internal logic
-    const response = await fetch(
+    // Get the access token from the request headers or session (depending on your app)
+    const bearerToken = req.headers.authorization?.split(" ")[1];
+
+    if (!bearerToken) {
+      return res.status(400).send("Authorization token is missing");
+    }
+
+    // Structure the request body for the load search API
+    const requestBody = {
+      metadata: {
+        limit: 10,
+        sortBy: { field: "Origin", direction: "Ascending" },
+        fields: "all",
+        type: "Regular",
+      },
+      includeWithGreaterPickupDates: true,
+      origin: {
+        city: originCity,
+        states: [originState],
+        radius: radius,
+        type: "City",
+      },
+      destination: {
+        type: destinationType,
+      },
+      equipmentTypes: equipmentTypes,
+      minWeight: minWeight,
+      maxMileage: maxMileage,
+      pickupDates: [pickupDate],
+      company: {
+        minRating: companyRating,
+      },
+      modifiedOnStart: modifiedStartDate,
+      modifiedOnEnd: modifiedEndDate,
+    };
+
+    // Send the structured request to the external API
+    const loadResp = await fetch(
       "https://api.dev.123loadboard.com/loads/search",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer <YOUR_TOKEN_HERE>",
+          "123LB-Correlation-Id": "123GADZ",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`, // Pass the bearer token
         },
         body: JSON.stringify(requestBody),
       }
     );
 
-    const data = await response.json();
-    res.json(data);
+    const loadData = await loadResp.json();
+
+    if (loadResp.ok) {
+      return res.json(loadData);
+    } else {
+      console.error("Load Search API Error:", loadData);
+      return res.status(400).json({ error: "Failed to fetch load data" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Error fetching loads data" });
+    console.error("Error during load search:", error);
+    res.status(500).json({ error: "An error occurred during load search" });
   }
 });
 
