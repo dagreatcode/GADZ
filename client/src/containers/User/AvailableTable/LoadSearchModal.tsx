@@ -36,9 +36,9 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
 
   // Sample data for auto-filling
   const sampleData = {
-    originCity: "Los Angeles",
-    originState: "CA",
-    radius: "50",
+    originCity: "Chicago",
+    originState: "IL",
+    radius: "100",
     destinationType: "Terminal",
     equipmentTypes: "Flatbed",
     minWeight: "1000",
@@ -47,6 +47,7 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
     companyRating: "A",
     modifiedStartDate: "2024-11-01",
     modifiedEndDate: "2024-11-30",
+    
   };
 
   // Autofill the form with sample data
@@ -61,14 +62,18 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
   };
 
   // Fetch loadboard data based on form data
-  const fetchLoadboardDataFromForm = async (authCode: string) => {
+  const fetch123LoadboardDataInForm = async (authCode: string) => {
     try {
       const response = await axios.post(
         `/api/load-search?code=${authCode}`,
         formData,
         {
           headers: {
+            "123LB-Correlation-Id": "123GADZ",
             "Content-Type": "application/json",
+            "123LB-Api-Version": "1.3",
+            "User-Agent": `${process.env.USER_AGENT}`,
+            "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
             Authorization: `Bearer ${authCode}`,
           },
         }
@@ -93,7 +98,7 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const authCode = new URLSearchParams(window.location.search).get("code");
-    fetchLoadboardDataFromForm(authCode || "");
+    fetch123LoadboardDataInForm(authCode || "");
   };
 
   return (

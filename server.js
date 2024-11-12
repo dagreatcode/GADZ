@@ -108,8 +108,8 @@ app.post("/api/load-search", async (req, res) => {
   } = req.body;
 
   try {
-    // Get the authorization code from the URL parameters
-    const authCode = req.query.code; // Using params to fetch the 'code' from URL
+    // Get the authorization code from the URL query parameters
+    const authCode = req.query.code; // Get 'code' from the URL query
     console.log("Authorization Code:", authCode);
 
     if (!authCode) {
@@ -134,7 +134,7 @@ app.post("/api/load-search", async (req, res) => {
       destination: {
         type: destinationType,
       },
-      equipmentTypes: equipmentTypes,
+      equipmentTypes: equipmentTypes.split(", "), // Splitting equipment types string into an array
       minWeight: minWeight,
       maxMileage: maxMileage,
       pickupDates: [pickupDate],
@@ -156,7 +156,7 @@ app.post("/api/load-search", async (req, res) => {
           "123LB-Api-Version": "1.3",
           "User-Agent": USER_AGENT,
           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-          Authorization: `Bearer ${authCode}`, // Use the authCode from params
+          Authorization: `Bearer ${authCode}`,
         },
         body: JSON.stringify(requestBody),
       }
