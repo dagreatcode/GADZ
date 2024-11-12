@@ -106,6 +106,7 @@ const AvailableTable: React.FC = () => {
     }
   };
 
+  //TODO: Fix This
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
@@ -200,8 +201,8 @@ const AvailableTable: React.FC = () => {
   const handleAuthorizeNavigation = () => {
     const baseUrl =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:3001/authorize"
-        : "https://gadzconnect.com/authorize";
+        ? "http://localhost:3001/api/123Loads/authorize"
+        : "https://gadzconnect.com/api/123Loads/authorize";
     window.location.href = baseUrl;
   };
 

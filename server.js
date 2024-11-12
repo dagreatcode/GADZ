@@ -16,6 +16,7 @@ const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
 const driverController = require("./controllers/DriverController");
 const messageRouter = require("./controllers/MessageController");
+const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 
 // Environment variables
 const {
@@ -63,6 +64,8 @@ io.on("connection", (socket) => {
   handleMessageSocket(io, socket);
 });
 
+// 123Loads API route
+app.use("/api/123Loads", LoadsRouter);
 // Message API route
 app.use("/api/message", messageRouter);
 
@@ -172,10 +175,6 @@ app.post("/api/load-search", async (req, res) => {
     res.status(500).json({ error: "An error occurred during load search" });
   }
 });
-
-const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
-// 123Loads API route
-app.use("/api/123Loads", LoadsRouter);
 
 // OAuth Flow - Authorization Route
 app.get("/authorize", async (req, res) => {
