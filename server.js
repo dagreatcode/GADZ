@@ -197,6 +197,7 @@ app.post("/api/load-search", async (req, res) => {
 
     const loadData = await loadResp.json();
     if (loadResp.ok) {
+      console.log("Load search successful, returning data...");
       return res.json(loadData);
     } else {
       console.error("Load Search API Error:", loadData);
