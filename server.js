@@ -92,6 +92,7 @@ app.get("/api/drivers", driverController.getAllDrivers);
 app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
+// Load Search Route
 app.post("/api/load-search", async (req, res) => {
   const {
     originCity,
@@ -107,16 +108,14 @@ app.post("/api/load-search", async (req, res) => {
     modifiedEndDate,
   } = req.body;
 
+  // Fetch authorization code from query
+  const authCode = req.query.code;
+  if (!authCode) {
+    return res.status(400).json({ error: "Authorization token is missing" });
+  }
+
   try {
-    // Get the authorization code from the URL query parameters
-    const authCode = req.query.code; // Get 'code' from the URL query
-    console.log("Authorization Code:", authCode);
-
-    if (!authCode) {
-      return res.status(400).send("Authorization token is missing");
-    }
-
-    // Structure the request body for the load search API
+    // Structure request payload
     const requestBody = {
       metadata: {
         limit: 10,
@@ -128,24 +127,20 @@ app.post("/api/load-search", async (req, res) => {
       origin: {
         city: originCity,
         states: [originState],
-        radius: radius,
+        radius,
         type: "City",
       },
-      destination: {
-        type: destinationType,
-      },
-      equipmentTypes: equipmentTypes.split(", "), // Splitting equipment types string into an array
-      minWeight: minWeight,
-      maxMileage: maxMileage,
+      destination: { type: destinationType },
+      equipmentTypes: equipmentTypes.split(", "),
+      minWeight,
+      maxMileage,
       pickupDates: [pickupDate],
-      company: {
-        minRating: companyRating,
-      },
+      company: { minRating: companyRating },
       modifiedOnStart: modifiedStartDate,
       modifiedOnEnd: modifiedEndDate,
     };
 
-    // Send the structured request to the external API
+    // API call to load search
     const loadResp = await fetch(
       "https://api.dev.123loadboard.com/loads/search",
       {
@@ -154,8 +149,8 @@ app.post("/api/load-search", async (req, res) => {
           "Content-Type": "application/json",
           "123LB-Correlation-Id": "123GADZ",
           "123LB-Api-Version": "1.3",
-          "User-Agent": USER_AGENT,
-          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          "User-Agent": process.env.USER_AGENT, // Load from environment
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf", // process.env.LOADBOARD_AID, // Load from environment
           Authorization: `Bearer ${authCode}`,
         },
         body: JSON.stringify(requestBody),
@@ -163,12 +158,13 @@ app.post("/api/load-search", async (req, res) => {
     );
 
     const loadData = await loadResp.json();
-
     if (loadResp.ok) {
       return res.json(loadData);
     } else {
       console.error("Load Search API Error:", loadData);
-      return res.status(400).json({ error: "Failed to fetch load data" });
+      return res
+        .status(400)
+        .json({ error: "Failed to fetch load data", details: loadData });
     }
   } catch (error) {
     console.error("Error during load search:", error);
