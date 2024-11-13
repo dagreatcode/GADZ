@@ -65,7 +65,7 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
   const fetch123LoadboardDataInForm = async (authCode: string) => {
     try {
       const response = await axios.post(
-        `/api/load-search?code=${authCode}`,
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=${authCode}`,
         formData,
         {
           headers: {
