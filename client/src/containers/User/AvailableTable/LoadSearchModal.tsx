@@ -47,7 +47,6 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
     companyRating: "A",
     modifiedStartDate: "2024-11-01",
     modifiedEndDate: "2024-11-30",
-    
   };
 
   // Autofill the form with sample data
@@ -62,8 +61,14 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
   };
 
   // Fetch loadboard data based on form data
+
   const fetch123LoadboardDataInForm = async (authCode: string) => {
     try {
+      // Ensure formData is defined or structured as needed
+      const formData = {
+        /* your formData structure here */
+      };
+
       const response = await axios.post(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=${authCode}`,
         formData,
@@ -72,8 +77,10 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
             "123LB-Correlation-Id": "123GADZ",
             "Content-Type": "application/json",
             "123LB-Api-Version": "1.3",
-            "User-Agent": `${process.env.USER_AGENT}`,
-            "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+            "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
+            "123LB-AID":
+              process.env.LOADBOARD_AID ||
+              "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
             Authorization: `Bearer ${authCode}`,
           },
         }
@@ -89,6 +96,7 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
         setSuccess(false);
       }
     } catch (error) {
+      console.error("Error fetching load data:", error);
       setError("An error occurred while fetching load data");
       setSuccess(false);
     }

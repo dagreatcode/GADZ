@@ -24,11 +24,11 @@ const {
   SOCKET_IO_SERVER_PORT,
   CLIENT_ID,
   CLIENT_SECRET,
-  TOKEN_123,
-  BEARER_123,
+  // TOKEN_123,
+  // BEARER_123,
   URI_123,
   DEV_URI,
-  USER_AGENT,
+  // USER_AGENT,
 } = process.env;
 
 // Initialize express app and HTTP server
@@ -93,12 +93,15 @@ app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
 // Load Search Route
+
 app.post("/api/load-search", async (req, res) => {
+  console.log("Hit /api/load-search endpoint");
+
   const {
     originCity,
     originState,
     radius,
-    destinationType,
+    destinationType = "Anywhere",
     equipmentTypes,
     minWeight,
     maxMileage,
@@ -107,168 +110,107 @@ app.post("/api/load-search", async (req, res) => {
     modifiedStartDate,
     modifiedEndDate,
   } = req.body;
+  console.log("Hit2 /api/load-search endpoint");
 
-  // Fetch authorization code from query
-  const authCode = req.query.code;
-  if (!authCode) {
-    return res.status(400).json({ error: "Authorization token is missing" });
+  // Basic validation for required fields
+  if (!originCity || !originState || !radius) {
+    return res.status(400).json({ error: "Required fields are missing" });
   }
+  console.log("Hit3 /api/load-search endpoint");
+
+  // Build the request payload
+  const requestBody = {
+    metadata: {
+      limit: 10,
+      sortBy: { field: "Origin", direction: "Ascending" },
+      fields: "all",
+      type: "Regular",
+    },
+    includeWithGreaterPickupDates: true,
+    origin: {
+      city: originCity,
+      states: [originState],
+      radius: parseInt(radius, 10),
+      type: "City",
+    },
+    destination: { type: destinationType },
+    equipmentTypes: equipmentTypes ? equipmentTypes.split(", ") : ["Van"],
+    includeLoadsWithoutWeight: true,
+    includeLoadsWithoutLength: true,
+  };
+  console.log("Hit4 /api/load-search endpoint");
+
+  if (pickupDate) requestBody.pickupDates = [pickupDate];
+  if (minWeight) requestBody.minWeight = minWeight;
+  if (maxMileage) requestBody.maxMileage = maxMileage;
+  if (companyRating) requestBody.company = { minRating: companyRating };
+  if (modifiedStartDate) requestBody.modifiedOnStart = modifiedStartDate;
+  if (modifiedEndDate) requestBody.modifiedOnEnd = modifiedEndDate;
+  console.log("Hit5 /api/load-search endpoint");
 
   try {
-    // Structure request payload
-    const requestBody = {
-      metadata: {
-        limit: 10,
-        sortBy: { field: "Origin", direction: "Ascending" },
-        fields: "all",
-        type: "Regular",
+    // Step 1: Fetch Authorization Token
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": process.env.LOADBOARD_AID || "default_aid",
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
+          ).toString("base64"),
       },
-      includeWithGreaterPickupDates: true,
-      origin: {
-        city: originCity,
-        states: [originState],
-        radius,
-        type: "City",
-      },
-      destination: { type: destinationType },
-      equipmentTypes: equipmentTypes.split(", "),
-      minWeight,
-      maxMileage,
-      pickupDates: [pickupDate],
-      company: { minRating: companyRating },
-      modifiedOnStart: modifiedStartDate,
-      modifiedOnEnd: modifiedEndDate,
-    };
+      body: "grant_type=client_credentials",
+    });
+    console.log("Hit6 /api/load-search endpoint");
 
-    // API call to load search
-    const loadResp = await fetch(
-      "https://api.dev.123loadboard.com/loads/search",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "123LB-Correlation-Id": "123GADZ",
-          "123LB-Api-Version": "1.3",
-          "User-Agent": process.env.USER_AGENT, // Load from environment
-          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf", // process.env.LOADBOARD_AID, // Load from environment
-          Authorization: `Bearer ${authCode}`,
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    if (!tokenResp.ok) {
+      const errorData = await tokenResp.json();
+      console.error("Token Request Error:", errorData);
+      return res.status(400).json({
+        error: "Failed to retrieve authorization token",
+        details: errorData.message || "No details provided",
+      });
+    }
+    console.log("Hit7 /api/load-search endpoint");
+
+    const { access_token: bearerToken } = await tokenResp.json();
+    console.log("Hit8 /api/load-search endpoint");
+
+    // Step 2: Use access token to fetch loads
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "123LB-Correlation-Id": "123GADZ",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": process.env.USER_AGENT || "default_user_agent",
+        "123LB-AID": process.env.LOADBOARD_AID || "default_aid",
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+    console.log("Hit9 /api/load-search endpoint");
 
     const loadData = await loadResp.json();
     if (loadResp.ok) {
       return res.json(loadData);
     } else {
       console.error("Load Search API Error:", loadData);
-      return res
-        .status(400)
-        .json({ error: "Failed to fetch load data", details: loadData });
+      return res.status(400).json({
+        error: "Failed to fetch load data",
+        details: loadData.message || "No details provided",
+      });
     }
   } catch (error) {
     console.error("Error during load search:", error);
-    res.status(500).json({ error: "An error occurred during load search" });
+    return res
+      .status(500)
+      .json({ error: "An error occurred during load search" });
   }
-});
-
-// API endpoint to handle the POST request
-// app.post("/api/load-search/:code", async (req, res) => {
-//   const {
-//     originCity,
-//     originState,
-//     radius,
-//     destinationType,
-//     equipmentTypes,
-//     minWeight,
-//     maxMileage,
-//     pickupDate,
-//     companyRating,
-//     modifiedStartDate,
-//     modifiedEndDate,
-//   } = req.body;
-
-//   try {
-//     // Get the access token from the request headers or session (depending on your app)
-//     // const bearerToken = req.headers.authorization?.split(" ")[1];
-//     const authCode = req.query.code;
-//     console.log("Authorization Code:", authCode);
-//     if (!authCode) {
-//       return res.status(400).send("Authorization token is missing");
-//     }
-
-//     // Structure the request body for the load search API
-//     const requestBody = {
-//       metadata: {
-//         limit: 10,
-//         sortBy: { field: "Origin", direction: "Ascending" },
-//         fields: "all",
-//         type: "Regular",
-//       },
-//       includeWithGreaterPickupDates: true,
-//       origin: {
-//         city: originCity,
-//         states: [originState],
-//         radius: radius,
-//         type: "City",
-//       },
-//       destination: {
-//         type: destinationType,
-//       },
-//       equipmentTypes: equipmentTypes,
-//       minWeight: minWeight,
-//       maxMileage: maxMileage,
-//       pickupDates: [pickupDate],
-//       company: {
-//         minRating: companyRating,
-//       },
-//       modifiedOnStart: modifiedStartDate,
-//       modifiedOnEnd: modifiedEndDate,
-//     };
-
-//     // Send the structured request to the external API
-//     const loadResp = await fetch(
-//       "https://api.dev.123loadboard.com/loads/search",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "123LB-Correlation-Id": "123GADZ",
-//           "123LB-Api-Version": "1.3",
-//           "User-Agent": USER_AGENT,
-//           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-//           Authorization: `Bearer ${bearerToken}`, // Pass the bearer token
-//         },
-//         body: JSON.stringify(requestBody),
-//       }
-//     );
-
-//     const loadData = await loadResp.json();
-
-//     if (loadResp.ok) {
-//       return res.json(loadData);
-//     } else {
-//       console.error("Load Search API Error:", loadData);
-//       return res.status(400).json({ error: "Failed to fetch load data" });
-//     }
-//   } catch (error) {
-//     console.error("Error during load search:", error);
-//     res.status(500).json({ error: "An error occurred during load search" });
-//   }
-// });
-
-// OAuth Flow - Authorization Route
-app.get("/authorize", async (req, res) => {
-  const query = new URLSearchParams({
-    response_type: "code",
-    client_id: CLIENT_ID,
-    redirect_uri: DEV_URI,
-    scope: "loadsearching",
-    state: "string",
-    login_hint: "gadzconnect_dev",
-  }).toString();
-
-  res.redirect(`${URI_123}/authorize?${query}`);
 });
 
 // Route to handle token exchange and fetch loads
@@ -294,7 +236,9 @@ app.get("/auth/callback", async (req, res) => {
         "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
         Authorization:
           "Basic " +
-          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+          Buffer.from(
+            `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
+          ).toString("base64"),
       },
       body: formData,
     });
@@ -312,7 +256,7 @@ app.get("/auth/callback", async (req, res) => {
           "123LB-Correlation-Id": "123GADZ",
           "Content-Type": "application/json",
           "123LB-Api-Version": "1.3",
-          "User-Agent": USER_AGENT,
+          "User-Agent": process.env.USER_AGENT,
           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
           Authorization: `Bearer ${bearerToken}`,
         },
@@ -349,6 +293,116 @@ app.get("/auth/callback", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred during the process.");
+  }
+});
+
+app.use(express.json());
+
+// Step 1: Get Authorization Code (Login Part - Triggered from the Frontend)
+app.get("/auth/authorize", (req, res) => {
+  const authUri = `${URI_123}/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${DEV_URI}`;
+  res.redirect(authUri);
+});
+
+// Step 2: Exchange Authorization Code for Access and Refresh Tokens
+app.post("/auth/token", async (req, res) => {
+  const { code } = req.body;
+
+  const formData = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    client_id: CLIENT_ID,
+    redirect_uri: DEV_URI,
+  }).toString();
+
+  try {
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`,
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    res.json(tokenData); // { access_token, refresh_token, expires_in, ... }
+  } catch (error) {
+    res.status(500).json({ error: "Token exchange failed." });
+  }
+});
+
+// Step 3: Refresh Access Token Using Refresh Token
+app.post("/auth/refresh-token", async (req, res) => {
+  const { refresh_token } = req.body;
+
+  const formData = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token,
+    client_id: CLIENT_ID,
+  }).toString();
+
+  try {
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`,
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    res.json(tokenData); // New access_token and refresh_token
+  } catch (error) {
+    res.status(500).json({ error: "Failed to refresh access token." });
+  }
+});
+
+// Load Search Route (Automated Part)
+app.post("/api/load-search", async (req, res) => {
+  const { access_token } = req.headers;
+  const { originCity, originState, radius, destinationType, equipmentTypes } =
+    req.body;
+
+  const requestBody = {
+    metadata: {
+      limit: 10,
+      sortBy: { field: "Origin", direction: "Ascending" },
+      fields: "all",
+      type: "Regular",
+    },
+    includeWithGreaterPickupDates: true,
+    origin: {
+      states: [originState],
+      city: originCity,
+      radius,
+      type: "City",
+    },
+    destination: { type: destinationType || "Anywhere" },
+    equipmentTypes: equipmentTypes.split(", "),
+    includeLoadsWithoutWeight: true,
+    includeLoadsWithoutLength: true,
+  };
+
+  try {
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "123LB-Api-Version": "1.3",
+        "123LB-Correlation-Id": "123GADZ",
+        "User-Agent": process.env.USER_AGENT,
+        "123LB-AID": process.env.LOADBOARD_AID,
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    const loadData = await loadResp.json();
+    res.json(loadData);
+  } catch (error) {
+    res.status(500).json({ error: "Load search failed." });
   }
 });
 
