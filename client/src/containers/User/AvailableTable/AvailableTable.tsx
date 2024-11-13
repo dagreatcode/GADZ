@@ -208,6 +208,10 @@ const AvailableTable: React.FC = () => {
     window.location.href = baseUrl;
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   return (
     <div className={styles.container}>
       <img
