@@ -1,57 +1,223 @@
+/* Root styles */
 .home-container {
-  animation: fadeIn 1.5s ease-in-out;
+  animation: fadeIn 1.2s ease-in-out;
+  font-family: "Inter", Arial, sans-serif;
+  color: #1a1a1a;
 }
 
+/* Fade animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.welcome-text {
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 10%;
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #fff;
+  border-radius: 12px;
+  margin-bottom: 60px;
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 300px;
+  padding: 20px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hero-title span {
+  color: #ffe600;
+}
+
+.hero-subtitle {
+  margin: 20px 0;
+  font-size: 1.2rem;
+  max-width: 500px;
+}
+
+.hero-buttons {
+  margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.btn-primary {
+  background: #ffe600;
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: #ffcc00;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hero-image img {
+  max-width: 450px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* Social icons */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 40px 0;
+}
+
+/* Offer Section */
+.offer-section {
+  display: flex;
+  justify-content: center;
+  margin: 60px 0;
+}
+
+.offer-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+  max-width: 1000px;
+}
+
+.offer-card img {
+  width: 100%;
+  max-width: 450px;
+  object-fit: cover;
+}
+
+.offer-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.offer-content h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #0072ff;
+}
+
+.offer-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Global Section */
+.global-section {
+  padding: 60px 10%;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.global-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: #00a8cc;
+}
+
+.global-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 40px;
+}
+
+.global-text {
+  flex: 1;
+  min-width: 300px;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.global-image img {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* CTA Section */
+.cta-section {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #fff;
+  border-radius: 12px;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
   margin-bottom: 20px;
 }
 
-.social-icons {
-  display: flex;
-  justify-content: center; /* Centers the icons horizontally */
-  align-items: center; /* Centers the icons vertically */
-  margin: 20px 0; /* Adjusts spacing around the icons */
+.cta-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
 }
 
-.social-icons lord-icon {
-  margin: 0 10px; /* Adds spacing between icons */
+.cta-btn {
+  background: #fff;
+  color: #ff7e5f;
+  font-size: 1.1rem;
 }
 
-.jumbotron {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 40px;
-  transition: transform 0.3s;
+.cta-btn:hover {
+  background: #f1f1f1;
 }
 
-.jumbotron:hover {
-  transform: scale(1.02);
-}
-
-@media (max-width: 768px) {
-  .display-4 {
-    font-size: 1.5rem; /* Adjust font size for mobile */
+/* Responsive */
+@media (max-width: 992px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
   }
 
-  .display-6 {
-    font-size: 1rem; /* Adjust font size for mobile */
+  .hero-image {
+    margin-top: 30px;
   }
 
-  .social-icons {
-    flex-direction: column; /* Stack icons vertically on mobile */
+  .offer-card {
+    flex-direction: column;
+    text-align: center;
   }
 
-  .social-icons lord-icon {
-    margin: 10px 0; /* Adjust spacing for vertical alignment */
+  .global-content {
+    flex-direction: column;
+    text-align: center;
   }
 }
