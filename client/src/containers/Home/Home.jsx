@@ -204,10 +204,10 @@ const Home = () => {
             worldwide on one seamless platform.
           </p>
           <div className="hero-buttons">
-            <button className="home-btn-primary">Get Started</button>
+            {/* <button className="home-btn-primary">Get Started</button> */}
             {/* <button className="home-btn-secondary">Learn More</button> */}
             <Link to="/Login">
-              <button className="home-btn-secondary">Learn More</button>
+              <button className="home-btn-secondary">Get Started</button>
             </Link>
             <Link to="/Bio">
               <button className="home-btn-secondary">Learn More</button>
