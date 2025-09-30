@@ -1,0 +1,156 @@
+.dispatch-container {
+  font-family: "Inter", Arial, sans-serif;
+  color: #1a1a1a;
+  animation: fadeIn 1s ease-in-out;
+  padding-bottom: 50px;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Contact Section */
+.dispatch-contact {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.dispatch-contact-btn {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 14px 30px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.dispatch-contact-btn:hover {
+  background: #0056cc;
+  transform: translateY(-3px);
+}
+
+/* Hero Section */
+.dispatch-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.dispatch-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #0072ff;
+  margin-bottom: 20px;
+}
+
+.dispatch-nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.dispatch-nav a {
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0072ff;
+  background: #f1faff;
+  border: 2px solid #0072ff;
+  transition: all 0.3s ease;
+}
+
+.dispatch-nav a:hover {
+  background: #0072ff;
+  color: #fff;
+}
+
+/* Hero Image */
+.dispatch-image {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.dispatch-image img {
+  max-width: 800px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Intro Section */
+.dispatch-intro {
+  text-align: center;
+  margin: 40px auto;
+  max-width: 900px;
+}
+
+/* Agreement Details */
+.dispatch-agreement-details {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.dispatch-agreement-details ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+
+.dispatch-agreement-details li {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+/* Importance Section */
+.dispatch-importance {
+  background: #f9f9f9;
+  padding: 40px 20px;
+  margin: 50px auto;
+  border-radius: 12px;
+  max-width: 900px;
+}
+
+.dispatch-importance ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+
+/* Closing Section */
+.dispatch-closing {
+  text-align: center;
+  margin: 50px auto;
+}
+
+.dispatch-cta-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 14px 30px;
+  font-size: 1.2rem;
+  color: #fff;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.dispatch-cta-btn:hover {
+  background: #ff6347;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .dispatch-agreement-details,
+  .dispatch-importance,
+  .dispatch-intro {
+    padding: 0 20px;
+    text-align: center;
+  }
+}

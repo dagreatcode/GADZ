@@ -19,3 +19,106 @@
       font-size: 1.6rem;
     }
   } */
+
+  /* Scoped to About Page only */
+.about-container {
+  font-family: "Inter", Arial, sans-serif;
+  animation: fadeIn 1.2s ease-in-out;
+  color: #1a1a1a;
+  padding-bottom: 50px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Phone CTA */
+.about-phone {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.about-phone-btn {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 14px 30px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.about-phone-btn:hover {
+  background: #0056cc;
+  transform: translateY(-3px);
+}
+
+/* Hero Section */
+.about-hero {
+  text-align: center;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.about-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #0072ff;
+  margin-bottom: 20px;
+}
+
+/* Nav Links */
+.about-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.about-nav a {
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0072ff;
+  background: #f1faff;
+  border: 2px solid #0072ff;
+  transition: all 0.3s ease;
+}
+
+.about-nav a:hover {
+  background: #0072ff;
+  color: #fff;
+}
+
+/* Truck Image */
+.about-image {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.about-image img {
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Video Section */
+.about-video {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+}

@@ -1,0 +1,67 @@
+.agreement-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 30px;
+  font-family: "Times New Roman", serif;
+  line-height: 1.6;
+  background: #fff;
+  border: 2px solid #000;
+}
+
+.agreement-title {
+  text-align: center;
+  text-decoration: underline;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.agreement-form label {
+  font-weight: bold;
+  display: block;
+  margin-top: 15px;
+}
+
+.agreement-form input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 15px 0;
+  font-size: 1rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+
+.signature-canvas {
+  border: 1px solid #000;
+  background: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.signature-buttons {
+  margin-bottom: 15px;
+}
+
+.signature-buttons button {
+  margin-right: 10px;
+  padding: 8px 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0072ff;
+  color: white;
+}
+
+.submit-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.submit-container button {
+  padding: 12px 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #0072ff;
+  color: white;
+}

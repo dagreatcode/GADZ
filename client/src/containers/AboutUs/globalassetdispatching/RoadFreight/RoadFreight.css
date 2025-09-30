@@ -1,5 +1,4 @@
-/* Scoped to Bio Page only */
-.bio-container {
+.road-container {
   font-family: "Inter", Arial, sans-serif;
   animation: fadeIn 1.2s ease-in-out;
   color: #1a1a1a;
@@ -12,17 +11,17 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Contact Section */
-.bio-contact {
+/* Phone CTA */
+.road-phone {
   text-align: center;
   margin: 30px 0;
 }
 
-.bio-contact-btn {
+.road-phone-btn {
   background: linear-gradient(135deg, #0072ff, #00c6ff);
   color: #fff;
   text-decoration: none;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   padding: 14px 30px;
   border-radius: 50px;
@@ -33,26 +32,27 @@
   box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-.bio-contact-btn:hover {
+.road-phone-btn:hover {
   background: #0056cc;
   transform: translateY(-3px);
 }
 
-.bio-contact-number {
-  margin: 0;
+/* Hero Section */
+.road-hero {
+  text-align: center;
+  margin: 40px auto;
+  padding: 20px;
 }
 
-/* Page Title */
-.bio-title {
+.road-title {
   font-size: 3rem;
   font-weight: 800;
   color: #0072ff;
   margin-bottom: 20px;
-  text-align: center;
 }
 
-/* Nav — reused from AboutUs */
-.about-nav {
+/* Nav Links */
+.road-nav {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -60,7 +60,7 @@
   margin-bottom: 30px;
 }
 
-.about-nav a {
+.road-nav a {
   padding: 10px 20px;
   border-radius: 50px;
   text-decoration: none;
@@ -71,87 +71,51 @@
   transition: all 0.3s ease;
 }
 
-.about-nav a:hover {
+.road-nav a:hover {
   background: #0072ff;
   color: #fff;
 }
 
 /* Hero Image */
-.bio-image-wrapper {
+.road-image {
   display: flex;
   justify-content: center;
   margin: 30px 0;
 }
 
-.bio-image {
+.road-image img {
   width: 100%;
-  max-width: 900px;
+  max-width: 1000px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* About Section */
-.bio-about {
-  text-align: center;
-  margin: 40px auto;
+/* Content Section */
+.road-content {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 20px;
 }
 
-.bio-subtitle {
-  font-size: 1rem;
-  color: #666;
+.road-section {
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+  line-height: 1.7;
 }
 
-.bio-quote {
-  font-style: italic;
-  color: #444;
-  margin-top: 15px;
+.road-section img.road-section-image {
+  width: 100%;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-/* Divider */
-.bio-divider {
-  margin: 40px auto;
-  border: none;
-  border-top: 2px solid #eee;
-  width: 80%;
-}
-
-/* Services */
-.bio-services {
-  margin: 30px auto;
-  max-width: 900px;
-  padding: 0 20px;
-}
-
-.bio-services dt {
-  font-weight: bold;
-  margin-top: 15px;
-  color: #0072ff;
-}
-
-.bio-services dd {
-  margin-left: 20px;
-  line-height: 1.6;
-}
-
-/* Biography Details */
-.bio-details {
+/* Video Section */
+.road-video {
+  margin-top: 50px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 40px;
-  gap: 20px;
-}
-
-.bio-column {
-  flex: 1;
-  min-width: 280px;
+  justify-content: center;
   padding: 20px;
-  text-align: justify;
-}
-
-.bio-heading {
-  font-size: 1.6rem;
-  margin-bottom: 15px;
-  color: #0072ff;
+  background: #f9f9f9;
+  border-radius: 12px;
 }
