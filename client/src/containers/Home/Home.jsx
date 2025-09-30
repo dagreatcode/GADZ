@@ -209,7 +209,7 @@ const Home = () => {
             <Link to="/Login">
               <button className="home-btn-secondary">Get Started</button>
             </Link>
-            <Link to="/Bio">
+            <Link to="/AboutUs">
               <button className="home-btn-secondary">Learn More</button>
             </Link>
           </div>
@@ -288,7 +288,10 @@ const Home = () => {
           Join thousands of logistics professionals already transforming the way
           they manage operations. The future of logistics is here.
         </p>
-        <button className="home-btn-primary cta-btn">Connect Now</button>
+        {/* <button className="home-btn-primary cta-btn">Connect Now</button> */}
+        <Link to="/Agreement">
+          <button className="home-btn-secondary">Connect Now</button>
+        </Link>
       </section>
     </div>
   );
