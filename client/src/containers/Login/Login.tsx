@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Modal, Button, Alert } from "react-bootstrap";
+import { Modal, Button, Alert, Spinner } from "react-bootstrap";
 
 interface LoginResponse {
   error: boolean;
@@ -18,18 +18,27 @@ const ServerPort =
   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [signupEmail, setSignupEmail] = useState<string>("");
-  const [signupPassword, setSignupPassword] = useState<string>("");
-  const [showSignupModal, setShowSignupModal] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null); // Info message state
   const navigate = useNavigate();
 
+  // Login state
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [loadingLogin, setLoadingLogin] = useState(false);
+
+  // Signup state
+  const [signupEmail, setSignupEmail] = useState<string>("");
+  const [signupPassword, setSignupPassword] = useState<string>("");
+  const [loadingSignup, setLoadingSignup] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState<boolean>(false);
+
+  // Login handler
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage(null); // Reset success message
+    setSuccessMessage(null);
+    setInfoMessage(null);
+    setLoadingLogin(true);
 
     try {
       const response = await axios.post<LoginResponse>(
@@ -38,28 +47,31 @@ const Login: React.FC = () => {
       );
 
       if (response.data.error) {
-        setInfoMessage("Invalid email or password."); // Set info message
+        setInfoMessage("Invalid email or password.");
         return;
       }
 
       const { token, user } = response.data.data;
 
-      // Save token and user ID to local storage
       localStorage.setItem("token", token);
       localStorage.setItem("userId", user.id);
 
-      setSuccessMessage("Login successful!"); // Set success message
-      console.log("Login successful, token and user ID saved!");
-      navigate("/user");
+      setSuccessMessage("Login successful! Redirecting...");
+      setTimeout(() => navigate("/user"), 1000);
     } catch (err) {
-      setInfoMessage("An error occurred during login."); // Set info message
       console.error("Login error:", err);
+      setInfoMessage("An error occurred during login.");
+    } finally {
+      setLoadingLogin(false);
     }
   };
 
+  // Signup handler
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage(null); // Reset success message
+    setSuccessMessage(null);
+    setInfoMessage(null);
+    setLoadingSignup(true);
 
     try {
       const response = await axios.post(`${ServerPort}/api/user/signup`, {
@@ -68,112 +80,118 @@ const Login: React.FC = () => {
       });
 
       if (!response.data.success) {
-        setInfoMessage(response.data.message || "Signup failed."); // Set info message
+        setInfoMessage(response.data.message || "Signup failed.");
         return;
       }
 
-      setSuccessMessage("You have successfully signed up! Please log in.");
-      setShowSignupModal(false); // Close modal on success
-      // Clear signup fields
+      setSuccessMessage("Signup successful! You can now log in.");
       setSignupEmail("");
       setSignupPassword("");
+      setTimeout(() => setShowSignupModal(false), 1500);
     } catch (err) {
-      setInfoMessage("An error occurred during signup."); // Set info message
       console.error("Signup error:", err);
+      setInfoMessage("An error occurred during signup.");
+    } finally {
+      setLoadingSignup(false);
     }
   };
 
   return (
-    <div className="container">
-      <div className="mt-4">
-        <h2 className="display-4 fw-bold lh-1 mb-3 text-center">Login</h2>
-      </div>
+    <div className="login-page d-flex flex-column align-items-center justify-content-center py-5">
+      <h2 className="display-4 fw-bold mb-3 text-center">Welcome Back</h2>
 
-      {/* Success Message */}
+      {/* Messages */}
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-      {/* Info Message */}
       {infoMessage && <Alert variant="warning">{infoMessage}</Alert>}
 
       {/* Login Form */}
       <form
         onSubmit={handleLogin}
-        className="p-4 p-md-5 border rounded-3 bg-light"
+        className="login-form p-4 p-md-5 bg-white rounded-4 shadow-sm border border-light"
       >
-        <h3 className="text-center">Login</h3>
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12">
-              <input
-                id="email"
-                className="form-control"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-          <div className="row form-group">
-            <div className="col-sm-12">
-              <input
-                id="password"
-                className="form-control"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
-            Connect
-          </button>
+        <h3 className="text-center mb-4">Login</h3>
+
+        <div className="mb-3">
+          <input
+            type="email"
+            className="form-control form-control-lg"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
+
+        <div className="mb-3">
+          <input
+            type="password"
+            className="form-control form-control-lg"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <Button
+          type="submit"
+          className="w-100 btn-lg"
+          variant="primary"
+          disabled={loadingLogin}
+        >
+          {loadingLogin ? <Spinner animation="border" size="sm" /> : "Connect"}
+        </Button>
       </form>
 
-      {/* Button to trigger Signup Modal */}
-      <div className="text-center mt-3">
+      {/* Signup Trigger */}
+      <div className="mt-3 text-center">
         <Button variant="link" onClick={() => setShowSignupModal(true)}>
-          Sign Up
+          Don't have an account? Sign Up
         </Button>
       </div>
 
       {/* Signup Modal */}
-      <Modal show={showSignupModal} onHide={() => setShowSignupModal(false)}>
+      <Modal
+        show={showSignupModal}
+        onHide={() => setShowSignupModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Sign Up</Modal.Title>
+          <Modal.Title>Create Account</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>After signing up, please close this window to Connect.</h5>
           <form onSubmit={handleSignup}>
             <div className="mb-3">
               <input
-                id="signup-email"
-                className="form-control"
                 type="email"
+                className="form-control form-control-lg"
                 placeholder="Email"
                 value={signupEmail}
                 onChange={(e) => setSignupEmail(e.target.value)}
                 required
               />
             </div>
+
             <div className="mb-3">
               <input
-                id="signup-password"
-                className="form-control"
                 type="password"
+                className="form-control form-control-lg"
                 placeholder="Password"
                 value={signupPassword}
                 onChange={(e) => setSignupPassword(e.target.value)}
                 required
               />
             </div>
-            {/* Info Message in Signup Modal */}
+
             {infoMessage && <Alert variant="warning">{infoMessage}</Alert>}
-            <Button variant="primary" type="submit">
-              Sign Up
+
+            <Button
+              type="submit"
+              className="w-100"
+              variant="primary"
+              disabled={loadingSignup}
+            >
+              {loadingSignup ? <Spinner animation="border" size="sm" /> : "Sign Up"}
             </Button>
           </form>
         </Modal.Body>
