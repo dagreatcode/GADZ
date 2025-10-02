@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
-// import Col from "react-bootstrap/Col";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-// import Row from "react-bootstrap/Row";
+import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
 type User = {
   id: string;
   email: string;
-  password?: string;
+  password?: string; // Handle this securely
   description: string;
   userType: string;
   experienceLevel: string;
@@ -45,7 +45,6 @@ type User = {
   companyID?: string;
   companyProfile?: object;
   partnershipStatus?: string;
-  profileImage?: string; // Added profile image field
 };
 
 const ServerPort =
@@ -58,10 +57,6 @@ const ProfileUpdate: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-
-  // 🆕 State for image upload
-  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState<User>({
     id: "",
@@ -101,23 +96,20 @@ const ProfileUpdate: React.FC = () => {
     companyID: "",
     companyProfile: {},
     partnershipStatus: "",
-    profileImage: "", // added
   });
 
-  const [
-    // formErrors
-    , setFormErrors] = useState({
-      email: "",
-      description: "",
-      userType: "",
-      experienceLevel: "",
-      location: "",
-      availableFrom: "",
-      newPassword: "",
-      phoneNumber: "",
-      driversLicense: "",
-      comments: "",
-    });
+  const [formErrors, setFormErrors] = useState({
+    email: "",
+    description: "",
+    userType: "",
+    experienceLevel: "",
+    location: "",
+    availableFrom: "",
+    newPassword: "",
+    phoneNumber: "",
+    driversLicense: "",
+    comments: "",
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -135,19 +127,19 @@ const ProfileUpdate: React.FC = () => {
         if (response.status === 200) {
           const userData = response.data;
 
+          // Check if availableFrom exists and is a string before splitting
           const availableFromDate =
             typeof userData.availableFrom === "string"
               ? userData.availableFrom.split("T")[0]
-              : "";
+              : ""; // Default to an empty string if not a valid string
 
           setFormData({
             ...userData,
-            availableFrom: availableFromDate,
+            availableFrom: availableFromDate, // Use the checked variable
             password: "",
             newPassword: "",
           });
           setQrCodeImage(userData.qrCode || null);
-          setProfileImagePreview(userData.profileImage || null); // 🆕 Show existing image
         } else {
           setError("Failed to fetch user data.");
         }
@@ -196,13 +188,15 @@ const ProfileUpdate: React.FC = () => {
 
     const updatedData: Partial<User> = { ...formData };
 
+    // Only set password if newPassword is provided
     if (formData.newPassword && formData.newPassword.trim() !== "") {
       updatedData.password = formData.newPassword;
     } else {
-      delete updatedData.password;
+      delete updatedData.password; // Remove password field if newPassword is not provided
     }
 
     try {
+      console.log("Updating user with data:", updatedData); // Log data being sent
       const response = await axios.put(
         `${ServerPort}/api/user/update/${userId}`,
         updatedData,
@@ -215,9 +209,10 @@ const ProfileUpdate: React.FC = () => {
       );
       if (response.status === 200) {
         setSuccessMessage("Profile updated successfully.");
-        setFormData({ ...formData, newPassword: "" });
+        setFormData({ ...formData, newPassword: "" }); // Reset new password field
       }
     } catch (error) {
+      console.error("Error updating user:", error); // Log the error
       handleApiError(error);
     } finally {
       setLoading(false);
@@ -225,41 +220,12 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
-  // 🆕 Handle Cloudinary upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    const data = new FormData();
-    data.append("file", file);
-    data.append("upload_preset", "YOUR_CLOUDINARY_UPLOAD_PRESET"); // 🔑 Replace
-    data.append("cloud_name", "YOUR_CLOUDINARY_CLOUD_NAME"); // 🔑 Replace
-
-    try {
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUDINARY_CLOUD_NAME/image/upload", // 🔑 Replace
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-      const uploadResponse = await res.json();
-      setFormData({ ...formData, profileImage: uploadResponse.secure_url });
-      setProfileImagePreview(uploadResponse.secure_url);
-      setSuccessMessage("Profile image uploaded successfully.");
-    } catch (err) {
-      setError("Image upload failed.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleApiError = (error: any) => {
     if (axios.isAxiosError(error)) {
+      console.error("API Error:", error.response?.data); // Log full error details
       setError(error.response?.data.message || error.message);
     } else {
+      console.error("Unknown Error:", error);
       setError("An unknown error occurred");
     }
   };
@@ -267,38 +233,175 @@ const ProfileUpdate: React.FC = () => {
   return (
     <div>
       <h1>Profile Update</h1>
-
-      {/* 🆕 Show profile image */}
-      {profileImagePreview && (
-        <div style={{ marginBottom: "20px" }}>
-          <h3>Profile Image</h3>
-          <img
-            src={profileImagePreview}
-            alt="Profile"
-            style={{ maxWidth: "200px", borderRadius: "8px" }}
-          />
-        </div>
-      )}
-
-      {/* 🆕 Upload input */}
-      <Form.Group controlId="profileImageUpload" className="mb-3">
-        <Form.Label>Update Profile Image</Form.Label>
-        <Form.Control type="file" accept="image/*" onChange={handleImageUpload} />
-        {uploading && <p>Uploading...</p>}
-      </Form.Group>
-
       {loading && <p>Loading...</p>}
       {error && <Alert variant="danger">{error}</Alert>}
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-
-      {/* ✅ Existing form untouched */}
       <Form onSubmit={handleUserUpdate}>
-        {/* ... your existing fields remain exactly as is ... */}
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              value={formData.email || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              isInvalid={!!formErrors.email}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.email}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.description || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              isInvalid={!!formErrors.description}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.description}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="userType">
+            <Form.Label>User Type</Form.Label>
+            <Form.Control
+              as="select"
+              value={formData.userType || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, userType: e.target.value })
+              }
+              isInvalid={!!formErrors.userType}
+            >
+              <option value="">Select User Type</option>
+              <option value="shipper">Shipper</option>
+              <option value="carrier">Carrier</option>
+              <option value="broker">Broker</option>
+              <option value="contractor">Contractor</option>
+            </Form.Control>
+            <Form.Control.Feedback type="invalid">
+              {formErrors.userType}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="experienceLevel">
+            <Form.Label>Experience Level</Form.Label>
+            <Form.Control
+              as="select"
+              value={formData.experienceLevel || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, experienceLevel: e.target.value })
+              }
+              isInvalid={!!formErrors.experienceLevel}
+            >
+              <option value="">Select Experience Level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="expert">Expert</option>
+            </Form.Control>
+            <Form.Control.Feedback type="invalid">
+              {formErrors.experienceLevel}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="location">
+            <Form.Label>Location</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.location || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
+              isInvalid={!!formErrors.location}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.location}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="availableFrom">
+            <Form.Label>Available From</Form.Label>
+            <Form.Control
+              type="date"
+              value={formData.availableFrom || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, availableFrom: e.target.value })
+              }
+              isInvalid={!!formErrors.availableFrom}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.availableFrom}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="newPassword">
+            <Form.Label>New Password</Form.Label>
+            <Form.Control
+              type="password"
+              value={formData.newPassword || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, newPassword: e.target.value })
+              }
+              isInvalid={!!formErrors.newPassword}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.newPassword}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="phoneNumber">
+            <Form.Label>Phone Number</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.phoneNumber || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, phoneNumber: e.target.value })
+              }
+              isInvalid={!!formErrors.phoneNumber}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.phoneNumber}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="driversLicense">
+            <Form.Label>Drivers License</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.driversLicense || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, driversLicense: e.target.value })
+              }
+              isInvalid={!!formErrors.driversLicense}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.driversLicense}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="comments">
+            <Form.Label>Comments</Form.Label>
+            <Form.Control
+              as="textarea"
+              value={formData.comments || ""} // Ensure value is never null
+              onChange={(e) =>
+                setFormData({ ...formData, comments: e.target.value })
+              }
+              isInvalid={!!formErrors.comments}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.comments}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
         <Button type="submit" disabled={isSubmitting || loading}>
           {isSubmitting ? "Updating..." : "Update Profile"}
         </Button>
       </Form>
-
       {qrCodeImage && (
         <div>
           <h3>Your QR Code</h3>
