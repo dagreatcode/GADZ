@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
+// import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
+// import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
@@ -104,18 +104,20 @@ const ProfileUpdate: React.FC = () => {
     profileImage: "", // added
   });
 
-  const [formErrors, setFormErrors] = useState({
-    email: "",
-    description: "",
-    userType: "",
-    experienceLevel: "",
-    location: "",
-    availableFrom: "",
-    newPassword: "",
-    phoneNumber: "",
-    driversLicense: "",
-    comments: "",
-  });
+  const [
+    // formErrors
+    , setFormErrors] = useState({
+      email: "",
+      description: "",
+      userType: "",
+      experienceLevel: "",
+      location: "",
+      availableFrom: "",
+      newPassword: "",
+      phoneNumber: "",
+      driversLicense: "",
+      comments: "",
+    });
 
   useEffect(() => {
     const fetchUserData = async () => {
