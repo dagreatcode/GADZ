@@ -6,6 +6,7 @@ import Modal from "react-modal";
 import styles from "./LoadSearchModal.module.css"; // Create a CSS module specific to this modal
 
 Modal.setAppElement("#root"); // Set the root element for accessibility
+const TypedModal = Modal as unknown as React.FC<any>;
 
 // Define interface for form data and props
 interface LoadSearchModalProps {
@@ -108,9 +109,8 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
     const authCode = new URLSearchParams(window.location.search).get("code");
     fetch123LoadboardDataInForm(authCode || "");
   };
-
   return (
-    <Modal
+    <TypedModal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className={styles.modalContent}
@@ -222,7 +222,7 @@ const LoadSearchModal: React.FC<LoadSearchModalProps> = ({
           </pre>
         )}
       </div>
-    </Modal>
+    </TypedModal>
   );
 };
 
