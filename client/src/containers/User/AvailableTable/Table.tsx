@@ -1,12 +1,13 @@
+// Table.tsx
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "./Table.module.css"; // Reuse the same CSS
+import styles from "./AvailableTable.module.css"; // Use same CSS for consistent style
 
 interface TableProps {
-  data: any[]; // Data can be either loads or drivers
+  data: any[];
   title: string;
-  isUser: boolean; // Flag to indicate whether we're displaying user-related data (drivers)
-  showCompanyLink?: boolean; // Flag to optionally show the company link
+  isUser: boolean;
+  showCompanyLink?: boolean;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -16,49 +17,37 @@ const Table: React.FC<TableProps> = ({
   showCompanyLink = false,
 }) => {
   return (
-    <div className={styles["table-container"]}>
+    <div className={styles["at-tableContainer"]}>
       <h3>{title}</h3>
-      <table className={styles.table}>
+      <table className={styles["at-table"]}>
         <thead>
           <tr>
             {isUser ? (
               <>
-                <th className={styles.tableHeader} scope="col">
-                  Driver ID
-                </th>
-                <th className={styles.tableHeader} scope="col">
-                  Description
-                </th>
-                <th className={styles.tableHeader} scope="col">
-                  Company
-                </th>
+                <th>Driver ID</th>
+                <th>Description</th>
+                <th>Company</th>
               </>
             ) : (
               <>
-                <th className={styles.tableHeader} scope="col">
-                  Load ID
-                </th>
-                <th className={styles.tableHeader} scope="col">
-                  Description
-                </th>
-                <th className={styles.tableHeader} scope="col">
-                  Company
-                </th>
+                <th>Load ID</th>
+                <th>Description</th>
+                <th>Company</th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
-            <tr key={item.id} className={styles.tableRow}>
+            <tr key={item.id}>
               {isUser ? (
                 <>
-                  <td className={styles.tableCell}>{item.id}</td>
-                  <td className={styles.tableCell}>{item.description}</td>
-                  <td className={styles.tableCell}>
+                  <td>{item.id}</td>
+                  <td>{item.description}</td>
+                  <td>
                     <Link
-                      to={`/UserProfile/${item.userId}`} // Fixed backticks here
-                      className={styles.tableLink}
+                      to={`/UserProfile/${item.userId}`}
+                      className={styles["at-link"]}
                     >
                       {item.company}
                     </Link>
@@ -66,13 +55,13 @@ const Table: React.FC<TableProps> = ({
                 </>
               ) : (
                 <>
-                  <td className={styles.tableCell}>{item.id}</td>
-                  <td className={styles.tableCell}>{item.description}</td>
-                  <td className={styles.tableCell}>
+                  <td>{item.id}</td>
+                  <td>{item.description}</td>
+                  <td>
                     {showCompanyLink ? (
                       <Link
-                        to={`/UserProfile/${item.userId}`} // Fixed backticks here
-                        className={styles.tableLink}
+                        to={`/UserProfile/${item.userId}`}
+                        className={styles["at-link"]}
                       >
                         {item.company}
                       </Link>

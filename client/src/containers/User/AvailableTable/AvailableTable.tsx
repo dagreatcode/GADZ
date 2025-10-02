@@ -1017,28 +1017,30 @@ const AvailableTable: React.FC = () => {
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
 
         <h3>Your Loads</h3>
-        <table className={styles["at-table"]}>
-          <thead>
-            <tr>
-              <th>Load ID</th>
-              <th>Description</th>
-              <th>Company</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userLoads.map((load) => (
-              <tr key={load.id}>
-                <td>{load.id}</td>
-                <td>{load.description}</td>
-                <td>
-                  <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
-                    {load.company}
-                  </Link>
-                </td>
+        <div className={styles["at-tableContainer"]}>
+          <table className={styles["at-table"]}>
+            <thead>
+              <tr>
+                <th>Load ID</th>
+                <th>Description</th>
+                <th>Company</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {userLoads.map((load) => (
+                <tr key={load.id}>
+                  <td>{load.id}</td>
+                  <td>{load.description}</td>
+                  <td>
+                    <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
+                      {load.company}
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
           <h3>Add New Load</h3>
