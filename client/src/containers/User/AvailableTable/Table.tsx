@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "./Table.module.css"; // Assuming you have the CSS module for styling
+import styles from "./Table.module.css"; // Reuse the same CSS
 
 interface TableProps {
   data: any[]; // Data can be either loads or drivers
@@ -16,22 +16,34 @@ const Table: React.FC<TableProps> = ({
   showCompanyLink = false,
 }) => {
   return (
-    <div>
+    <div className={styles["table-container"]}>
       <h3>{title}</h3>
       <table className={styles.table}>
         <thead>
           <tr>
             {isUser ? (
               <>
-                <th className={styles.tableHeader} scope="col">Driver ID</th>
-                <th className={styles.tableHeader} scope="col">Description</th>
-                <th className={styles.tableHeader} scope="col">Company</th>
+                <th className={styles.tableHeader} scope="col">
+                  Driver ID
+                </th>
+                <th className={styles.tableHeader} scope="col">
+                  Description
+                </th>
+                <th className={styles.tableHeader} scope="col">
+                  Company
+                </th>
               </>
             ) : (
               <>
-                <th className={styles.tableHeader} scope="col">Load ID</th>
-                <th className={styles.tableHeader} scope="col">Description</th>
-                <th className={styles.tableHeader} scope="col">Company</th>
+                <th className={styles.tableHeader} scope="col">
+                  Load ID
+                </th>
+                <th className={styles.tableHeader} scope="col">
+                  Description
+                </th>
+                <th className={styles.tableHeader} scope="col">
+                  Company
+                </th>
               </>
             )}
           </tr>
@@ -45,7 +57,7 @@ const Table: React.FC<TableProps> = ({
                   <td className={styles.tableCell}>{item.description}</td>
                   <td className={styles.tableCell}>
                     <Link
-                      to={`/UserProfile/${item.userId}`} // Link to user profile page using the driver's userId
+                      to={`/UserProfile/${item.userId}`} // Fixed backticks here
                       className={styles.tableLink}
                     >
                       {item.company}
@@ -59,7 +71,7 @@ const Table: React.FC<TableProps> = ({
                   <td className={styles.tableCell}>
                     {showCompanyLink ? (
                       <Link
-                        to={`/UserProfile/${item.userId}`} // Link to driver profile using the load's userId
+                        to={`/UserProfile/${item.userId}`} // Fixed backticks here
                         className={styles.tableLink}
                       >
                         {item.company}

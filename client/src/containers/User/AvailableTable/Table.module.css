@@ -12,7 +12,7 @@
   text-align: left;
   position: sticky;
   top: 0; /* Keep header at the top when scrolling */
-  z-index: 1; /* Ensure the header stays on top of the table rows */
+  z-index: 1; /* Ensure the header stays above rows */
 }
 
 .tableRow {
@@ -38,27 +38,26 @@
   text-decoration: underline;
 }
 
-/* Make tables scrollable on smaller screens */
+/* Scrollable container for responsive tables */
 .table-container {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* For smoother scrolling on mobile */
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
   margin-bottom: 20px;
 }
 
-/* Ensure responsiveness on mobile */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
   .table {
-    width: 100%;
-    font-size: 14px; /* Adjust text size for smaller screens */
+    font-size: 14px;
   }
 
   .tableHeader,
   .tableCell {
-    padding: 8px; /* Adjust padding for smaller screens */
+    padding: 8px;
   }
 
   .tableRow {
-    font-size: 12px; /* Smaller text size for mobile */
+    font-size: 12px;
   }
 
   .tableLink {
