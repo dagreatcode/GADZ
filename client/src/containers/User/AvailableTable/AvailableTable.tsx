@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
-import Table from "./Table"; // Update the path as needed
+import Table from "./Table"; 
 
 // Types
 interface Load {
@@ -24,7 +24,7 @@ interface Load {
 interface Driver {
   description: string;
   company: string;
-  userId: string;  // Add userId for filtering
+  userId: string;
 }
 
 interface LoadboardData {
@@ -93,7 +93,6 @@ const AvailableTable: React.FC = () => {
       );
       setDriverList(response.data);
 
-      // Filter drivers based on current user ID
       const userId = localStorage.getItem("userId");
       if (userId) {
         const filteredDrivers = response.data.filter(
@@ -106,7 +105,6 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  //TODO: Fix This
   const fetchLoadboardData = async (authCode: string) => {
     try {
       const response = await axios.get<LoadboardData>(
@@ -156,14 +154,7 @@ const AvailableTable: React.FC = () => {
         userId,
       });
 
-      const updatedResponse = await axios.get(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
-      );
-      setLoads(updatedResponse.data);
-      const filteredLoads = updatedResponse.data.filter(
-        (load: Load) => load.userId === userId
-      );
-      setUserLoads(filteredLoads);
+      fetchLoads();
     } catch (error) {
       console.error("Error creating load:", error);
     }
@@ -178,21 +169,13 @@ const AvailableTable: React.FC = () => {
     }
 
     try {
-      const requestData = {
-        description: newDriver.description,
-        company: newDriver.company,
-        userId,
-      };
+      const requestData = { ...newDriver, userId };
       await axios.post(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`,
         requestData
       );
-      setNewDriver({
-        description: "",
-        company: "",
-        userId: "",
-      });
-      fetchDrivers();  // Fetch drivers after adding a new one
+      setNewDriver({ description: "", company: "", userId: "" });
+      fetchDrivers();
     } catch (error) {
       console.error("Error creating driver:", error);
     }
@@ -208,198 +191,170 @@ const AvailableTable: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <img
-        src={GADZTruck}
-        alt="Truck Animation"
-        className={styles.truckAnimation}
-      />
-      <h1 className={styles.header}>Available Table / Load Board</h1>
-      <Link to="/User" className={styles.homeLink}>
-        Home
-      </Link>
+      <header className={styles.hero}>
+        <img src={GADZTruck} alt="Truck Animation" className={styles.truck} />
+        <h1 className={styles.title}>🚛 GADZConnect Load Board</h1>
+        <p className={styles.subtitle}>
+          Manage your drivers, loads, and connect with 123Loadboard seamlessly
+        </p>
+        <Link to="/User" className={styles.homeLink}>
+          Back to Dashboard
+        </Link>
+      </header>
 
-      <h3>GADZConnect Table</h3>
-      <button
-        onClick={fetchLoads}
-        className={`${styles.button} ${styles.fetchButton}`}
-        aria-label="Fetch my loads"
-      >
-        Fetch Loads
-      </button>
+      {/* Driver Controls */}
+      <section className={styles.section}>
+        <h2>👨‍✈️ Drivers</h2>
+        <div className={styles.buttonGroup}>
+          <button onClick={fetchDrivers} className={styles.button}>
+            Fetch Drivers
+          </button>
+        </div>
+        <Table data={driverList} title="All Drivers" isUser={true} />
+        <Table
+          data={userDrivers}
+          title="Your Drivers"
+          isUser={true}
+          showCompanyLink={false}
+        />
 
-      <button
-        onClick={fetchDrivers}
-        className={`${styles.button} ${styles.fetchButton}`}
-        aria-label="Fetch my drivers"
-      >
-        Fetch Drivers
-      </button>
-      <br />
-      <br />
-      {/* Driver Table */}
-      <Table data={driverList} title="All Drivers" isUser={true} />
-      <br />
-      <br />
-      <hr />
-      {/* Your Drivers Table */}
-      <Table
-        data={userDrivers} // Display only the user's drivers
-        title="Your Drivers"
-        isUser={true} // Set to true because we are displaying user data (drivers)
-        showCompanyLink={false} // No company link for drivers
-      />
-      <br />
-      <br />
-      <hr />
-      {/* Load Table */}
-      <Table
-        data={loads}
-        title="All Loads"
-        isUser={false}
-        showCompanyLink={true}
-      />
-      <br />
-      <br />
-      <h3>Your Loads</h3>
-      <table className={styles.loadTable}>
-        <thead>
-          <tr>
-            <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Description</th>
-            <th className={styles.tableHeader}>Company</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userLoads.map((load) => (
-            <tr key={load.id} className={styles.tableRow}>
-              <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>
-                <Link
-                  to={`/UserProfile/${load.userId}`}
-                  className={styles.loadLink}
-                >
-                  {load.company}
-                </Link>
-              </td>
+        <form className={styles.form} onSubmit={handleSubmitDriver}>
+          <h3>Add New Driver</h3>
+          <input
+            className={styles.input}
+            type="text"
+            name="description"
+            placeholder="Driver Description"
+            value={newDriver.description}
+            onChange={handleDriverInputChange}
+            required
+          />
+          <input
+            className={styles.input}
+            type="text"
+            name="company"
+            placeholder="Company"
+            value={newDriver.company}
+            onChange={handleDriverInputChange}
+            required
+          />
+          <button type="submit" className={styles.submitButton}>
+            ➕ Add Driver
+          </button>
+        </form>
+      </section>
+
+      {/* Loads Controls */}
+      <section className={styles.section}>
+        <h2>📦 Loads</h2>
+        <div className={styles.buttonGroup}>
+          <button onClick={fetchLoads} className={styles.button}>
+            Fetch Loads
+          </button>
+        </div>
+        <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
+
+        <h3>Your Loads</h3>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Load ID</th>
+              <th>Description</th>
+              <th>Company</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <br />
-      <hr />
-      {/* New Load Form */}
-      <form className={styles.form} onSubmit={handleSubmitLoad}>
-        <input
-          className={styles.input}
-          type="text"
-          name="description"
-          placeholder="Load Description"
-          value={newLoad.description}
-          onChange={handleLoadInputChange}
-          required
-        />
-        <input
-          className={styles.input}
-          type="text"
-          name="company"
-          placeholder="Company"
-          value={newLoad.company}
-          onChange={handleLoadInputChange}
-          required
-        />
-        {/* Add more fields as needed */}
-        <button
-          type="submit"
-          className={`${styles.button} ${styles.submitButton}`}
-        >
-          Create Load
-        </button>
-      </form>
-      <br />
-      {/* New Driver Form */}
-      <form className={styles.form} onSubmit={handleSubmitDriver}>
-        <input
-          className={styles.input}
-          type="text"
-          name="description"
-          placeholder="Driver Description"
-          value={newDriver.description}
-          onChange={handleDriverInputChange}
-          required
-        />
-        <input
-          className={styles.input}
-          type="text"
-          name="company"
-          placeholder="Company"
-          value={newDriver.company}
-          onChange={handleDriverInputChange}
-          required
-        />
-        <button
-          type="submit"
-          className={`${styles.button} ${styles.submitButton}`}
-        >
-          Create Driver
-        </button>
-      </form>
+          </thead>
+          <tbody>
+            {userLoads.map((load) => (
+              <tr key={load.id}>
+                <td>{load.id}</td>
+                <td>{load.description}</td>
+                <td>
+                  <Link to={`/UserProfile/${load.userId}`} className={styles.link}>
+                    {load.company}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <br />
-      <br />
-      <br />
-      <hr />
-      <h3>123Loadboard Table</h3>
-      <button
-        onClick={handleAuthorizeNavigation}
-        className={`${styles.button} ${styles.authorizeButton}`}
-        aria-label="Authorize with 123Loadboard"
-      >
-        Authorize
-      </button>
-      <button
-        onClick={() => fetchLoadboardData(code || "")}
-        className={`${styles.button} ${styles.fetchButton}`}
-        aria-label="Fetch 123Loadboard data"
-      >
-        Fetch 123Loadboard Data
-      </button>
-      <br />
-      <h3>Default Loads Search</h3>
-      <table className={styles.loadboardTable}>
-        <thead>
-          <tr>
-            <th className={styles.tableHeader}>Load ID</th>
-            <th className={styles.tableHeader}>Description</th>
-            <th className={styles.tableHeader}>Company</th>
-            <th className={styles.tableHeader}>Delivery Date Time Utc</th>
-            <th className={styles.tableHeader}>Number Of Stops</th>
-            <th className={styles.tableHeader}>Mileage</th>
-            <th className={styles.tableHeader}>Number Of Loads</th>
-            <th className={styles.tableHeader}>Pickup Date Times</th>
-            <th className={styles.tableHeader}>Equipment Info</th>
-            <th className={styles.tableHeader}>Private LoadNote</th>
-            <th className={styles.tableHeader}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loadboardData.map((load) => (
-            <tr key={load.id} className={styles.tableRow}>
-              <td className={styles.tableCell}>{load.id}</td>
-              <td className={styles.tableCell}>{load.description}</td>
-              <td className={styles.tableCell}>{load.company}</td>
-              <td className={styles.tableCell}>{load.deliveryDateTimeUtc}</td>
-              <td className={styles.tableCell}>{load.numberOfStops}</td>
-              <td className={styles.tableCell}>{load.mileage}</td>
-              <td className={styles.tableCell}>{load.numberOfLoads}</td>
-              <td className={styles.tableCell}>{load.pickupDateTimes}</td>
-              <td className={styles.tableCell}>{load.equipmentInfo}</td>
-              <td className={styles.tableCell}>{load.privateLoadNote}</td>
-              <td className={styles.tableCell}>{load.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <form className={styles.form} onSubmit={handleSubmitLoad}>
+          <h3>Add New Load</h3>
+          <input
+            className={styles.input}
+            type="text"
+            name="description"
+            placeholder="Load Description"
+            value={newLoad.description}
+            onChange={handleLoadInputChange}
+            required
+          />
+          <input
+            className={styles.input}
+            type="text"
+            name="company"
+            placeholder="Company"
+            value={newLoad.company}
+            onChange={handleLoadInputChange}
+            required
+          />
+          <button type="submit" className={styles.submitButton}>
+            ➕ Add Load
+          </button>
+        </form>
+      </section>
+
+      {/* 123Loadboard Section */}
+      <section className={styles.section}>
+        <h2>🌐 123Loadboard</h2>
+        <div className={styles.buttonGroup}>
+          <button onClick={handleAuthorizeNavigation} className={styles.buttonAlt}>
+            🔑 Authorize
+          </button>
+          <button
+            onClick={() => fetchLoadboardData(code || "")}
+            className={styles.button}
+          >
+            📥 Fetch 123Loadboard Data
+          </button>
+        </div>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Load ID</th>
+                <th>Description</th>
+                <th>Company</th>
+                <th>Delivery</th>
+                <th>Stops</th>
+                <th>Mileage</th>
+                <th># Loads</th>
+                <th>Pickup</th>
+                <th>Equipment</th>
+                <th>Note</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loadboardData.map((load) => (
+                <tr key={load.id}>
+                  <td>{load.id}</td>
+                  <td>{load.description}</td>
+                  <td>{load.company}</td>
+                  <td>{load.deliveryDateTimeUtc}</td>
+                  <td>{load.numberOfStops}</td>
+                  <td>{load.mileage}</td>
+                  <td>{load.numberOfLoads}</td>
+                  <td>{load.pickupDateTimes}</td>
+                  <td>{load.equipmentInfo}</td>
+                  <td>{load.privateLoadNote}</td>
+                  <td>{load.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 };

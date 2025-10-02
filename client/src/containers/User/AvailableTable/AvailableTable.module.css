@@ -1,172 +1,152 @@
 .container {
-  font-family: Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
+  animation: fadeIn 0.8s ease-in-out;
   padding: 20px;
   max-width: 1200px;
   margin: auto;
 }
 
-.header {
-  color: #2c3e50;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero */
+.hero {
   text-align: center;
-  font-size: 2rem;
+  margin-bottom: 40px;
 }
-
-.subHeader {
-  text-align: center;
-  font-size: 1rem;
-  color: #7f8c8d;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  margin: 20px 0;
-}
-
-.form .input {
-  margin-bottom: 15px; /* Increase spacing between input fields */
-}
-
-.input {
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* General button styles for consistency */
-.button {
-  padding: 12px;
-  background-color: #2980b9; /* Same color as other buttons */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.button:focus {
-  outline: 2px solid #1a66a0;
-  outline-offset: 2px;
-}
-
-.button:hover {
-  background-color: #1a66a0;
-}
-
-.button:active {
-  background-color: #156b8c; /* Darker shade for active state */
-  transform: scale(0.98); /* Slight scale-down effect on click */
-}
-
-/* Optional: Add spacing for button groups */
-.form .button {
-  margin-top: 15px;
-}
-
-.loadTable {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-}
-
-.loadTable tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-.loadTable tr:nth-child(odd) {
-  background-color: #ffffff;
-}
-
-.tableHeader {
-  background-color: #34495e;
-  color: white;
-  padding: 12px;
-}
-
-.tableRow {
-  border: 1px solid #ddd;
-}
-
-.tableRow:hover {
-  background-color: #f1f1f1;
-}
-
-.tableCell {
-  padding: 12px;
-  text-align: left;
-}
-
-.truckAnimation {
-  position: absolute;
+.truck {
   width: 120px;
-  animation: drive 5s linear infinite;
+  animation: drive 6s linear infinite;
 }
-
 @keyframes drive {
-  0% {
-    left: -120px;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -120px; position: relative; }
+  100% { left: 100%; }
 }
-
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0072ff;
+}
+.subtitle {
+  color: #7f8c8d;
+  margin: 10px 0 20px;
+}
 .homeLink {
-  margin: 20px;
+  display: inline-block;
+  margin-top: 10px;
+  color: #0072ff;
+  font-weight: 600;
   text-decoration: none;
-  color: #2980b9;
 }
-
-.fetchButton,
-.authorizeButton {
-  margin: 10px;
-}
-
-.loadLink {
-  color: #2980b9;
-}
-
-.loadLink:hover {
+.homeLink:hover {
   text-decoration: underline;
 }
 
-/* Make tables scrollable */
+/* Sections */
+.section {
+  margin-bottom: 50px;
+}
+.section h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #2c3e50;
+}
+
+/* Buttons */
+.button, .buttonAlt {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 5px;
+  transition: all 0.3s ease;
+}
+.button {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: white;
+}
+.button:hover {
+  background: #0056cc;
+  transform: translateY(-2px);
+}
+.buttonAlt {
+  background: #f1faff;
+  color: #0072ff;
+  border: 2px solid #0072ff;
+}
+.buttonAlt:hover {
+  background: #0072ff;
+  color: #fff;
+}
+
+/* Forms */
+.form {
+  background: #f9f9f9;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.input {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.submitButton {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-weight: bold;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.submitButton:hover {
+  background: #0056cc;
+  transform: translateY(-2px);
+}
+
+/* Tables */
 .table-container {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* For smoother scrolling on mobile */
-  margin-bottom: 20px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  min-width: 800px;
+}
+.table th {
+  background: #34495e;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+.table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+.table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+.table tr:hover {
+  background: #eef5ff;
+}
+.link {
+  color: #0072ff;
+}
+.link:hover {
+  text-decoration: underline;
 }
 
-/* Optional: Add max-width for responsive tables */
-.loadTable, .loadboardTable {
-  min-width: 800px; /* Adjust as needed */
-  table-layout: fixed;
-}
-
-.loadTable th, .loadboardTable th {
-  position: sticky;
-  top: 0;
-  background-color: #34495e;
-  z-index: 1; /* Make sure the header stays above table rows */
-}
-
+/* Mobile */
 @media (max-width: 768px) {
-  .table-container {
-    margin: 0;
-    padding: 0 10px;
-  }
-
-  .loadTable {
-    min-width: 600px;
-  }
-
-  .loadTable .tableCell {
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  .button {
-    padding: 10px;
-    font-size: 14px;
-  }
+  .title { font-size: 2rem; }
+  .button, .submitButton { font-size: 14px; padding: 10px 15px; }
+  .input { font-size: 14px; }
 }
