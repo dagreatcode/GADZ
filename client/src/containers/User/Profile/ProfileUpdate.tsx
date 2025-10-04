@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 
 type User = {
   id: string;
+  image: string;
   email: string;
   password?: string;
   description: string;
@@ -42,6 +43,7 @@ const ProfileUpdate: React.FC = () => {
 
   const [formData, setFormData] = useState<User>({
     id: "",
+    image: "",
     email: "",
     password: "",
     description: "",

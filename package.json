@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A website for B2B to do Business.",
   "main": "server.js",
+  "engines": {
+  "node": "22.x"
+},
   "scripts": {
     "testClient": "cd client && npm run test",
     "test": "echo \"Error: no test specified\" && exit 1",
