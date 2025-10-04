@@ -31,8 +31,8 @@ const ServerPort =
 
 // Cloudinary constants (replace with your Cloudinary cloud name & preset)
 const CLOUDINARY_UPLOAD_URL =
-  `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
-const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+  "https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
 
 const ProfileUpdate: React.FC = () => {
   const userId = localStorage.userId;
@@ -106,7 +106,7 @@ const ProfileUpdate: React.FC = () => {
     try {
       const data = new FormData();
       data.append("file", file);
-      data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET!);
+      data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
       const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
       setFormData({ ...formData, profileImage: res.data.secure_url });
