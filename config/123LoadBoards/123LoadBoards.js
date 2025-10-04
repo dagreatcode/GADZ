@@ -104,44 +104,79 @@ async function authCallback(req, res) {
           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
           Authorization: `Bearer ${bearerToken}`,
         },
+        // body: JSON.stringify({
+        //   metadata: {
+        //     limit: 10,
+        //     sortBy: { field: "Origin", direction: "Ascending" },
+        //     fields: "all", // Including all available fields in the response
+        //     type: "Regular", // Type of load
+        //   },
+        //   includeWithGreaterPickupDates: true, // Include loads with greater pickup dates
+        //   origin: {
+        //     states: ["IL"], // Filter loads from Illinois
+        //     city: "Chicago", // Filter loads originating in Chicago
+        //     radius: 100, // Search within a 100-mile radius
+        //     type: "City", // Origin type
+        //   },
+        //   destination: {
+        //     type: "Anywhere", // Destination type (Anywhere)
+        //   },
+        //   equipmentTypes: ["Van", "Flatbed", "Reefer"], // Types of equipment you're interested in
+        //   includeLoadsWithoutWeight: true, // Include loads without weight information
+        //   includeLoadsWithoutLength: true, // Include loads without length information
+        //   company: {
+        //     name: "ExampleCompany", // Name of the company (replace with actual)
+        //     types: "None", // Type of company (None as a placeholder)
+        //     minRating: 5, // Minimum rating of the company
+        //     isFavorite: true, // Whether the company is a favorite
+        //     isFactorable: true, // Whether the load is factorable
+        //     isTiaMember: true, // Whether the company is a TIA member
+        //     isTiaCertified: true, // Whether the company is TIA certified
+        //   },
+        //   modifiedOnStart: "2023-01-01T00:00:00Z", // Modified date range start
+        //   modifiedOnEnd: "2023-12-31T23:59:59Z", // Modified date range end
+        //   minMileage: 100, // Minimum mileage for the load
+        //   maxMileage: 500, // Maximum mileage for the load
+        //   weight: 10000, // Minimum weight for the load
+        //   includeLoadsWithoutWeight: true, // Include loads without weight
+        //   length: 40, // Minimum length of the load
+        //   includeLoadsWithoutLength: true, // Include loads without length
+        //   pickupDates: ["2023-12-01T00:00:00Z"], // Specify the pickup date
+        // }),
         body: JSON.stringify({
           metadata: {
             limit: 10,
             sortBy: { field: "Origin", direction: "Ascending" },
-            fields: "all", // Including all available fields in the response
-            type: "Regular", // Type of load
+            fields: "all",
+            type: "Regular",
           },
-          includeWithGreaterPickupDates: true, // Include loads with greater pickup dates
+          includeWithGreaterPickupDates: true,
           origin: {
-            states: ["IL"], // Filter loads from Illinois
-            city: "Chicago", // Filter loads originating in Chicago
-            radius: 100, // Search within a 100-mile radius
-            type: "City", // Origin type
+            states: ["IL"],
+            city: "Chicago",
+            radius: 100,
+            type: "City",
           },
-          destination: {
-            type: "Anywhere", // Destination type (Anywhere)
-          },
-          equipmentTypes: ["Van", "Flatbed", "Reefer"], // Types of equipment you're interested in
-          includeLoadsWithoutWeight: true, // Include loads without weight information
-          includeLoadsWithoutLength: true, // Include loads without length information
+          destination: { type: "Anywhere" },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"],
+          includeLoadsWithoutWeight: true,
+          includeLoadsWithoutLength: true,
           company: {
-            name: "ExampleCompany", // Name of the company (replace with actual)
-            types: "None", // Type of company (None as a placeholder)
-            minRating: 5, // Minimum rating of the company
-            isFavorite: true, // Whether the company is a favorite
-            isFactorable: true, // Whether the load is factorable
-            isTiaMember: true, // Whether the company is a TIA member
-            isTiaCertified: true, // Whether the company is TIA certified
+            name: "ExampleCompany",
+            types: "None",
+            minRating: 5,
+            isFavorite: true,
+            isFactorable: true,
+            isTiaMember: true,
+            isTiaCertified: true,
           },
-          modifiedOnStart: "2023-01-01T00:00:00Z", // Modified date range start
-          modifiedOnEnd: "2023-12-31T23:59:59Z", // Modified date range end
-          minMileage: 100, // Minimum mileage for the load
-          maxMileage: 500, // Maximum mileage for the load
-          weight: 10000, // Minimum weight for the load
-          includeLoadsWithoutWeight: true, // Include loads without weight
-          length: 40, // Minimum length of the load
-          includeLoadsWithoutLength: true, // Include loads without length
-          pickupDates: ["2023-12-01T00:00:00Z"], // Specify the pickup date
+          modifiedOnStart: "2023-01-01T00:00:00Z",
+          modifiedOnEnd: "2023-12-31T23:59:59Z",
+          minMileage: 100,
+          maxMileage: 500,
+          weight: 10000,
+          length: 40,
+          pickupDates: ["2023-12-01T00:00:00Z"],
         }),
       });
 
