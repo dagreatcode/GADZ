@@ -23,15 +23,13 @@ type User = {
   phoneNumber: string;
   driversLicense: string;
   comments: string;
-  qrCode?: string; // ✅ added QR support
 };
 
 const ServerPort =
   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
 // Cloudinary constants (replace with your Cloudinary cloud name & preset)
-const CLOUDINARY_UPLOAD_URL =
-  "https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload";
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload";
 const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
 
 const ProfileUpdate: React.FC = () => {
@@ -41,7 +39,6 @@ const ProfileUpdate: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // ✅ QR state
 
   const [formData, setFormData] = useState<User>({
     id: "",
@@ -57,7 +54,6 @@ const ProfileUpdate: React.FC = () => {
     phoneNumber: "",
     driversLicense: "",
     comments: "",
-    qrCode: "",
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -89,7 +85,6 @@ const ProfileUpdate: React.FC = () => {
             newPassword: "",
           });
           setImagePreview(userData.profileImage || null);
-          setQrCodeImage(userData.qrCode || null); // ✅ pull QR code
         }
       } catch (err) {
         handleApiError(err);
@@ -220,18 +215,6 @@ const ProfileUpdate: React.FC = () => {
           />
         </div>
 
-        {/* ✅ QR Code Section */}
-        {qrCodeImage && (
-          <div className="mb-4 text-center">
-            <h5>Your QR Code</h5>
-            <img
-              src={qrCodeImage}
-              alt="Generated QR Code"
-              style={{ width: 150, height: 150 }}
-            />
-          </div>
-        )}
-
         {/* Email + Description */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="email">
@@ -269,13 +252,19 @@ const ProfileUpdate: React.FC = () => {
           <Form.Group as={Col} md="6" controlId="userType">
             <Form.Label>User Type</Form.Label>
             <Form.Control
-              type="text"
+              as="select"
               value={formData.userType}
               onChange={(e) =>
                 setFormData({ ...formData, userType: e.target.value })
               }
               isInvalid={!!formErrors.userType}
-            />
+            >
+              <option value="">Select User Type</option>
+              <option value="shipper">Shipper</option>
+              <option value="carrier">Carrier</option>
+              <option value="broker">Broker</option>
+              <option value="contractor">Contractor</option>
+            </Form.Control>
             <Form.Control.Feedback type="invalid">
               {formErrors.userType}
             </Form.Control.Feedback>
@@ -283,13 +272,21 @@ const ProfileUpdate: React.FC = () => {
           <Form.Group as={Col} md="6" controlId="experienceLevel">
             <Form.Label>Experience Level</Form.Label>
             <Form.Control
-              type="text"
+              as="select"
               value={formData.experienceLevel}
               onChange={(e) =>
-                setFormData({ ...formData, experienceLevel: e.target.value })
+                setFormData({
+                  ...formData,
+                  experienceLevel: e.target.value,
+                })
               }
               isInvalid={!!formErrors.experienceLevel}
-            />
+            >
+              <option value="">Select Experience Level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="expert">Expert</option>
+            </Form.Control>
             <Form.Control.Feedback type="invalid">
               {formErrors.experienceLevel}
             </Form.Control.Feedback>
@@ -328,8 +325,22 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* Phone Number + Drivers License */}
+        {/* Password + Phone */}
         <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="newPassword">
+            <Form.Label>New Password</Form.Label>
+            <Form.Control
+              type="password"
+              value={formData.newPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, newPassword: e.target.value })
+              }
+              isInvalid={!!formErrors.newPassword}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.newPassword}
+            </Form.Control.Feedback>
+          </Form.Group>
           <Form.Group as={Col} md="6" controlId="phoneNumber">
             <Form.Label>Phone Number</Form.Label>
             <Form.Control
@@ -344,6 +355,10 @@ const ProfileUpdate: React.FC = () => {
               {formErrors.phoneNumber}
             </Form.Control.Feedback>
           </Form.Group>
+        </Row>
+
+        {/* License + Comments */}
+        <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="driversLicense">
             <Form.Label>Drivers License</Form.Label>
             <Form.Control
@@ -358,38 +373,23 @@ const ProfileUpdate: React.FC = () => {
               {formErrors.driversLicense}
             </Form.Control.Feedback>
           </Form.Group>
+          <Form.Group as={Col} md="6" controlId="comments">
+            <Form.Label>Comments</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={formData.comments}
+              onChange={(e) =>
+                setFormData({ ...formData, comments: e.target.value })
+              }
+              isInvalid={!!formErrors.comments}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.comments}
+            </Form.Control.Feedback>
+          </Form.Group>
         </Row>
 
-        {/* Comments */}
-        <Form.Group className="mb-3" controlId="comments">
-          <Form.Label>Comments</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={formData.comments}
-            onChange={(e) =>
-              setFormData({ ...formData, comments: e.target.value })
-            }
-            isInvalid={!!formErrors.comments}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.comments}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        {/* Password Update */}
-        <Form.Group className="mb-3" controlId="newPassword">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={formData.newPassword}
-            onChange={(e) =>
-              setFormData({ ...formData, newPassword: e.target.value })
-            }
-          />
-        </Form.Group>
-
-        {/* Buttons */}
         <div className="d-flex justify-content-between">
           <Button
             type="submit"
