@@ -1719,6 +1719,7 @@
 
 // export default AvailableTable;
 
+// AvailableTable.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
@@ -1731,8 +1732,8 @@ interface Load {
   id: string;
   postReference?: string;
   numberOfLoads: number;
-  originLocation?: any;
-  destinationLocation?: any;
+  originLocation?: { city?: string; state?: string };
+  destinationLocation?: { city?: string; state?: string };
   equipments?: any[];
   loadSize?: string;
   weight?: number;
@@ -1768,7 +1769,7 @@ interface LoadboardData {
 const AvailableTable: React.FC = () => {
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
-  const [searchFormData, setSearchFormData] = useState<Record<string, string | boolean>>({
+  const [searchFormData, setSearchFormData] = useState({
     originCity: "",
     originState: "",
     radius: "",
@@ -1852,8 +1853,7 @@ const AvailableTable: React.FC = () => {
           `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
           { params: { code: authCode } }
         );
-        const apiLoads = response.data.loads || [];
-        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        const mappedLoads = (response.data.loads || []).map(mapApiLoadToDisplay);
         setSearchResults(mappedLoads);
         setSuccess(true);
       } catch (err) {
@@ -1867,9 +1867,7 @@ const AvailableTable: React.FC = () => {
   );
 
   useEffect(() => {
-    if (code) {
-      fetchLoadboardData(code);
-    }
+    if (code) fetchLoadboardData(code);
   }, [code, fetchLoadboardData]);
 
   // Fetch local loads
@@ -1879,9 +1877,7 @@ const AvailableTable: React.FC = () => {
       setLoads(response.data);
 
       const userId = localStorage.getItem("userId");
-      if (userId) {
-        setUserLoads(response.data.filter((l: Load) => l.userId === userId));
-      }
+      if (userId) setUserLoads(response.data.filter((l: Load) => l.userId === userId));
     } catch (err) {
       console.error("Error fetching loads:", err);
     }
@@ -1894,22 +1890,16 @@ const AvailableTable: React.FC = () => {
       setDriverList(response.data);
 
       const userId = localStorage.getItem("userId");
-      if (userId) {
-        setUserDrivers(response.data.filter((d: Driver) => d.userId === userId));
-      }
+      if (userId) setUserDrivers(response.data.filter((d: Driver) => d.userId === userId));
     } catch (err) {
       console.error("Error fetching drivers:", err);
     }
   };
 
-  // Handle search form input safely
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setSearchFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  // Search form handlers
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearchFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAutoFill = () => {
@@ -1953,8 +1943,7 @@ const AvailableTable: React.FC = () => {
         }
       );
       if (response.status === 200) {
-        const apiLoads = response.data.loads || [];
-        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        const mappedLoads = (response.data.loads || []).map(mapApiLoadToDisplay);
         setSearchResults(mappedLoads);
         setSuccess(true);
       } else {
@@ -1968,21 +1957,22 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  // Local load and driver form handlers
-  const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Local load/driver form handlers
+  const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
-  };
 
-  const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setNewDriver({ ...newDriver, [e.target.name]: e.target.value });
-  };
 
   const handleSubmitLoad = async (e: React.FormEvent) => {
     e.preventDefault();
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     try {
-      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`, { ...newLoad, userId });
+      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`, {
+        ...newLoad,
+        userId,
+      });
       setNewLoad({
         id: "",
         numberOfLoads: 0,
@@ -2006,7 +1996,10 @@ const AvailableTable: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     try {
-      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`, { ...newDriver, userId });
+      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`, {
+        ...newDriver,
+        userId,
+      });
       setNewDriver({ description: "", company: "", userId: "" });
       fetchDrivers();
     } catch (err) {
@@ -2035,7 +2028,7 @@ const AvailableTable: React.FC = () => {
         </Link>
       </header>
 
-      {/* Drivers */}
+      {/* Drivers Section */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -2043,8 +2036,8 @@ const AvailableTable: React.FC = () => {
             Fetch Drivers
           </button>
         </div>
-        <Table data={driverList} title="All Drivers" isUser={true} />
-        <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
+        <Table data={driverList} title="All Drivers" isUser />
+        <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
 
         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
           <h3>Add New Driver</h3>
@@ -2072,7 +2065,7 @@ const AvailableTable: React.FC = () => {
         </form>
       </section>
 
-      {/* Loads */}
+      {/* Loads Section */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -2132,7 +2125,7 @@ const AvailableTable: React.FC = () => {
         </form>
       </section>
 
-      {/* 123Loadboard */}
+      {/* 123Loadboard Section */}
       <section className={styles["at-section"]}>
         <h2>🌐 123Loadboard</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -2144,35 +2137,20 @@ const AvailableTable: React.FC = () => {
           </button>
         </div>
 
-        {/* 123 Search Form */}
         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
           <h3>Search Loads</h3>
           <div className="flex flex-wrap gap-2">
-            {Object.keys(searchFormData).map((key) => {
-              const value = searchFormData[key];
-              const isCheckbox = typeof value === "boolean";
-
-              return isCheckbox ? (
-                <label key={key}>
-                  {key}:
-                  <input
-                    type="checkbox"
-                    name={key}
-                    checked={value as boolean}
-                    onChange={handleInputChange}
-                  />
-                </label>
-              ) : (
-                <input
-                  key={key}
-                  type={key.includes("Date") ? "date" : "text"}
-                  name={key}
-                  placeholder={key}
-                  value={value as string}
-                  onChange={handleInputChange}
-                />
-              );
-            })}
+            {Object.keys(searchFormData).map((key) => (
+              <input
+                key={key}
+                className={styles["at-input"]}
+                type={key.includes("Date") ? "date" : "text"}
+                name={key}
+                placeholder={key}
+                value={searchFormData[key as keyof typeof searchFormData]}
+                onChange={handleInputChange}
+              />
+            ))}
           </div>
           <div className="flex gap-3">
             <button type="button" className={styles["at-buttonAlt"]} onClick={handleAutoFill}>
@@ -2186,7 +2164,6 @@ const AvailableTable: React.FC = () => {
           {success && <p style={{ color: "green" }}>Search completed!</p>}
         </form>
 
-        {/* Search Results Table */}
         {searchResults.length > 0 && (
           <div className={styles["at-tableContainer"]}>
             <h3>Search Results</h3>
