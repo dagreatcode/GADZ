@@ -143,43 +143,116 @@ async function authCallback(req, res) {
         //   includeLoadsWithoutLength: true, // Include loads without length
         //   pickupDates: ["2023-12-01T00:00:00Z"], // Specify the pickup date
         // }),
+        //   body: JSON.stringify({
+        //     metadata: {
+        //       limit: 10,
+        //       sortBy: { field: "Origin", direction: "Ascending" },
+        //       fields: "all",
+        //       type: "Regular",
+        //     },
+        //     includeWithGreaterPickupDates: true,
+        //     origin: {
+        //       states: ["IL"],
+        //       city: "Chicago",
+        //       radius: 100,
+        //       type: "City",
+        //     },
+        //     destination: { type: "Anywhere" },
+        //     equipmentTypes: ["Van", "Flatbed", "Reefer"],
+        //     includeLoadsWithoutWeight: true,
+        //     includeLoadsWithoutLength: true,
+        //     company: {
+        //       name: "ExampleCompany",
+        //       types: "None",
+        //       minRating: 5,
+        //       isFavorite: true,
+        //       isFactorable: true,
+        //       isTiaMember: true,
+        //       isTiaCertified: true,
+        //     },
+        //     modifiedOnStart: "2023-01-01T00:00:00Z",
+        //     modifiedOnEnd: "2023-12-31T23:59:59Z",
+        //     minMileage: 100,
+        //     maxMileage: 500,
+        //     weight: 10000,
+        //     length: 40,
+        //     pickupDates: ["2023-12-01T00:00:00Z"],
+        //   }),
+        // });
+
         body: JSON.stringify({
           metadata: {
-            limit: 10,
+            nextToken: "string",
+            limit: 25,
             sortBy: { field: "Origin", direction: "Ascending" },
             fields: "all",
-            type: "Regular",
+            type: "Regular"
           },
+
+          equipmentSpecifications:
+            "AirRide,BlanketWrap,Conestoga,Chains,HazMat,Tarps,TeamDriver",
           includeWithGreaterPickupDates: true,
-          origin: {
-            states: ["IL"],
-            city: "Chicago",
-            radius: 100,
-            type: "City",
-          },
-          destination: { type: "Anywhere" },
-          equipmentTypes: ["Van", "Flatbed", "Reefer"],
-          includeLoadsWithoutWeight: true,
-          includeLoadsWithoutLength: true,
+          maxAge: 86400, // 1 day old max
+          maxExtraDrops: 5,
+          hasTeam: true,
+          hasRate: true,
+
           company: {
-            name: "ExampleCompany",
+            name: "ExampleCarrier",
             types: "None",
-            minRating: 5,
-            isFavorite: true,
+            minRating: 4,
+            isFavorite: false,
             isFactorable: true,
             isTiaMember: true,
-            isTiaCertified: true,
+            isTiaCertified: false
           },
+
           modifiedOnStart: "2023-01-01T00:00:00Z",
           modifiedOnEnd: "2023-12-31T23:59:59Z",
           minMileage: 100,
-          maxMileage: 500,
-          weight: 10000,
-          length: 40,
-          pickupDates: ["2023-12-01T00:00:00Z"],
-        }),
-      });
+          maxMileage: 2500,
+          minOriginRadius: 50,
+          isFavoriteBroker: false,
+          minWeight: 1000,
+          minLength: 10,
 
+          origin: {
+            states: ["IL", "IN", "WI"],
+            city: "Chicago",
+            zipCode: "60601",
+            longitude: -87.6298,
+            latitude: 41.8781,
+            radius: 100,
+            type: "City"
+          },
+
+          destination: {
+            states: ["GA", "TN", "AL"],
+            city: "Atlanta",
+            zipCode: "30301",
+            longitude: -84.388,
+            latitude: 33.749,
+            radius: 100,
+            type: "Anywhere"
+          },
+
+          equipmentTypes: [
+            "Van",
+            "Reefer",
+            "Flatbed",
+            "StepDeck",
+            "PowerOnly",
+            "BoxTruck"
+          ],
+          pickupDates: ["2023-12-01T00:00:00Z"],
+          loadSize: "Tl",
+          weight: 10000,
+          includeLoadsWithoutWeight: true,
+          length: 40,
+          includeLoadsWithoutLength: true
+        })
+      });
+      
       const loadData = await loadResp.json();
       console.log("Load Response:", loadData);
       res.send(loadData);
