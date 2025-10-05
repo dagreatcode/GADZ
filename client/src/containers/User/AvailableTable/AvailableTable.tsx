@@ -1156,90 +1156,55 @@
 
 // export default AvailableTable;
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
 import Table from "./Table";
 
-/**
- * NOTE:
- * - This component expects the backend endpoints you're already using:
- *   - `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
- *   - `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
- *   - `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/` (GET with ?code=)
- *   - `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=...` (POST)
- *
- * - The 123Loadboard response (example you pasted) is an object with `loads: [...]`.
- *   Each load object is nested (originLocation, destinationLocation, equipments, pickupDateTimesUtc, poster, etc.).
- *   This component maps those fields into a simpler shape for rendering.
- */
-
-/* -------------------------
-   TypeScript interfaces
-   ------------------------- */
-
-// The shape we keep for displaying a 123Loadboard load
-interface DisplayLoad {
+// Types
+interface Load {
   id: string;
   postReference?: string;
-  description?: string; // fallback/commodity etc
-  company?: string; // poster.name
-  originCity?: string;
-  originState?: string;
-  originZip?: string;
-  destinationCity?: string;
-  destinationState?: string;
-  destinationZip?: string;
-  pickupDates?: string[]; // pickupDateTimesUtc array
-  firstPickup?: string; // derived (first pickup date) human-friendly
-  delivery?: string; // deliveryDateTimeUtc
-  equipments?: string; // comma list
-  weight?: number | null;
-  computedMileage?: number | null;
-  numberOfStops?: number;
-  numberOfLoads?: number;
-  status?: string;
-  commodity?: string | null;
-  raw?: any; // keep raw object for debugging if needed
-}
-
-// Local "Load" type kept for your local loads table & forms (minimal)
-interface LocalLoad {
-  id: number;
   numberOfLoads: number;
-  pickupDateTimes: number | string;
-  equipmentInfo: string;
-  privateLoadNote: string;
-  status: string;
-  deliveryDateTimeUtc: number | string;
-  mileage: number;
+  originLocation?: any;
+  destinationLocation?: any;
+  equipments?: any[];
+  loadSize?: string;
+  weight?: number;
+  rateCheck?: any;
   numberOfStops: number;
+  teamDriving?: boolean;
+  pickupDateTimesUtc?: string[];
+  deliveryDateTimeUtc?: string;
+  computedMileage?: number;
+  status: string;
+  age?: number;
+  lastRefreshed?: string;
+  isDateRefreshed?: boolean;
+  poster?: any;
+  metadata?: any;
+  sortEquipCode?: string;
+  privateLoadNote?: string;
   description: string;
   company: string;
   userId: string;
 }
 
-// Driver type (local)
 interface Driver {
   description: string;
   company: string;
   userId: string;
 }
 
-/* -------------------------
-   Component
-   ------------------------- */
+interface LoadboardData {
+  loads: Load[];
+}
 
 const AvailableTable: React.FC = () => {
-  // Local loads & drivers (unchanged)
-  const [loads, setLoads] = useState<LocalLoad[]>([]);
-  const [userLoads, setUserLoads] = useState<LocalLoad[]>([]);
-  const [driverList, setDriverList] = useState<Driver[]>([]);
-  const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
-
-  // Search form (keeps your existing fields)
+  const [loads, setLoads] = useState<Load[]>([]);
+  const [userLoads, setUserLoads] = useState<Load[]>([]);
   const [searchFormData, setSearchFormData] = useState({
     originCity: "",
     originState: "",
@@ -1253,23 +1218,18 @@ const AvailableTable: React.FC = () => {
     modifiedStartDate: "",
     modifiedEndDate: "",
   });
-
-  // Results from 123Loadboard mapped to DisplayLoad
-  const [searchResults, setSearchResults] = useState<DisplayLoad[]>([]);
+  const [searchResults, setSearchResults] = useState<Load[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Form state for adding local loads/drivers (kept same)
-  const [newLoad, setNewLoad] = useState<LocalLoad>({
-    id: 0,
+  const [newLoad, setNewLoad] = useState<Load>({
+    id: "",
     numberOfLoads: 0,
-    pickupDateTimes: 0,
-    equipmentInfo: "",
-    privateLoadNote: "",
+    pickupDateTimesUtc: [],
+    equipments: [],
     status: "",
-    deliveryDateTimeUtc: 0,
-    mileage: 0,
+    deliveryDateTimeUtc: "",
     numberOfStops: 0,
     description: "",
     company: "",
@@ -1282,158 +1242,143 @@ const AvailableTable: React.FC = () => {
     userId: "",
   });
 
-  // OAuth code from query string (if present)
+  const [driverList, setDriverList] = useState<Driver[]>([]);
+  const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const code = queryParams.get("code");
+
+  // Map API load response to display-ready Load type
+  const mapApiLoadToDisplay = (apiLoad: any): Load => {
+    return {
+      id: apiLoad.id,
+      postReference: apiLoad.postReference,
+      numberOfLoads: apiLoad.numberOfLoads,
+      originLocation: apiLoad.originLocation,
+      destinationLocation: apiLoad.destinationLocation,
+      equipments: apiLoad.equipments,
+      loadSize: apiLoad.loadSize,
+      weight: apiLoad.weight,
+      rateCheck: apiLoad.rateCheck,
+      numberOfStops: apiLoad.numberOfStops,
+      teamDriving: apiLoad.teamDriving,
+      pickupDateTimesUtc: apiLoad.pickupDateTimesUtc,
+      deliveryDateTimeUtc: apiLoad.deliveryDateTimeUtc,
+      computedMileage: apiLoad.computedMileage,
+      status: apiLoad.status,
+      age: apiLoad.age,
+      lastRefreshed: apiLoad.lastRefreshed,
+      isDateRefreshed: apiLoad.isDateRefreshed,
+      poster: apiLoad.poster,
+      metadata: apiLoad.metadata,
+      sortEquipCode: apiLoad.sortEquipCode,
+      privateLoadNote: apiLoad.privateLoadNote || "",
+      description: apiLoad.description || "",
+      company: apiLoad.poster?.company || "",
+      userId: apiLoad.poster?.userId || "",
+    };
+  };
+
+  // Fetch 123Loadboard data
+  const fetchLoadboardData = useCallback(
+    async (authCode: string) => {
+      if (!authCode) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get<LoadboardData>(
+          `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
+          { params: { code: authCode } }
+        );
+        const apiLoads = response.data.loads || [];
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        setSearchResults(mappedLoads);
+        setSuccess(true);
+      } catch (err) {
+        console.error("Error fetching 123Loadboard data:", err);
+        setError("Failed to fetch 123Loadboard data.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (code) {
       fetchLoadboardData(code);
     }
-  }, [code]);
-
-  /* -------------------------
-     Helpers
-     ------------------------- */
-
-  // Safely format a date string (returns original string if invalid)
-  const formatDateSafe = (d: any) => {
-    if (!d) return "";
-    try {
-      const parsed = new Date(d);
-      if (isNaN(parsed.getTime())) return String(d);
-      return parsed.toLocaleString();
-    } catch {
-      return String(d);
-    }
-  };
-
-  // Map a single raw 123Loadboard load object into DisplayLoad
-  const mapApiLoadToDisplay = (raw: any): DisplayLoad => {
-    const origin = raw.originLocation || raw.origin || {};
-    const dest = raw.destinationLocation || raw.destination || {};
-    const poster = raw.poster || {};
-    const equipments = raw.equipments || raw.equipment || [];
-
-    // pickup times array (they used pickupDateTimesUtc)
-    const pickupArr: string[] =
-      raw.pickupDateTimesUtc?.map((p: any) => p) ||
-      raw.pickupDates ||
-      raw.pickupDateTimes ||
-      [];
-
-    const firstPickup = pickupArr && pickupArr.length > 0 ? pickupArr[0] : "";
-
-    const equipmentList =
-      Array.isArray(equipments) && equipments.length > 0
-        ? equipments.map((e: any) => e.code || e.type || e.name || e).join(", ")
-        : "";
-
-    return {
-      id: raw.id || raw.loadId || raw.postReference || "",
-      postReference: raw.postReference,
-      description: raw.commodity || raw.description || raw.postReference || "",
-      company: poster?.name || poster?.companyName || poster?.company || "",
-      originCity: origin.city || origin.name || "",
-      originState: origin.state || origin.region || "",
-      originZip: origin.zipCode || origin.zip || "",
-      destinationCity: dest.city || dest.name || "",
-      destinationState: dest.state || dest.region || dest.states?.[0] || "",
-      destinationZip: dest.zipCode || dest.zip || "",
-      pickupDates: pickupArr,
-      firstPickup: firstPickup ? formatDateSafe(firstPickup) : "",
-      delivery: formatDateSafe(raw.deliveryDateTimeUtc || raw.deliveryDateTime),
-      equipments: equipmentList,
-      weight: raw.weight ?? raw.actualWeight ?? null,
-      computedMileage: raw.computedMileage ?? raw.mileage ?? null,
-      numberOfStops: raw.numberOfStops ?? 0,
-      numberOfLoads: raw.numberOfLoads ?? 1,
-      status: raw.status ?? "Unknown",
-      commodity: raw.commodity ?? null,
-      raw,
-    };
-  };
-
-  /* -------------------------
-     API calls (local & loadboard)
-     ------------------------- */
+  }, [code, fetchLoadboardData]);
 
   // Fetch local loads
   const fetchLoads = async () => {
     try {
-      const resp = await axios.get(
+      const response = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
       );
-      const data = resp.data || [];
-      setLoads(data);
+      setLoads(response.data);
+
       const userId = localStorage.getItem("userId");
       if (userId) {
-        setUserLoads(data.filter((l: any) => l.userId === userId));
+        setUserLoads(response.data.filter((l: Load) => l.userId === userId));
       }
     } catch (err) {
       console.error("Error fetching loads:", err);
-      setError("Failed to fetch local loads");
     }
   };
 
   // Fetch drivers
   const fetchDrivers = async () => {
     try {
-      const resp = await axios.get(
+      const response = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
       );
-      const data = resp.data || [];
-      setDriverList(data);
+      setDriverList(response.data);
+
       const userId = localStorage.getItem("userId");
       if (userId) {
-        setUserDrivers(data.filter((d: any) => d.userId === userId));
+        setUserDrivers(response.data.filter((d: Driver) => d.userId === userId));
       }
     } catch (err) {
       console.error("Error fetching drivers:", err);
-      setError("Failed to fetch drivers");
     }
   };
 
-  // Fetch 123Loadboard data via backend callback route (expects backend to call 123Loadboard using code param)
-  const fetchLoadboardData = async (authCode: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const resp = await axios.get(
-        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
-        {
-          params: { code: authCode },
-        }
-      );
-      // resp.data should be { loads: [...], refreshedLoads: [...], metadata: {...} }
-      const apiLoads = resp.data?.loads || [];
-      const mapped = apiLoads.map((l: any) => mapApiLoadToDisplay(l));
-      setSearchResults(mapped);
-    } catch (err) {
-      console.error("Error fetching 123Loadboard data:", err);
-      setError("Failed to fetch 123Loadboard data (see console)");
-    } finally {
-      setLoading(false);
-    }
+  // Handle search form input
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearchFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Trigger a search through your backend (POST) using searchFormData and the code param
+  const handleAutoFill = () => {
+    setSearchFormData({
+      originCity: "Chicago",
+      originState: "IL",
+      radius: "100",
+      destinationType: "Terminal",
+      equipmentTypes: "Flatbed",
+      minWeight: "1000",
+      maxMileage: "500",
+      pickupDate: "2024-11-15",
+      companyRating: "A",
+      modifiedStartDate: "2024-11-01",
+      modifiedEndDate: "2024-11-30",
+    });
+  };
+
   const handle123Search = async () => {
     if (!code) {
       setError("Authorization code is missing. Please authorize first.");
       return;
     }
-
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const resp = await axios.post(
+      const response = await axios.post(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=${code}`,
-        // We send a request body that your backend should transform / forward to 123Loadboard.
-        // For now send searchFormData — backend should build the full schema when calling 123Loadboard.
         searchFormData,
         {
           headers: {
@@ -1448,34 +1393,29 @@ const AvailableTable: React.FC = () => {
           },
         }
       );
-
-      const apiLoads = resp.data?.loads || [];
-      const mapped = apiLoads.map((l: any) => mapApiLoadToDisplay(l));
-      setSearchResults(mapped);
-      setSuccess(true);
+      if (response.status === 200) {
+        const apiLoads = response.data.loads || [];
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        setSearchResults(mappedLoads);
+        setSuccess(true);
+      } else {
+        setError("Failed to fetch 123Loadboard search results");
+      }
     } catch (err) {
-      console.error("Error during 123Search:", err);
+      console.error(err);
       setError("Error fetching 123Loadboard search results");
     } finally {
       setLoading(false);
     }
   };
 
-  /* -------------------------
-     Forms handlers for local data (unchanged)
-     ------------------------- */
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSearchFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  // Local load and driver form handlers
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewLoad({ ...newLoad, [e.target.name]: e.target.value } as any);
+    setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
   };
 
   const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewDriver({ ...newDriver, [e.target.name]: e.target.value } as any);
+    setNewDriver({ ...newDriver, [e.target.name]: e.target.value });
   };
 
   const handleSubmitLoad = async (e: React.FormEvent) => {
@@ -1488,14 +1428,12 @@ const AvailableTable: React.FC = () => {
         { ...newLoad, userId }
       );
       setNewLoad({
-        id: 0,
+        id: "",
         numberOfLoads: 0,
-        pickupDateTimes: 0,
-        equipmentInfo: "",
-        privateLoadNote: "",
+        pickupDateTimesUtc: [],
+        equipments: [],
         status: "",
-        deliveryDateTimeUtc: 0,
-        mileage: 0,
+        deliveryDateTimeUtc: "",
         numberOfStops: 0,
         description: "",
         company: "",
@@ -1504,7 +1442,6 @@ const AvailableTable: React.FC = () => {
       fetchLoads();
     } catch (err) {
       console.error(err);
-      setError("Failed to add new load");
     }
   };
 
@@ -1521,7 +1458,6 @@ const AvailableTable: React.FC = () => {
       fetchDrivers();
     } catch (err) {
       console.error(err);
-      setError("Failed to add new driver");
     }
   };
 
@@ -1532,10 +1468,6 @@ const AvailableTable: React.FC = () => {
         : "https://gadzconnect.com/api/123Loads/authorize";
     window.location.href = baseUrl;
   };
-
-  /* -------------------------
-     Render
-     ------------------------- */
 
   return (
     <div className={styles["at-container"]}>
@@ -1559,12 +1491,7 @@ const AvailableTable: React.FC = () => {
           </button>
         </div>
         <Table data={driverList} title="All Drivers" isUser={true} />
-        <Table
-          data={userDrivers}
-          title="Your Drivers"
-          isUser={true}
-          showCompanyLink={false}
-        />
+        <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
 
         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
           <h3>Add New Driver</h3>
@@ -1592,7 +1519,7 @@ const AvailableTable: React.FC = () => {
         </form>
       </section>
 
-      {/* Local Loads */}
+      {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -1603,30 +1530,28 @@ const AvailableTable: React.FC = () => {
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
 
         <h3>Your Loads</h3>
-        <div className={styles["at-tableContainer"]}>
-          <table className={styles["at-table"]}>
-            <thead>
-              <tr>
-                <th>Load ID</th>
-                <th>Description</th>
-                <th>Company</th>
+        <table className={styles["at-table"]}>
+          <thead>
+            <tr>
+              <th>Load ID</th>
+              <th>Description</th>
+              <th>Company</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userLoads.map((load) => (
+              <tr key={load.id}>
+                <td>{load.id}</td>
+                <td>{load.description}</td>
+                <td>
+                  <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
+                    {load.company}
+                  </Link>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {userLoads.map((load) => (
-                <tr key={load.id}>
-                  <td>{load.id}</td>
-                  <td>{load.description}</td>
-                  <td>
-                    <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
-                      {load.company}
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
 
         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
           <h3>Add New Load</h3>
@@ -1657,15 +1582,11 @@ const AvailableTable: React.FC = () => {
       {/* 123Loadboard */}
       <section className={styles["at-section"]}>
         <h2>🌐 123Loadboard</h2>
-
         <div className={styles["at-buttonGroup"]}>
           <button onClick={handleAuthorizeNavigation} className={styles["at-buttonAlt"]}>
             🔑 Authorize
           </button>
-          <button
-            onClick={() => fetchLoadboardData(code || "")}
-            className={styles["at-button"]}
-          >
+          <button onClick={() => fetchLoadboardData(code || "")} className={styles["at-button"]}>
             📥 Fetch 123Loadboard Data
           </button>
         </div>
@@ -1678,39 +1599,22 @@ const AvailableTable: React.FC = () => {
               <input
                 key={key}
                 className={styles["at-input"]}
-                type={key.toLowerCase().includes("date") ? "date" : "text"}
+                type={key.includes("Date") ? "date" : "text"}
                 name={key}
                 placeholder={key}
-                value={(searchFormData as any)[key as keyof typeof searchFormData]}
+                value={searchFormData[key as keyof typeof searchFormData]}
                 onChange={handleInputChange}
               />
             ))}
           </div>
-
           <div className="flex gap-3">
-            <button type="button" className={styles["at-buttonAlt"]} onClick={() =>
-              setSearchFormData({
-                originCity: "Chicago",
-                originState: "IL",
-                radius: "100",
-                destinationType: "Terminal",
-                equipmentTypes: "Flatbed",
-                minWeight: "1000",
-                maxMileage: "500",
-                pickupDate: "2024-11-15",
-                companyRating: "A",
-                modifiedStartDate: "2024-11-01",
-                modifiedEndDate: "2024-11-30",
-              })
-            }>
+            <button type="button" className={styles["at-buttonAlt"]} onClick={handleAutoFill}>
               Autofill Sample Data
             </button>
-
             <button type="button" className={styles["at-button"]} onClick={handle123Search}>
               {loading ? "Searching..." : "123 Search"}
             </button>
           </div>
-
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>Search completed!</p>}
         </form>
@@ -1722,60 +1626,38 @@ const AvailableTable: React.FC = () => {
             <table className={styles["at-table"]}>
               <thead>
                 <tr>
-                  <th>Post Ref</th>
-                  <th>Description / Commodity</th>
+                  <th>Load ID</th>
+                  <th>Description</th>
                   <th>Company</th>
-                  <th>Origin</th>
-                  <th>Destination</th>
-                  <th>Pickup (first)</th>
                   <th>Delivery</th>
-                  <th>Weight</th>
-                  <th>Mileage</th>
-                  <th>Equipment</th>
                   <th>Stops</th>
+                  <th>Mileage</th>
+                  <th># Loads</th>
+                  <th>Pickup</th>
+                  <th>Equipment</th>
+                  <th>Note</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {searchResults.map((load) => (
                   <tr key={load.id}>
-                    <td>{load.postReference || load.id}</td>
+                    <td>{load.id}</td>
                     <td>{load.description}</td>
                     <td>{load.company}</td>
-                    <td>
-                      {load.originCity}
-                      {load.originState ? `, ${load.originState}` : ""}
-                      {load.originZip ? ` (${load.originZip})` : ""}
-                    </td>
-                    <td>
-                      {load.destinationCity}
-                      {load.destinationState ? `, ${load.destinationState}` : ""}
-                      {load.destinationZip ? ` (${load.destinationZip})` : ""}
-                    </td>
-                    <td>{load.firstPickup}</td>
-                    <td>{load.delivery}</td>
-                    <td>{load.weight ?? "—"}</td>
-                    <td>{load.computedMileage ?? "—"}</td>
-                    <td>{load.equipments}</td>
-                    <td>{load.numberOfStops ?? 0}</td>
+                    <td>{load.deliveryDateTimeUtc}</td>
+                    <td>{load.numberOfStops}</td>
+                    <td>{load.computedMileage}</td>
+                    <td>{load.numberOfLoads}</td>
+                    <td>{load.pickupDateTimesUtc?.join(", ")}</td>
+                    <td>{load.equipments?.map((e) => e.name || e).join(", ")}</td>
+                    <td>{load.privateLoadNote}</td>
                     <td>{load.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            {/* Helpful debugging: raw JSON of first load (uncomment to show) */}
-            {/* <pre style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>
-              {JSON.stringify(searchResults[0]?.raw, null, 2)}
-            </pre> */}
           </div>
-        )}
-
-        {!loading && searchResults.length === 0 && (
-          <p style={{ marginTop: 12 }}>
-            No search results yet. Click <strong>Authorize</strong> then{" "}
-            <strong>Fetch 123Loadboard Data</strong> or run a <strong>123 Search</strong>.
-          </p>
         )}
       </section>
     </div>
