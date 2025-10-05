@@ -1205,9 +1205,6 @@ interface LoadboardData {
 const AvailableTable: React.FC = () => {
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
-  const [driverList, setDriverList] = useState<Driver[]>([]);
-  const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
-  const [searchResults, setSearchResults] = useState<Load[]>([]);
   const [searchFormData, setSearchFormData] = useState({
     originCity: "",
     originState: "",
@@ -1221,6 +1218,7 @@ const AvailableTable: React.FC = () => {
     modifiedStartDate: "",
     modifiedEndDate: "",
   });
+  const [searchResults, setSearchResults] = useState<Load[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1244,41 +1242,81 @@ const AvailableTable: React.FC = () => {
     userId: "",
   });
 
+  const [driverList, setDriverList] = useState<Driver[]>([]);
+  const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const code = queryParams.get("code");
 
-  const mapApiLoadToDisplay = (apiLoad: any): Load => ({
-    id: apiLoad.id,
-    postReference: apiLoad.postReference,
-    numberOfLoads: apiLoad.numberOfLoads,
-    originLocation: apiLoad.originLocation,
-    destinationLocation: apiLoad.destinationLocation,
-    equipments: apiLoad.equipments,
-    loadSize: apiLoad.loadSize,
-    weight: apiLoad.weight,
-    rateCheck: apiLoad.rateCheck,
-    numberOfStops: apiLoad.numberOfStops,
-    teamDriving: apiLoad.teamDriving,
-    pickupDateTimesUtc: apiLoad.pickupDateTimesUtc,
-    deliveryDateTimeUtc: apiLoad.deliveryDateTimeUtc,
-    computedMileage: apiLoad.computedMileage,
-    status: apiLoad.status,
-    age: apiLoad.age,
-    lastRefreshed: apiLoad.lastRefreshed,
-    isDateRefreshed: apiLoad.isDateRefreshed,
-    poster: apiLoad.poster,
-    metadata: apiLoad.metadata,
-    sortEquipCode: apiLoad.sortEquipCode,
-    privateLoadNote: apiLoad.privateLoadNote || "",
-    description: apiLoad.description || "",
-    company: apiLoad.poster?.company || "",
-    userId: apiLoad.poster?.userId || "",
-  });
+  // Map API load response to display-ready Load type
+  const mapApiLoadToDisplay = (apiLoad: any): Load => {
+    return {
+      id: apiLoad.id,
+      postReference: apiLoad.postReference,
+      numberOfLoads: apiLoad.numberOfLoads,
+      originLocation: apiLoad.originLocation,
+      destinationLocation: apiLoad.destinationLocation,
+      equipments: apiLoad.equipments,
+      loadSize: apiLoad.loadSize,
+      weight: apiLoad.weight,
+      rateCheck: apiLoad.rateCheck,
+      numberOfStops: apiLoad.numberOfStops,
+      teamDriving: apiLoad.teamDriving,
+      pickupDateTimesUtc: apiLoad.pickupDateTimesUtc,
+      deliveryDateTimeUtc: apiLoad.deliveryDateTimeUtc,
+      computedMileage: apiLoad.computedMileage,
+      status: apiLoad.status,
+      age: apiLoad.age,
+      lastRefreshed: apiLoad.lastRefreshed,
+      isDateRefreshed: apiLoad.isDateRefreshed,
+      poster: apiLoad.poster,
+      metadata: apiLoad.metadata,
+      sortEquipCode: apiLoad.sortEquipCode,
+      privateLoadNote: apiLoad.privateLoadNote || "",
+      description: apiLoad.description || "",
+      company: apiLoad.poster?.company || "",
+      userId: apiLoad.poster?.userId || "",
+    };
+  };
 
+  // Fetch 123Loadboard data
+  const fetchLoadboardData = useCallback(
+    async (authCode: string) => {
+      if (!authCode) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get<LoadboardData>(
+          `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
+          { params: { code: authCode } }
+        );
+        const apiLoads = response.data.loads || [];
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        setSearchResults(mappedLoads);
+        setSuccess(true);
+      } catch (err) {
+        console.error("Error fetching 123Loadboard data:", err);
+        setError("Failed to fetch 123Loadboard data.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (code) {
+      fetchLoadboardData(code);
+    }
+  }, [code, fetchLoadboardData]);
+
+  // Fetch local loads
   const fetchLoads = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+      );
       setLoads(response.data);
 
       const userId = localStorage.getItem("userId");
@@ -1290,9 +1328,12 @@ const AvailableTable: React.FC = () => {
     }
   };
 
+  // Fetch drivers
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
+      );
       setDriverList(response.data);
 
       const userId = localStorage.getItem("userId");
@@ -1304,54 +1345,7 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  const fetchLoadboardData = useCallback(
-    async (authCode: string) => {
-      if (!authCode) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const cleanedPayload = Object.fromEntries(
-          Object.entries(searchFormData).filter(([_, v]) => v !== "" && v != null)
-        );
-        const response = await axios.post(
-          `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=${authCode}`,
-          cleanedPayload,
-          {
-            headers: {
-              "123LB-Correlation-Id": "123GADZ",
-              "Content-Type": "application/json",
-              "123LB-Api-Version": "1.3",
-              "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
-              "123LB-AID":
-                process.env.LOADBOARD_AID || "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-              Authorization: `Bearer ${authCode}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          const apiLoads = response.data.loads || [];
-          const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
-          setSearchResults(mappedLoads);
-          setSuccess(true);
-        } else {
-          setError("Failed to fetch 123Loadboard search results");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Error fetching 123Loadboard search results");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchFormData]
-  );
-
-  useEffect(() => {
-    if (code) {
-      fetchLoadboardData(code);
-    }
-  }, [code, fetchLoadboardData]);
-
+  // Handle search form input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
@@ -1373,14 +1367,49 @@ const AvailableTable: React.FC = () => {
     });
   };
 
-  const handle123Search = () => {
+  const handle123Search = async () => {
     if (!code) {
       setError("Authorization code is missing. Please authorize first.");
       return;
     }
-    fetchLoadboardData(code);
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/load-search?code=${code}`,
+        searchFormData,
+        {
+          headers: {
+            "123LB-Correlation-Id": "123GADZ",
+            "Content-Type": "application/json",
+            "123LB-Api-Version": "1.3",
+            "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
+            "123LB-AID":
+              process.env.LOADBOARD_AID ||
+              "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+            Authorization: `Bearer ${code}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const apiLoads = response.data.loads || [];
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        setSearchResults(mappedLoads);
+        setSuccess(true);
+      } else {
+        setError("Failed to fetch 123Loadboard search results");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching 123Loadboard search results");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Local load and driver form handlers
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
   };
@@ -1443,7 +1472,7 @@ const AvailableTable: React.FC = () => {
   return (
     <div className={styles["at-container"]}>
       <header className={styles["at-hero"]}>
-        <img src={GADZTruck} alt="Truck" className={styles["at-truck"]} />
+        <img src={GADZTruck} alt="Truck Animation" className={styles["at-truck"]} />
         <h1 className={styles["at-title"]}>🚛 GADZConnect Load Board</h1>
         <p className={styles["at-subtitle"]}>
           Manage your drivers, loads, and connect with 123Loadboard seamlessly
@@ -1557,12 +1586,12 @@ const AvailableTable: React.FC = () => {
           <button onClick={handleAuthorizeNavigation} className={styles["at-buttonAlt"]}>
             🔑 Authorize
           </button>
-          <button onClick={handle123Search} className={styles["at-button"]}>
+          <button onClick={() => fetchLoadboardData(code || "")} className={styles["at-button"]}>
             📥 Fetch 123Loadboard Data
           </button>
         </div>
 
-        {/* Search Form */}
+        {/* 123 Search Form */}
         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
           <h3>Search Loads</h3>
           <div className="flex flex-wrap gap-2">
@@ -1583,16 +1612,105 @@ const AvailableTable: React.FC = () => {
               Autofill Sample Data
             </button>
             <button type="button" className={styles["at-button"]} onClick={handle123Search}>
-              Search
+              {loading ? "Searching..." : "123 Search"}
             </button>
           </div>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {success && <p style={{ color: "green" }}>Search completed!</p>}
         </form>
 
-        {loading && <p>Loading 123Loadboard results...</p>}
-        {error && <p className={styles["at-error"]}>{error}</p>}
-        {success && (
-          <div className={styles["at-searchResults"]}>
-            <Table data={searchResults} title="123Loadboard Search Results" isUser={false} />
+        {/* Search Results Table */}
+        {searchResults.length > 0 && (
+          <div className={styles["at-tableContainer"]}>
+            <h3>Search Results</h3>
+            <table className={styles["at-table"]}>
+              {/* <thead>
+                <tr>
+                  <th>Load ID</th>
+                  <th>Description</th>
+                  <th>Company</th>
+                  <th>Delivery</th>
+                  <th>Stops</th>
+                  <th>Mileage</th>
+                  <th># Loads</th>
+                  <th>Pickup</th>
+                  <th>Equipment</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                </tr>
+              </thead> */}
+              <thead>
+                <tr>
+                  <th>Load ID</th>
+                  <th>Description</th>
+                  <th>Company</th>
+                  <th>Delivery</th>
+                  <th>Stops</th>
+                  <th>Mileage</th>
+                  <th># Loads</th>
+                  <th>Pickup</th>
+                  <th>Equipment</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Origin</th>
+                  <th>Destination</th>
+                </tr>
+              </thead>
+
+              {/* <tbody>
+                {searchResults.map((load) => (
+                  <tr key={load.id}>
+                    <td>{load.id}</td>
+                    <td>{load.description}</td>
+                    <td>{load.company}</td>
+                    <td>{load.deliveryDateTimeUtc}</td>
+                    <td>{load.numberOfStops}</td>
+                    <td>{load.computedMileage}</td>
+                    <td>{load.numberOfLoads}</td>
+                    <td>{load.pickupDateTimesUtc?.join(", ")}</td>
+                    <td>{load.equipments?.map((e) => e.name || e).join(", ")}</td>
+                    <td>{load.privateLoadNote}</td>
+                    <td>{load.status}</td>
+                  </tr>
+                ))}
+              </tbody> */}
+              <tbody>
+                {searchResults.map((load) => (
+                  <tr key={load.id}>
+                    <td>{load.id}</td>
+                    <td>{load.postReference || "N/A"}</td>
+                    <td>{load.poster?.company || "N/A"}</td>
+                    <td>{load.deliveryDateTimeUtc || "N/A"}</td>
+                    <td>{load.numberOfStops}</td>
+                    <td>{load.computedMileage}</td>
+                    <td>{load.numberOfLoads}</td>
+                    <td>
+                      {load.pickupDateTimesUtc
+                        ? load.pickupDateTimesUtc.map((dt: string) => new Date(dt).toLocaleString()).join(", ")
+                        : "N/A"}
+                    </td>
+                    <td>
+                      {load.equipments
+                        ? load.equipments.map((e: any) => e.name || e.code || e).join(", ")
+                        : "N/A"}
+                    </td>
+                    <td>{load.privateLoadNote || ""}</td>
+                    <td>{load.status}</td>
+                    <td>
+                      {load.originLocation
+                        ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}`
+                        : "N/A"}
+                    </td>
+                    <td>
+                      {load.destinationLocation
+                        ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}`
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
           </div>
         )}
       </section>
