@@ -1678,20 +1678,20 @@ const AvailableTable: React.FC = () => {
                 {searchResults.map((load) => (
                   <tr key={load.id}>
                     <td>{load.id}</td>
-                    <td>{load.description || "N/A"}</td>
-                    <td>{load.company || "N/A"}</td>
+                    <td>{load.postReference || "N/A"}</td>
+                    <td>{load.poster?.company || "N/A"}</td>
                     <td>{load.deliveryDateTimeUtc || "N/A"}</td>
                     <td>{load.numberOfStops}</td>
                     <td>{load.computedMileage}</td>
                     <td>{load.numberOfLoads}</td>
                     <td>
                       {load.pickupDateTimesUtc
-                        ? load.pickupDateTimesUtc.map((dt) => new Date(dt).toLocaleString()).join(", ")
+                        ? load.pickupDateTimesUtc.map((dt: string) => new Date(dt).toLocaleString()).join(", ")
                         : "N/A"}
                     </td>
                     <td>
                       {load.equipments
-                        ? load.equipments.map((e) => e.name || e.code || e).join(", ")
+                        ? load.equipments.map((e: any) => e.name || e.code || e).join(", ")
                         : "N/A"}
                     </td>
                     <td>{load.privateLoadNote || ""}</td>
@@ -1706,11 +1706,9 @@ const AvailableTable: React.FC = () => {
                         ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}`
                         : "N/A"}
                     </td>
-
                   </tr>
                 ))}
               </tbody>
-
             </table>
           </div>
         )}
