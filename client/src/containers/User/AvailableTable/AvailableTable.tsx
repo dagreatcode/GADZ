@@ -1624,7 +1624,7 @@ const AvailableTable: React.FC = () => {
           <div className={styles["at-tableContainer"]}>
             <h3>Search Results</h3>
             <table className={styles["at-table"]}>
-              <thead>
+              {/* <thead>
                 <tr>
                   <th>Load ID</th>
                   <th>Description</th>
@@ -1638,8 +1638,26 @@ const AvailableTable: React.FC = () => {
                   <th>Note</th>
                   <th>Status</th>
                 </tr>
+              </thead> */}
+              <thead>
+                <tr>
+                  <th>Load ID</th>
+                  <th>Description</th>
+                  <th>Company</th>
+                  <th>Delivery</th>
+                  <th>Stops</th>
+                  <th>Mileage</th>
+                  <th># Loads</th>
+                  <th>Pickup</th>
+                  <th>Equipment</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Origin</th>
+                  <th>Destination</th>
+                </tr>
               </thead>
-              <tbody>
+
+              {/* <tbody>
                 {searchResults.map((load) => (
                   <tr key={load.id}>
                     <td>{load.id}</td>
@@ -1655,7 +1673,44 @@ const AvailableTable: React.FC = () => {
                     <td>{load.status}</td>
                   </tr>
                 ))}
+              </tbody> */}
+              <tbody>
+                {searchResults.map((load) => (
+                  <tr key={load.id}>
+                    <td>{load.id}</td>
+                    <td>{load.description || "N/A"}</td>
+                    <td>{load.company || "N/A"}</td>
+                    <td>{load.deliveryDateTimeUtc || "N/A"}</td>
+                    <td>{load.numberOfStops}</td>
+                    <td>{load.computedMileage}</td>
+                    <td>{load.numberOfLoads}</td>
+                    <td>
+                      {load.pickupDateTimesUtc
+                        ? load.pickupDateTimesUtc.map((dt) => new Date(dt).toLocaleString()).join(", ")
+                        : "N/A"}
+                    </td>
+                    <td>
+                      {load.equipments
+                        ? load.equipments.map((e) => e.name || e.code || e).join(", ")
+                        : "N/A"}
+                    </td>
+                    <td>{load.privateLoadNote || ""}</td>
+                    <td>{load.status}</td>
+                    <td>
+                      {load.originLocation
+                        ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}`
+                        : "N/A"}
+                    </td>
+                    <td>
+                      {load.destinationLocation
+                        ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}`
+                        : "N/A"}
+                    </td>
+
+                  </tr>
+                ))}
               </tbody>
+
             </table>
           </div>
         )}
