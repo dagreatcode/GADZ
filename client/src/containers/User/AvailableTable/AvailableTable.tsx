@@ -1719,8 +1719,7 @@
 
 // export default AvailableTable;
 
-// AvailableTable.tsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./AvailableTable.module.css";
@@ -1732,8 +1731,8 @@ interface Load {
   id: string;
   postReference?: string;
   numberOfLoads: number;
-  originLocation?: { city?: string; state?: string };
-  destinationLocation?: { city?: string; state?: string };
+  originLocation?: any;
+  destinationLocation?: any;
   equipments?: any[];
   loadSize?: string;
   weight?: number;
@@ -1760,10 +1759,6 @@ interface Driver {
   description: string;
   company: string;
   userId: string;
-}
-
-interface LoadboardData {
-  loads: Load[];
 }
 
 const AvailableTable: React.FC = () => {
@@ -1842,42 +1837,17 @@ const AvailableTable: React.FC = () => {
     userId: apiLoad.poster?.userId || "",
   });
 
-  // Fetch 123Loadboard data
-  const fetchLoadboardData = useCallback(
-    async (authCode: string) => {
-      if (!authCode) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get<LoadboardData>(
-          `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/auth/callback/`,
-          { params: { code: authCode } }
-        );
-        const mappedLoads = (response.data.loads || []).map(mapApiLoadToDisplay);
-        setSearchResults(mappedLoads);
-        setSuccess(true);
-      } catch (err) {
-        console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (code) fetchLoadboardData(code);
-  }, [code, fetchLoadboardData]);
-
   // Fetch local loads
   const fetchLoads = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`
+      );
       setLoads(response.data);
-
       const userId = localStorage.getItem("userId");
-      if (userId) setUserLoads(response.data.filter((l: Load) => l.userId === userId));
+      if (userId) {
+        setUserLoads(response.data.filter((l: Load) => l.userId === userId));
+      }
     } catch (err) {
       console.error("Error fetching loads:", err);
     }
@@ -1886,17 +1856,20 @@ const AvailableTable: React.FC = () => {
   // Fetch drivers
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`
+      );
       setDriverList(response.data);
-
       const userId = localStorage.getItem("userId");
-      if (userId) setUserDrivers(response.data.filter((d: Driver) => d.userId === userId));
+      if (userId) {
+        setUserDrivers(response.data.filter((d: Driver) => d.userId === userId));
+      }
     } catch (err) {
       console.error("Error fetching drivers:", err);
     }
   };
 
-  // Search form handlers
+  // Handle search form input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
@@ -1918,6 +1891,7 @@ const AvailableTable: React.FC = () => {
     });
   };
 
+  // 123 Search triggered ONLY by button
   const handle123Search = async () => {
     if (!code) {
       setError("Authorization code is missing. Please authorize first.");
@@ -1937,13 +1911,17 @@ const AvailableTable: React.FC = () => {
             "Content-Type": "application/json",
             "123LB-Api-Version": "1.3",
             "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
-            "123LB-AID": process.env.LOADBOARD_AID || "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+            "123LB-AID":
+              process.env.LOADBOARD_AID ||
+              "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
             Authorization: `Bearer ${code}`,
           },
         }
       );
+
       if (response.status === 200) {
-        const mappedLoads = (response.data.loads || []).map(mapApiLoadToDisplay);
+        const apiLoads = response.data.loads || [];
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
         setSearchResults(mappedLoads);
         setSuccess(true);
       } else {
@@ -1957,7 +1935,7 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  // Local load/driver form handlers
+  // Local load and driver form handlers
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setNewLoad({ ...newLoad, [e.target.name]: e.target.value });
 
@@ -1969,10 +1947,10 @@ const AvailableTable: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     try {
-      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`, {
-        ...newLoad,
-        userId,
-      });
+      await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/loads`,
+        { ...newLoad, userId }
+      );
       setNewLoad({
         id: "",
         numberOfLoads: 0,
@@ -1996,10 +1974,10 @@ const AvailableTable: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     try {
-      await axios.post(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`, {
-        ...newDriver,
-        userId,
-      });
+      await axios.post(
+        `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/drivers`,
+        { ...newDriver, userId }
+      );
       setNewDriver({ description: "", company: "", userId: "" });
       fetchDrivers();
     } catch (err) {
@@ -2028,7 +2006,7 @@ const AvailableTable: React.FC = () => {
         </Link>
       </header>
 
-      {/* Drivers Section */}
+      {/* Drivers */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -2036,8 +2014,8 @@ const AvailableTable: React.FC = () => {
             Fetch Drivers
           </button>
         </div>
-        <Table data={driverList} title="All Drivers" isUser />
-        <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
+        <Table data={driverList} title="All Drivers" isUser={true} />
+        <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
 
         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
           <h3>Add New Driver</h3>
@@ -2065,7 +2043,7 @@ const AvailableTable: React.FC = () => {
         </form>
       </section>
 
-      {/* Loads Section */}
+      {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
         <div className={styles["at-buttonGroup"]}>
@@ -2076,28 +2054,30 @@ const AvailableTable: React.FC = () => {
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
 
         <h3>Your Loads</h3>
-        <table className={styles["at-table"]}>
-          <thead>
-            <tr>
-              <th>Load ID</th>
-              <th>Description</th>
-              <th>Company</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userLoads.map((load) => (
-              <tr key={load.id}>
-                <td>{load.id}</td>
-                <td>{load.description}</td>
-                <td>
-                  <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
-                    {load.company}
-                  </Link>
-                </td>
+        <div className={styles["at-scrollableTableWrapper"]}>
+          <table className={styles["at-table"]}>
+            <thead>
+              <tr>
+                <th>Load ID</th>
+                <th>Description</th>
+                <th>Company</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {userLoads.map((load) => (
+                <tr key={load.id}>
+                  <td>{load.id}</td>
+                  <td>{load.description}</td>
+                  <td>
+                    <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>
+                      {load.company}
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
           <h3>Add New Load</h3>
@@ -2125,18 +2105,19 @@ const AvailableTable: React.FC = () => {
         </form>
       </section>
 
-      {/* 123Loadboard Section */}
+      {/* 123Loadboard */}
       <section className={styles["at-section"]}>
         <h2>🌐 123Loadboard</h2>
         <div className={styles["at-buttonGroup"]}>
           <button onClick={handleAuthorizeNavigation} className={styles["at-buttonAlt"]}>
             🔑 Authorize
           </button>
-          <button onClick={() => fetchLoadboardData(code || "")} className={styles["at-button"]}>
-            📥 Fetch 123Loadboard Data
+          <button onClick={handle123Search} className={styles["at-button"]}>
+            {loading ? "Searching..." : "123 Search"}
           </button>
         </div>
 
+        {/* 123 Search Form */}
         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
           <h3>Search Loads</h3>
           <div className="flex flex-wrap gap-2">
@@ -2152,7 +2133,7 @@ const AvailableTable: React.FC = () => {
               />
             ))}
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-2">
             <button type="button" className={styles["at-buttonAlt"]} onClick={handleAutoFill}>
               Autofill Sample Data
             </button>
@@ -2164,65 +2145,54 @@ const AvailableTable: React.FC = () => {
           {success && <p style={{ color: "green" }}>Search completed!</p>}
         </form>
 
+        {/* Scrollable Search Results Table */}
         {searchResults.length > 0 && (
-          <div className={styles["at-tableContainer"]}>
+          <div className={styles["at-scrollableTableContainer"]}>
             <h3>Search Results</h3>
-            <table className={styles["at-table"]}>
-              <thead>
-                <tr>
-                  <th>Load ID</th>
-                  <th>Description</th>
-                  <th>Company</th>
-                  <th>Delivery</th>
-                  <th>Stops</th>
-                  <th>Mileage</th>
-                  <th># Loads</th>
-                  <th>Pickup</th>
-                  <th>Equipment</th>
-                  <th>Note</th>
-                  <th>Status</th>
-                  <th>Origin</th>
-                  <th>Destination</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map((load) => (
-                  <tr key={load.id}>
-                    <td>{load.id}</td>
-                    <td>{load.postReference || "N/A"}</td>
-                    <td>{load.poster?.company || "N/A"}</td>
-                    <td>{load.deliveryDateTimeUtc || "N/A"}</td>
-                    <td>{load.numberOfStops}</td>
-                    <td>{load.computedMileage}</td>
-                    <td>{load.numberOfLoads}</td>
-                    <td>
-                      {load.pickupDateTimesUtc
-                        ? load.pickupDateTimesUtc
-                            .map((dt: string) => new Date(dt).toLocaleString())
-                            .join(", ")
-                        : "N/A"}
-                    </td>
-                    <td>
-                      {load.equipments
-                        ? load.equipments.map((e: any) => e.name || e.code || e).join(", ")
-                        : "N/A"}
-                    </td>
-                    <td>{load.privateLoadNote || ""}</td>
-                    <td>{load.status}</td>
-                    <td>
-                      {load.originLocation
-                        ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}`
-                        : "N/A"}
-                    </td>
-                    <td>
-                      {load.destinationLocation
-                        ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}`
-                        : "N/A"}
-                    </td>
+            <div className={styles["at-scrollableTableWrapper"]}>
+              <table className={styles["at-table"]}>
+                <thead>
+                  <tr>
+                    <th>Load ID</th>
+                    <th>Reference</th>
+                    <th>Company</th>
+                    <th>Delivery</th>
+                    <th>Stops</th>
+                    <th>Mileage</th>
+                    <th># Loads</th>
+                    <th>Pickup</th>
+                    <th>Equipment</th>
+                    <th>Note</th>
+                    <th>Status</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {searchResults.map((load) => (
+                    <tr key={load.id}>
+                      <td>{load.id}</td>
+                      <td>{load.postReference || "N/A"}</td>
+                      <td>{load.poster?.company || "N/A"}</td>
+                      <td>{load.deliveryDateTimeUtc ? new Date(load.deliveryDateTimeUtc).toLocaleString() : "N/A"}</td>
+                      <td>{load.numberOfStops}</td>
+                      <td>{load.computedMileage || "N/A"}</td>
+                      <td>{load.numberOfLoads}</td>
+                      <td>
+                        {load.pickupDateTimesUtc
+                          ? load.pickupDateTimesUtc.map((d) => new Date(d).toLocaleDateString()).join(", ")
+                          : "N/A"}
+                      </td>
+                      <td>{load.sortEquipCode || "N/A"}</td>
+                      <td>{load.privateLoadNote || ""}</td>
+                      <td>{load.status}</td>
+                      <td>{load.originLocation?.city || "N/A"}</td>
+                      <td>{load.destinationLocation?.city || "N/A"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>

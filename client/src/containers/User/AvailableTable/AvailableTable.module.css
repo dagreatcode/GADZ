@@ -158,6 +158,26 @@
   text-decoration: underline;
 }
 
+.at-scrollableTableContainer {
+  margin-top: 20px;
+}
+
+.at-scrollableTableWrapper {
+  max-height: 400px; /* adjust as needed */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Sticky header for scroll */
+.at-scrollableTableWrapper thead {
+  position: sticky;
+  top: 0;
+  background: #f9f9f9;
+  z-index: 2;
+}
+
+
 /* Mobile */
 @media (max-width: 768px) {
   .at-title { font-size: 2rem; }
