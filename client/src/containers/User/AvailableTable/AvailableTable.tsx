@@ -1243,6 +1243,17 @@ const AvailableTable: React.FC = () => {
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("authorized") === "123") {
+      // Mark that user is authorized
+      localStorage.setItem("loadboardAuthorized", "true");
+
+      // Clean the URL (optional)
+      window.history.replaceState({}, "", "/AvailableTable");
+    }
+  }, []);
+
   const handleAutoFill = () => {
     const today = new Date().toISOString().split("T")[0];
     const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split("T")[0];

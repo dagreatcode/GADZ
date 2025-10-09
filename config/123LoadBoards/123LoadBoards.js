@@ -336,12 +336,21 @@ router.post("/refresh-token", async (req, res) => {
 
     res.setHeader("Set-Cookie", cookieOptions);
 
-    return res.json({
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-      raw: tokenData,
-    });
+    // return res.json({
+    //   access_token: tokenData.access_token,
+    //   refresh_token: tokenData.refresh_token,
+    //   expires_in: tokenData.expires_in,
+    //   raw: tokenData,
+    // });
+    // ✅ NEW: redirect user back to frontend after auth success
+    // Example frontend URL: http://localhost:3000/dashboard or whatever your app uses
+    const FRONTEND_REDIRECT = process.env.FRONTEND_REDIRECT || "http://localhost:3000/AvailableTable";
+
+    res.setHeader("Set-Cookie", cookieOptions);
+
+    // Append a simple flag so frontend knows auth worked
+    return res.redirect(`${FRONTEND_REDIRECT}?authorized=123`);
+
   } catch (err) {
     console.error("Error refreshing token:", err);
     return res.status(500).json({ error: "refresh error", details: String(err) });
