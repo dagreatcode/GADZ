@@ -191,12 +191,91 @@ app.get("/authorize", async (req, res) => {
 });
 
 // Route to handle token exchange and fetch loads
+// app.get("/auth/callback", async (req, res) => {
+//   try {
+//     const authCode = req.query.code;
+//     console.log("Authorization Code:", authCode);
+
+//     // Exchange authorization code for access token
+//     const formData = new URLSearchParams({
+//       grant_type: "authorization_code",
+//       code: authCode,
+//       client_id: CLIENT_ID,
+//       redirect_uri: DEV_URI,
+//     }).toString();
+
+//     const tokenResp = await fetch(`${URI_123}/token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "123LB-Api-Version": "1.3",
+//         "User-Agent": "gadzconnect_dev",
+//         "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+//         Authorization:
+//           "Basic " +
+//           Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+//       },
+//       body: formData,
+//     });
+
+//     const tokenData = await tokenResp.json();
+//     console.log("Access Token Response:", tokenData);
+
+//     if (tokenData.access_token) {
+//       const bearerToken = tokenData.access_token;
+
+//       // Use access token to fetch loads
+//       const loadResp = await fetch(`${URI_123}/loads/search`, {
+//         method: "POST",
+//         headers: {
+//           "123LB-Correlation-Id": "123GADZ",
+//           "Content-Type": "application/json",
+//           "123LB-Api-Version": "1.3",
+//           "User-Agent": USER_AGENT,
+//           "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+//           Authorization: `Bearer ${bearerToken}`,
+//         },
+//         body: JSON.stringify({
+//           metadata: {
+//             limit: 10,
+//             sortBy: { field: "Origin", direction: "Ascending" },
+//             fields: "all",
+//             type: "Regular",
+//           },
+//           includeWithGreaterPickupDates: true,
+//           origin: {
+//             states: ["IL"],
+//             city: "Chicago",
+//             radius: 100,
+//             type: "City",
+//           },
+//           destination: {
+//             type: "Anywhere",
+//           },
+//           equipmentTypes: ["Van", "Flatbed", "Reefer"],
+//           includeLoadsWithoutWeight: true,
+//           includeLoadsWithoutLength: true,
+//         }),
+//       });
+
+//       const loadData = await loadResp.json();
+//       console.log("Load Response:", loadData);
+//       res.send(loadData);
+//     } else {
+//       console.error("Access token not found in response:", tokenData);
+//       res.status(400).send("Failed to retrieve access token.");
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("An error occurred during the process.");
+//   }
+// });
+// Route to handle token exchange ONLY (no auto-search)
 app.get("/auth/callback", async (req, res) => {
   try {
     const authCode = req.query.code;
     console.log("Authorization Code:", authCode);
 
-    // Exchange authorization code for access token
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
       code: authCode,
@@ -209,7 +288,7 @@ app.get("/auth/callback", async (req, res) => {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "123LB-Api-Version": "1.3",
-        "User-Agent": "gadzconnect_dev",
+        "User-Agent": USER_AGENT,
         "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
         Authorization:
           "Basic " +
@@ -221,53 +300,31 @@ app.get("/auth/callback", async (req, res) => {
     const tokenData = await tokenResp.json();
     console.log("Access Token Response:", tokenData);
 
-    if (tokenData.access_token) {
-      const bearerToken = tokenData.access_token;
-
-      // Use access token to fetch loads
-      const loadResp = await fetch(`${URI_123}/loads/search`, {
-        method: "POST",
-        headers: {
-          "123LB-Correlation-Id": "123GADZ",
-          "Content-Type": "application/json",
-          "123LB-Api-Version": "1.3",
-          "User-Agent": USER_AGENT,
-          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-          Authorization: `Bearer ${bearerToken}`,
-        },
-        body: JSON.stringify({
-          metadata: {
-            limit: 10,
-            sortBy: { field: "Origin", direction: "Ascending" },
-            fields: "all",
-            type: "Regular",
-          },
-          includeWithGreaterPickupDates: true,
-          origin: {
-            states: ["IL"],
-            city: "Chicago",
-            radius: 100,
-            type: "City",
-          },
-          destination: {
-            type: "Anywhere",
-          },
-          equipmentTypes: ["Van", "Flatbed", "Reefer"],
-          includeLoadsWithoutWeight: true,
-          includeLoadsWithoutLength: true,
-        }),
-      });
-
-      const loadData = await loadResp.json();
-      console.log("Load Response:", loadData);
-      res.send(loadData);
-    } else {
-      console.error("Access token not found in response:", tokenData);
-      res.status(400).send("Failed to retrieve access token.");
+    if (!tokenData.access_token) {
+      console.error("Access token missing in response:", tokenData);
+      return res.status(400).send("Failed to retrieve access token.");
     }
+
+    const bearerToken = tokenData.access_token;
+
+    // ✅ Option 1: Send token back as a cookie (recommended)
+    res.cookie("lb_access_token", bearerToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 3600 * 1000, // 1 hour
+    });
+
+    // ✅ Option 2: Also send token in response body (frontend can store it)
+    res.json({
+      success: true,
+      message: "Authorization successful",
+      access_token: bearerToken,
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred during the process.");
+    console.error("Error in /auth/callback:", error);
+    res.status(500).json({ error: "An error occurred during token exchange" });
   }
 });
 
