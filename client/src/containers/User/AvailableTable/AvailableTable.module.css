@@ -1,55 +1,40 @@
+/* Container & hero */
 .at-container {
   font-family: "Inter", Arial, sans-serif;
-  animation: fadeIn 0.8s ease-in-out;
+  animation: fadeIn 0.6s ease-in-out;
   padding: 20px;
   max-width: 1200px;
   margin: auto;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Hero */
 .at-hero {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+  position: relative;
 }
-.at-truck2 {
-  width: 120px;
-  animation: drive 6s linear infinite;
-}
-
 .at-truck {
   width: 120px;
-  animation: floatBoat 12s linear infinite;
   position: absolute;
   left: -150px;
-  top: 200px;
-}
-@keyframes floatBoat {
-  0% { left: -150px; transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(2deg); }
-  100% { left: 100%; transform: translateY(0px) rotate(0deg); }
-}
-
-@keyframes drive {
-  0% { left: -120px; position: relative; }
-  100% { left: 100%; }
+  top: 40px;
 }
 .at-title {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: #0072ff;
 }
 .at-subtitle {
   color: #7f8c8d;
-  margin: 10px 0 20px;
+  margin: 8px 0 14px;
 }
 .at-homeLink {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 8px;
   color: #0072ff;
   font-weight: 600;
   text-decoration: none;
@@ -60,127 +45,121 @@
 
 /* Sections */
 .at-section {
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 .at-section h2 {
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
   color: #2c3e50;
 }
 
 /* Buttons */
 .at-button, .at-buttonAlt {
-  padding: 12px 20px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 50px;
+  border-radius: 40px;
   font-weight: 600;
   cursor: pointer;
-  margin: 5px;
-  transition: all 0.3s ease;
+  margin: 4px;
+  transition: all 0.18s ease;
 }
 .at-button {
   background: linear-gradient(135deg, #0072ff, #00c6ff);
   color: white;
 }
-.at-button:hover {
-  background: #0056cc;
-  transform: translateY(-2px);
-}
+.at-button:hover { transform: translateY(-2px); }
 .at-buttonAlt {
   background: #f1faff;
   color: #0072ff;
   border: 2px solid #0072ff;
 }
-.at-buttonAlt:hover {
-  background: #0072ff;
-  color: #fff;
-}
+.at-buttonAlt:hover { background: #0072ff; color: #fff; }
 
 /* Forms */
 .at-form {
   background: #f9f9f9;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
 .at-input {
-  padding: 12px;
-  margin-bottom: 15px;
+  padding: 10px;
+  margin: 6px 6px 12px 0;
   border: 1px solid #ccc;
   border-radius: 8px;
+  min-width: 180px;
 }
 .at-submitButton {
-  padding: 12px 20px;
+  padding: 10px 16px;
   background: linear-gradient(135deg, #00c6ff, #0072ff);
   color: white;
   font-weight: bold;
-  border-radius: 50px;
+  border-radius: 40px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-.at-submitButton:hover {
-  background: #0056cc;
-  transform: translateY(-2px);
 }
 
-/* Tables */
+/* Table container and table */
 .at-tableContainer {
   overflow-x: auto;
+  margin-top: 8px;
 }
 .at-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
-  min-width: 800px;
+  margin-top: 8px;
+  min-width: 700px;
 }
 .at-table th {
   background: #34495e;
   color: white;
   padding: 10px;
   text-align: left;
+  font-weight: 700;
 }
 .at-table td {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #e6e6e6;
 }
 .at-table tr:nth-child(even) {
-  background: #f9f9f9;
+  background: #fbfbfb;
 }
 .at-table tr:hover {
-  background: #eef5ff;
+  background: #eef6ff;
 }
 .at-link {
   color: #0072ff;
 }
-.at-link:hover {
-  text-decoration: underline;
-}
 
+/* Scrollable wrapper with sticky header */
 .at-scrollableTableContainer {
-  margin-top: 20px;
+  margin-top: 12px;
 }
-
 .at-scrollableTableWrapper {
-  max-height: 400px; /* adjust as needed */
+  max-height: 300px; /* default, can be overridden inline */
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
+  background: white;
 }
 
-/* Sticky header for scroll */
-.at-scrollableTableWrapper thead {
+/* sticky header: applies to any table inside wrapper */
+.at-scrollableTableWrapper table thead th {
   position: sticky;
   top: 0;
-  background: #f9f9f9;
-  z-index: 2;
+  z-index: 3;
+  background: #34495e; /* same as header background */
+  color: #fff;
 }
 
-
-/* Mobile */
+/* mobile adjustments */
 @media (max-width: 768px) {
-  .at-title { font-size: 2rem; }
-  .at-button, .at-submitButton { font-size: 14px; padding: 10px 15px; }
-  .at-input { font-size: 14px; }
+  .at-title { font-size: 1.8rem; }
+  .at-input { width: 100%; min-width: 0; }
+  .at-table { font-size: 13px; }
 }
+
+/* Utility */
+.text-center { text-align: center; }
+.mb-4 { margin-bottom: 1rem; }
