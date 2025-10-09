@@ -728,6 +728,33 @@ const AvailableTable: React.FC = () => {
     fetchDrivers();
   }, [fetchLoads, fetchDrivers]);
 
+  // // Auto-refresh token every 14 minutes
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     const currentToken = getCookie("lb_access_token") || localStorage.getItem("lb_access_token");
+  //     if (!currentToken) return;
+
+  //     try {
+  //       const resp = await axios.get(`${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || ""}/refresh-token`, {
+  //         headers: { Authorization: `Bearer ${currentToken}` },
+  //       });
+
+  //       const newToken = resp.data?.access_token;
+  //       if (newToken) {
+  //         document.cookie = `lb_access_token=${newToken}; path=/; secure; samesite=lax`;
+  //         localStorage.setItem("lb_access_token", newToken);
+  //         setToken(newToken);
+  //         console.log("123Loadboard token refreshed automatically.");
+  //       }
+  //     } catch (err) {
+  //       console.error("Auto token refresh failed:", err);
+  //       setError("Automatic token refresh failed. Please reconnect.");
+  //     }
+  //   }, 14 * 60 * 1000); // 14 minutes
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
   // Handle form changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -847,7 +874,7 @@ const AvailableTable: React.FC = () => {
     if (code) {
       try {
         localStorage.setItem("lb_auth_code", code);
-      } catch {}
+      } catch { }
     }
   }, [code]);
 
@@ -947,62 +974,12 @@ const AvailableTable: React.FC = () => {
             </button>
           </div>
           {error && <p style={{ color: "red", marginTop: 8 }}>{error}</p>}
-          {success && <p style={{ color: "green", marginTop: 8 }}>Search completed!</p>}
+          {success && <p style={{ color: "green", marginTop: 8 }}>Search complete!</p>}
         </form>
 
-        <div ref={resultsRef} className={styles["at-scrollableTableContainer"]} style={{ marginTop: 18 }}>
-          <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 400 }}>
-            {searchResults.length === 0 && !loading ? (
-              <div style={{ padding: 20, textAlign: "center" }}>No search results yet. Try a search.</div>
-            ) : (
-              <table className={styles["at-table"]}>
-                <thead>
-                  <tr>
-                    <th>Load ID</th>
-                    <th>Reference</th>
-                    <th>Company</th>
-                    <th>Delivery</th>
-                    <th>Stops</th>
-                    <th>Mileage</th>
-                    <th># Loads</th>
-                    <th>Pickup</th>
-                    <th>Equipment</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchResults.map((load) => (
-                    <tr key={load.id}>
-                      <td>{load.id}</td>
-                      <td>{load.postReference || load.description || "N/A"}</td>
-                      <td>{load.poster?.company || load.company || "N/A"}</td>
-                      <td>{load.deliveryDateTimeUtc ? new Date(load.deliveryDateTimeUtc).toLocaleString() : "N/A"}</td>
-                      <td>{load.numberOfStops ?? "N/A"}</td>
-                      <td>{load.computedMileage ?? "N/A"}</td>
-                      <td>{load.numberOfLoads ?? "N/A"}</td>
-                      <td>
-                        {load.pickupDateTimesUtc && load.pickupDateTimesUtc.length > 0
-                          ? load.pickupDateTimesUtc.map((dt) => new Date(dt).toLocaleString()).join(", ")
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {load.equipments && load.equipments.length > 0
-                          ? load.equipments.map((e: any) => e.name || e.code || e).join(", ")
-                          : "N/A"}
-                      </td>
-                      <td>{load.privateLoadNote || ""}</td>
-                      <td>{load.status}</td>
-                      <td>{load.originLocation ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}` : "N/A"}</td>
-                      <td>{load.destinationLocation ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}` : "N/A"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+        {/* Search Results */}
+        <div ref={resultsRef} style={{ marginTop: 20 }}>
+          <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />
         </div>
       </section>
     </div>
