@@ -1160,7 +1160,7 @@ const AvailableTable: React.FC = () => {
         if (cookieToken) {
           try {
             localStorage.setItem("lb_access_token", cookieToken);
-          } catch {}
+          } catch { }
           setToken(cookieToken);
         }
 
@@ -1198,7 +1198,7 @@ const AvailableTable: React.FC = () => {
       setToken(cookieToken);
       try {
         localStorage.setItem("lb_access_token", cookieToken);
-      } catch {}
+      } catch { }
     } else {
       const stored = localStorage.getItem("lb_access_token");
       if (stored) setToken(stored);
@@ -1209,13 +1209,32 @@ const AvailableTable: React.FC = () => {
   }, [fetchLoads, fetchDrivers]);
 
   // If the OAuth provider redirected back with code=..., call server to exchange code
+  // useEffect(() => {
+  //   if (code) {
+  //     fetchLoadboardData(code);
+  //     try {
+  //       localStorage.setItem("lb_auth_code", code);
+  //     } catch {}
+  //   }
+  // }, [code, fetchLoadboardData]);
+
   useEffect(() => {
-    if (code) {
-      fetchLoadboardData(code);
+    if (!code) return; // no code in URL
+    const alreadyUsedCode = localStorage.getItem("lb_auth_code");
+    if (alreadyUsedCode === code) return; // prevent reprocessing same code
+
+    (async () => {
+      await fetchLoadboardData(code);
+
+      // Mark code as used so it won't refire on re-render
       try {
         localStorage.setItem("lb_auth_code", code);
-      } catch {}
-    }
+      } catch { }
+
+      // Remove `?code=` from URL so user refreshes cleanly
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    })();
   }, [code, fetchLoadboardData]);
 
   // handle search form input
