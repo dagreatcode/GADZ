@@ -3171,39 +3171,71 @@ const AvailableTable: React.FC = () => {
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
         <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
-          <div className="row g-2">
+          <div className="row g-3">
             <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">🏙️</span>
+                <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Origin State" name="originState" value={searchFormData.originState} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">📍</span>
+                <input type="text" className="form-control" placeholder="Origin State" name="originState" value={searchFormData.originState} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Radius (miles)" name="radius" value={searchFormData.radius} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">📏</span>
+                <input type="text" className="form-control" placeholder="Radius (miles)" name="radius" value={searchFormData.radius} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Equipment Types" name="equipmentTypes" value={searchFormData.equipmentTypes} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">🚛</span>
+                <input type="text" className="form-control" placeholder="Equipment Types" name="equipmentTypes" value={searchFormData.equipmentTypes} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-2">
-              <input type="number" className="form-control" placeholder="Min Weight" name="minWeight" value={searchFormData.minWeight} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">⚖️</span>
+                <input type="number" className="form-control" placeholder="Min Weight" name="minWeight" value={searchFormData.minWeight} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-2">
-              <input type="number" className="form-control" placeholder="Max Mileage" name="maxMileage" value={searchFormData.maxMileage} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">🛣️</span>
+                <input type="number" className="form-control" placeholder="Max Mileage" name="maxMileage" value={searchFormData.maxMileage} onChange={handleInputChange} />
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="input-group">
+                <span className="input-group-text">📅</span>
+                <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDate" value={searchFormData.pickupDate} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDate" value={searchFormData.pickupDate} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">⭐</span>
+                <input type="text" className="form-control" placeholder="Company Rating" name="companyRating" value={searchFormData.companyRating} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-3">
-              <input type="text" className="form-control" placeholder="Company Rating" name="companyRating" value={searchFormData.companyRating} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">📆</span>
+                <input type="date" className="form-control" placeholder="Modified Start Date" name="modifiedStartDate" value={searchFormData.modifiedStartDate} onChange={handleInputChange} />
+              </div>
             </div>
             <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Modified Start Date" name="modifiedStartDate" value={searchFormData.modifiedStartDate} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Modified End Date" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
+              <div className="input-group">
+                <span className="input-group-text">📆</span>
+                <input type="date" className="form-control" placeholder="Modified End Date" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
+              </div>
             </div>
           </div>
-          <div className="mt-3 d-flex gap-2">
+
+          <div className="mt-3 d-flex flex-wrap gap-2">
             <button type="submit" className="btn btn-primary">Search Loads</button>
             <button type="button" className="btn btn-secondary" onClick={handleAutoFill}>Auto Fill</button>
             <button type="button" className="btn btn-warning" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
@@ -3214,6 +3246,7 @@ const AvailableTable: React.FC = () => {
         {loading && <div className="alert alert-info">Loading...</div>}
         {success && <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />}
       </section>
+
     </div>
   );
 };
