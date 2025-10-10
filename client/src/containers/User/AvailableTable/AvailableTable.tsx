@@ -989,6 +989,981 @@
 // export default AvailableTable;
 
 
+// import React, { useEffect, useState, useCallback, useRef } from "react";
+// import { useLocation, Link } from "react-router-dom";
+// import axios from "axios";
+// import styles from "./AvailableTable.module.css";
+// import GADZTruck from "./GADZBoat.png";
+// import Table from "./Table";
+
+// // Types
+// interface Load {
+//   id: string;
+//   postReference?: string;
+//   numberOfLoads: number;
+//   originLocation?: any;
+//   destinationLocation?: any;
+//   equipments?: any[];
+//   loadSize?: string;
+//   weight?: number;
+//   rateCheck?: any;
+//   numberOfStops: number;
+//   teamDriving?: boolean;
+//   pickupDateTimesUtc?: string[];
+//   deliveryDateTimeUtc?: string;
+//   computedMileage?: number;
+//   status: string;
+//   age?: number;
+//   lastRefreshed?: string;
+//   isDateRefreshed?: boolean;
+//   poster?: any;
+//   metadata?: any;
+//   sortEquipCode?: string;
+//   privateLoadNote?: string;
+//   description: string;
+//   company: string;
+//   userId: string;
+// }
+
+// interface Driver {
+//   id?: string;
+//   description?: string;
+//   company?: string;
+//   userId?: string;
+// }
+
+// // helper to read cookie
+// const getCookie = (name: string): string | null => {
+//   const v = `; ${document.cookie}`;
+//   const parts = v.split(`; ${name}=`);
+//   if (parts.length === 2) return parts.pop()!.split(";").shift() || null;
+//   return null;
+// };
+
+// const API_BASE = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || ""; // e.g. http://localhost:3001
+
+// const AvailableTable: React.FC = () => {
+//   const [loads, setLoads] = useState<Load[]>([]);
+//   const [userLoads, setUserLoads] = useState<Load[]>([]);
+//   const [driverList, setDriverList] = useState<Driver[]>([]);
+//   const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
+//   const [searchResults, setSearchResults] = useState<Load[]>([]);
+//   const [searchFormData, setSearchFormData] = useState({
+//     originCity: "",
+//     originState: "",
+//     radius: "",
+//     destinationType: "Anywhere",
+//     equipmentTypes: "",
+//     minWeight: "",
+//     maxMileage: "",
+//     pickupDate: "",
+//     companyRating: "",
+//     modifiedStartDate: "",
+//     modifiedEndDate: "",
+//   });
+//   const [newLoad, setNewLoad] = useState<Partial<Load>>({
+//     id: "",
+//     numberOfLoads: 0,
+//     pickupDateTimesUtc: [],
+//     equipments: [],
+//     status: "",
+//     deliveryDateTimeUtc: "",
+//     numberOfStops: 0,
+//     description: "",
+//     company: "",
+//     userId: "",
+//   });
+//   const [newDriver, setNewDriver] = useState<Partial<Driver>>({
+//     description: "",
+//     company: "",
+//     userId: "",
+//   });
+
+//   const [token, setToken] = useState<string | null>(null);
+//   const [loading, setLoading] = useState(false);
+//   const [success, setSuccess] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const location = useLocation();
+//   const queryParams = new URLSearchParams(location.search);
+//   const code = queryParams.get("code");
+//   const resultsRef = useRef<HTMLDivElement | null>(null);
+
+//   // defensive mapping of API load objects -> our Load type
+//   const mapApiLoadToDisplay = (apiLoad: any): Load => ({
+//     id: apiLoad.id || apiLoad.loadId || `${Math.random()}`,
+//     postReference: apiLoad.postReference,
+//     numberOfLoads: apiLoad.numberOfLoads || 1,
+//     originLocation: apiLoad.originLocation || apiLoad.origin,
+//     destinationLocation: apiLoad.destinationLocation || apiLoad.destination,
+//     equipments: apiLoad.equipments || apiLoad.equipmentTypes || [],
+//     loadSize: apiLoad.loadSize,
+//     weight: apiLoad.weight,
+//     rateCheck: apiLoad.rateCheck,
+//     numberOfStops: apiLoad.numberOfStops || 0,
+//     teamDriving: apiLoad.teamDriving,
+//     pickupDateTimesUtc: apiLoad.pickupDateTimesUtc || apiLoad.pickupDates || [],
+//     deliveryDateTimeUtc: apiLoad.deliveryDateTimeUtc,
+//     computedMileage: apiLoad.computedMileage,
+//     status: apiLoad.status || apiLoad.state || "",
+//     age: apiLoad.age,
+//     lastRefreshed: apiLoad.lastRefreshed,
+//     isDateRefreshed: apiLoad.isDateRefreshed,
+//     poster: apiLoad.poster,
+//     metadata: apiLoad.metadata,
+//     sortEquipCode: apiLoad.sortEquipCode,
+//     privateLoadNote: apiLoad.privateLoadNote || apiLoad.note || "",
+//     description: apiLoad.description || apiLoad.postReference || "",
+//     company: apiLoad.poster?.company || apiLoad.companyName || "",
+//     userId: apiLoad.poster?.userId || apiLoad.userId || "",
+//   });
+
+//   // fetch local loads
+//   const fetchLoads = useCallback(async () => {
+//     try {
+//       const resp = await axios.get(`${API_BASE}/api/loads`);
+//       const data = resp.data || [];
+//       setLoads(data);
+//       const userId = localStorage.getItem("userId");
+//       if (userId) setUserLoads(data.filter((l: Load) => l.userId === userId));
+//     } catch (err) {
+//       console.error("Error fetching loads:", err);
+//     }
+//   }, []);
+
+//   // fetch drivers
+//   const fetchDrivers = useCallback(async () => {
+//     try {
+//       const resp = await axios.get(`${API_BASE}/api/drivers`);
+//       const data = resp.data || [];
+//       setDriverList(data);
+//       const userId = localStorage.getItem("userId");
+//       if (userId) setUserDrivers(data.filter((d: Driver) => d.userId === userId));
+//     } catch (err) {
+//       console.error("Error fetching drivers:", err);
+//     }
+//   }, []);
+
+//   // If an auth code is present (from OAuth redirect) call the backend callback endpoint
+//   // so the server can exchange the code for a token (and may set cookie or return loads).
+//   const fetchLoadboardData = useCallback(
+//     async (authCode: string) => {
+//       if (!authCode) return;
+//       setLoading(true);
+//       setError(null);
+//       try {
+//         // call server callback to exchange code for token and (optionally) return loads
+//         const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+
+//         // if the server set a token cookie, read it
+//         const cookieToken = getCookie("lb_access_token");
+//         if (cookieToken) {
+//           try {
+//             localStorage.setItem("lb_access_token", cookieToken);
+//           } catch { }
+//           setToken(cookieToken);
+//         }
+
+//         // server may return loads directly; handle several possible shapes
+//         let apiLoads: any[] = [];
+//         if (resp.data) {
+//           if (Array.isArray(resp.data)) apiLoads = resp.data;
+//           else if (Array.isArray(resp.data.loads)) apiLoads = resp.data.loads;
+//           else if (Array.isArray(resp.data.data)) apiLoads = resp.data.data;
+//           else if (Array.isArray(resp.data.results)) apiLoads = resp.data.results;
+//           else if (Array.isArray(resp.data.payload)) apiLoads = resp.data.payload;
+//         }
+
+//         if (apiLoads.length > 0) {
+//           const mapped = apiLoads.map(mapApiLoadToDisplay);
+//           setSearchResults(mapped);
+//           setSuccess(true);
+//           // scroll into view
+//           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+//         }
+//       } catch (err) {
+//         console.error("Error fetching 123Loadboard data via callback:", err);
+//         setError("Failed to fetch 123Loadboard data via callback.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     [mapApiLoadToDisplay]
+//   );
+
+//   // On mount: load token (cookie or localStorage) and fetch local loads/drivers
+//   useEffect(() => {
+//     const cookieToken = getCookie("lb_access_token");
+//     if (cookieToken) {
+//       setToken(cookieToken);
+//       try {
+//         localStorage.setItem("lb_access_token", cookieToken);
+//       } catch { }
+//     } else {
+//       const stored = localStorage.getItem("lb_access_token");
+//       if (stored) setToken(stored);
+//     }
+
+//     fetchLoads();
+//     fetchDrivers();
+//   }, [fetchLoads, fetchDrivers]);
+
+//   // If the OAuth provider redirected back with code=..., call server to exchange code
+//   // useEffect(() => {
+//   //   if (code) {
+//   //     fetchLoadboardData(code);
+//   //     try {
+//   //       localStorage.setItem("lb_auth_code", code);
+//   //     } catch {}
+//   //   }
+//   // }, [code, fetchLoadboardData]);
+
+//   useEffect(() => {
+//     if (!code) return; // no code in URL
+//     const alreadyUsedCode = localStorage.getItem("lb_auth_code");
+//     if (alreadyUsedCode === code) return; // prevent reprocessing same code
+
+//     (async () => {
+//       await fetchLoadboardData(code);
+
+//       // Mark code as used so it won't refire on re-render
+//       try {
+//         localStorage.setItem("lb_auth_code", code);
+//       } catch { }
+
+//       // Remove `?code=` from URL so user refreshes cleanly
+//       const cleanUrl = window.location.origin + window.location.pathname;
+//       window.history.replaceState({}, document.title, cleanUrl);
+//     })();
+//   }, [code, fetchLoadboardData]);
+
+//   // handle search form input
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//     const { name, value } = e.target;
+//     setSearchFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   useEffect(() => {
+//     const params = new URLSearchParams(window.location.search);
+//     if (params.get("authorized") === "123") {
+//       // Mark that user is authorized
+//       localStorage.setItem("loadboardAuthorized", "true");
+
+//       // Clean the URL (optional)
+//       window.history.replaceState({}, "", "/AvailableTable");
+//     }
+//   }, []);
+
+//   const handleAutoFill = () => {
+//     const today = new Date().toISOString().split("T")[0];
+//     const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split("T")[0];
+//     setSearchFormData({
+//       originCity: "Chicago",
+//       originState: "IL",
+//       radius: "100",
+//       destinationType: "Anywhere",
+//       equipmentTypes: "Flatbed",
+//       minWeight: "1000",
+//       maxMileage: "500",
+//       pickupDate: today,
+//       companyRating: "A",
+//       modifiedStartDate: lastMonth,
+//       modifiedEndDate: today,
+//     });
+//   };
+
+//   // handle 123Loadboard search (user clicks search)
+//   const handle123Search = useCallback(async () => {
+//     setError(null);
+//     setSuccess(false);
+
+//     // Prefer cookie first, then state, then localStorage
+//     const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
+
+//     if (!authToken) {
+//       setError("Authorization token missing — please click Authorize/Connect first.");
+//       return;
+//     }
+
+//     setLoading(true);
+//     try {
+//       const resp = await axios.post(`${API_BASE}/api/load-search`, searchFormData, {
+//         headers: {
+//           Authorization: `Bearer ${authToken}`,
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//       // flexible parsing of response
+//       let apiLoads: any[] = [];
+//       if (resp.data) {
+//         if (Array.isArray(resp.data)) apiLoads = resp.data;
+//         else if (Array.isArray(resp.data.loads)) apiLoads = resp.data.loads;
+//         else if (Array.isArray(resp.data.data)) apiLoads = resp.data.data;
+//         else if (Array.isArray(resp.data.results)) apiLoads = resp.data.results;
+//         else if (Array.isArray(resp.data.payload)) apiLoads = resp.data.payload;
+//       }
+
+//       const mapped = apiLoads.map(mapApiLoadToDisplay);
+//       setSearchResults(mapped);
+//       setSuccess(true);
+
+//       // scroll into view
+//       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+//     } catch (err: any) {
+//       console.error("Error fetching 123Loadboard search results:", err);
+//       const msg = (err.response && err.response.data && (err.response.data.error || err.response.data.message)) || err.message || "Error fetching results";
+//       setError(String(msg));
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [searchFormData, token]);
+
+//   // local load form handlers
+//   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setNewLoad((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmitLoad = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) return setError("Please log in to add a load.");
+//     try {
+//       await axios.post(`${API_BASE}/api/loads`, { ...newLoad, userId });
+//       setNewLoad({ id: "", numberOfLoads: 0, pickupDateTimesUtc: [], equipments: [], status: "", deliveryDateTimeUtc: "", numberOfStops: 0, description: "", company: "", userId });
+//       fetchLoads();
+//     } catch (err) {
+//       console.error("Error creating load:", err);
+//       setError("Failed to create load.");
+//     }
+//   };
+
+//   // driver form handlers
+//   const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setNewDriver((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmitDriver = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) return setError("Please log in to add a driver.");
+//     try {
+//       await axios.post(`${API_BASE}/api/drivers`, { ...newDriver, userId });
+//       setNewDriver({ description: "", company: "", userId: "" });
+//       fetchDrivers();
+//     } catch (err) {
+//       console.error("Error creating driver:", err);
+//       setError("Failed to create driver.");
+//     }
+//   };
+
+//   // navigate to backend authorize endpoint
+//   const handleAuthorizeNavigation = () => {
+//     // Use API_BASE if provided (e.g. http://localhost:3001), otherwise fallback to hard-coded dev URL
+//     const base = API_BASE || (process.env.NODE_ENV === "development" ? "http://localhost:3001" : "");
+//     const url = base ? `${base}/api/123Loads/authorize` : "/api/123Loads/authorize";
+//     window.location.href = url;
+//   };
+
+//   return (
+//     <div className={styles["at-container"]}>
+//       <header className={styles["at-hero"]}>
+//         <img src={GADZTruck} alt="Truck Animation" className={styles["at-truck"]} />
+//         <h1 className={styles["at-title"]}>🚛 GADZConnect Load Board</h1>
+//         <p className={styles["at-subtitle"]}>Manage drivers, loads, and connect with 123Loadboard</p>
+//         <Link to="/User" className={styles["at-homeLink"]}>Back to Dashboard</Link>
+//       </header>
+
+//       {/* Drivers */}
+//       <section className={styles["at-section"]}>
+//         <h2>👨‍✈️ Drivers</h2>
+//         <div style={{ marginBottom: 10 }}>
+//           <button className={styles["at-button"]} onClick={fetchDrivers}>Fetch Drivers</button>
+//         </div>
+
+//         <Table data={driverList} title="All Drivers" isUser={true} />
+//         <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
+
+//         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
+//           <h3>Add New Driver</h3>
+//           <input className={styles["at-input"]} type="text" name="description" placeholder="Driver Description" value={newDriver.description || ""} onChange={handleDriverInputChange} required />
+//           <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newDriver.company || ""} onChange={handleDriverInputChange} required />
+//           <button type="submit" className={styles["at-submitButton"]}>➕ Add Driver</button>
+//         </form>
+//       </section>
+
+//       {/* Loads */}
+//       <section className={styles["at-section"]}>
+//         <h2>📦 Loads</h2>
+//         <div style={{ marginBottom: 10 }}>
+//           <button className={styles["at-button"]} onClick={fetchLoads}>Fetch Loads</button>
+//         </div>
+
+//         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
+
+//         <h3>Your Loads</h3>
+//         <div className={styles["at-scrollableTableContainer"]}>
+//           <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 300 }}>
+//             <table className={styles["at-table"]}>
+//               <thead>
+//                 <tr>
+//                   <th>Load ID</th>
+//                   <th>Description</th>
+//                   <th>Company</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {userLoads.map((load) => (
+//                   <tr key={load.id}>
+//                     <td>{load.id}</td>
+//                     <td>{load.description}</td>
+//                     <td>
+//                       <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>{load.company}</Link>
+//                     </td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+
+//         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
+//           <h3>Add New Load</h3>
+//           <input className={styles["at-input"]} type="text" name="description" placeholder="Load Description" value={newLoad.description || ""} onChange={handleLoadInputChange} required />
+//           <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newLoad.company || ""} onChange={handleLoadInputChange} required />
+//           <button type="submit" className={styles["at-submitButton"]}>➕ Add Load</button>
+//         </form>
+//       </section>
+
+//       {/* 123Loadboard */}
+//       <section className={styles["at-section"]}>
+//         <h2>🌐 123Loadboard</h2>
+
+//         <div style={{ marginBottom: 12 }}>
+//           <button className={styles["at-buttonAlt"]} onClick={handleAuthorizeNavigation}>🔑 Authorize / Connect</button>
+//           <span style={{ marginLeft: 12, color: token ? "green" : "#777" }}>{token ? "Connected" : "Not connected"}</span>
+//         </div>
+
+//         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
+//           <h3>Search Loads</h3>
+
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+//             {Object.keys(searchFormData).map((key) => (
+//               <input
+//                 key={key}
+//                 className={styles["at-input"]}
+//                 name={key}
+//                 placeholder={key}
+//                 type={key.toLowerCase().includes("date") ? "date" : "text"}
+//                 value={searchFormData[key as keyof typeof searchFormData]}
+//                 onChange={handleInputChange}
+//               />
+//             ))}
+//           </div>
+
+//           <div style={{ marginTop: 12 }}>
+//             <button type="button" className={styles["at-buttonAlt"]} onClick={handleAutoFill}>Autofill Sample Data</button>
+//             <button type="button" className={styles["at-button"]} onClick={handle123Search} style={{ marginLeft: 8 }}>
+//               {loading ? "Searching..." : "Search 123Loadboard"}
+//             </button>
+//           </div>
+
+//           {error && <p style={{ color: "red", marginTop: 8 }}>{error}</p>}
+//           {success && <p style={{ color: "green", marginTop: 8 }}>Search completed!</p>}
+//         </form>
+
+//         <div ref={resultsRef} className={styles["at-scrollableTableContainer"]} style={{ marginTop: 18 }}>
+//           <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 400 }}>
+//             {searchResults.length === 0 && !loading ? (
+//               <div style={{ padding: 20, textAlign: "center" }}>No search results yet. Try a search.</div>
+//             ) : (
+//               <table className={styles["at-table"]}>
+//                 <thead>
+//                   <tr>
+//                     <th>Load ID</th>
+//                     <th>Reference</th>
+//                     <th>Company</th>
+//                     <th>Delivery</th>
+//                     <th>Stops</th>
+//                     <th>Mileage</th>
+//                     <th># Loads</th>
+//                     <th>Pickup</th>
+//                     <th>Equipment</th>
+//                     <th>Note</th>
+//                     <th>Status</th>
+//                     <th>Origin</th>
+//                     <th>Destination</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {searchResults.map((load) => (
+//                     <tr key={load.id}>
+//                       <td>{load.id}</td>
+//                       <td>{load.postReference || load.description || "N/A"}</td>
+//                       <td>{(load.poster && load.poster.company) || load.company || "N/A"}</td>
+//                       <td>{load.deliveryDateTimeUtc ? new Date(load.deliveryDateTimeUtc).toLocaleString() : "N/A"}</td>
+//                       <td>{load.numberOfStops ?? "N/A"}</td>
+//                       <td>{load.computedMileage ?? "N/A"}</td>
+//                       <td>{load.numberOfLoads ?? "N/A"}</td>
+//                       <td>{load.pickupDateTimesUtc && load.pickupDateTimesUtc.length > 0 ? load.pickupDateTimesUtc.map((dt) => new Date(dt).toLocaleString()).join(", ") : "N/A"}</td>
+//                       <td>{load.equipments && load.equipments.length > 0 ? load.equipments.map((e: any) => e.name || e.code || e).join(", ") : "N/A"}</td>
+//                       <td>{load.privateLoadNote || ""}</td>
+//                       <td>{load.status}</td>
+//                       <td>{load.originLocation ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}` : "N/A"}</td>
+//                       <td>{load.destinationLocation ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}` : "N/A"}</td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             )}
+//           </div>
+//         </div>
+//       </section>
+//     </div>
+//   );
+// };
+
+// export default AvailableTable;
+
+// import React, { useEffect, useState, useCallback, useRef } from "react";
+// import { useLocation, Link } from "react-router-dom";
+// import axios from "axios";
+// import styles from "./AvailableTable.module.css";
+// import GADZTruck from "./GADZBoat.png";
+// import Table from "./Table";
+
+// // Types
+// interface Load {
+//   id: string;
+//   postReference?: string;
+//   numberOfLoads: number;
+//   originLocation?: Record<string, unknown>;
+//   destinationLocation?: Record<string, unknown>;
+//   equipments?: string[];
+//   loadSize?: string;
+//   weight?: number;
+//   rateCheck?: unknown;
+//   numberOfStops: number;
+//   teamDriving?: boolean;
+//   pickupDateTimesUtc?: string[];
+//   deliveryDateTimeUtc?: string;
+//   computedMileage?: number;
+//   status: string;
+//   age?: number;
+//   lastRefreshed?: string;
+//   isDateRefreshed?: boolean;
+//   poster?: { company?: string; userId?: string };
+//   metadata?: unknown;
+//   sortEquipCode?: string;
+//   privateLoadNote?: string;
+//   description: string;
+//   company: string;
+//   userId: string;
+// }
+
+// interface Driver {
+//   id?: string;
+//   description?: string;
+//   company?: string;
+//   userId?: string;
+// }
+
+// // Helper to read cookie
+// const getCookie = (name: string): string | null => {
+//   const v = `; ${document.cookie}`;
+//   const parts = v.split(`; ${name}=`);
+//   if (parts.length === 2) return parts.pop()!.split(";").shift() || null;
+//   return null;
+// };
+
+// const API_BASE = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "";
+
+// const AvailableTable: React.FC = () => {
+//   const [loads, setLoads] = useState<Load[]>([]);
+//   const [userLoads, setUserLoads] = useState<Load[]>([]);
+//   const [driverList, setDriverList] = useState<Driver[]>([]);
+//   const [userDrivers, setUserDrivers] = useState<Driver[]>([]);
+//   const [searchResults, setSearchResults] = useState<Load[]>([]);
+//   const [searchFormData, setSearchFormData] = useState({
+//     originCity: "",
+//     originState: "",
+//     radius: "",
+//     destinationType: "Anywhere",
+//     equipmentTypes: "",
+//     minWeight: "",
+//     maxMileage: "",
+//     pickupDate: "",
+//     companyRating: "",
+//     modifiedStartDate: "",
+//     modifiedEndDate: "",
+//   });
+//   const [newLoad, setNewLoad] = useState<Partial<Load>>({
+//     id: "",
+//     numberOfLoads: 0,
+//     pickupDateTimesUtc: [],
+//     equipments: [],
+//     status: "",
+//     deliveryDateTimeUtc: "",
+//     numberOfStops: 0,
+//     description: "",
+//     company: "",
+//     userId: "",
+//   });
+//   const [newDriver, setNewDriver] = useState<Partial<Driver>>({
+//     description: "",
+//     company: "",
+//     userId: "",
+//   });
+//   const [token, setToken] = useState<string | null>(null);
+//   const [loading, setLoading] = useState(false);
+//   const [success, setSuccess] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const location = useLocation();
+//   const queryParams = new URLSearchParams(location.search);
+//   const code = queryParams.get("code");
+//   const resultsRef = useRef<HTMLDivElement | null>(null);
+
+//   // Stable mapping function
+//   const mapApiLoadToDisplay = useCallback((apiLoad: Record<string, any>): Load => ({
+//     id: apiLoad.id || apiLoad.loadId || `${Math.random()}`,
+//     postReference: apiLoad.postReference,
+//     numberOfLoads: apiLoad.numberOfLoads || 1,
+//     originLocation: apiLoad.originLocation || apiLoad.origin,
+//     destinationLocation: apiLoad.destinationLocation || apiLoad.destination,
+//     equipments: apiLoad.equipments || apiLoad.equipmentTypes || [],
+//     loadSize: apiLoad.loadSize,
+//     weight: apiLoad.weight,
+//     rateCheck: apiLoad.rateCheck,
+//     numberOfStops: apiLoad.numberOfStops || 0,
+//     teamDriving: apiLoad.teamDriving,
+//     pickupDateTimesUtc: apiLoad.pickupDateTimesUtc || apiLoad.pickupDates || [],
+//     deliveryDateTimeUtc: apiLoad.deliveryDateTimeUtc,
+//     computedMileage: apiLoad.computedMileage,
+//     status: apiLoad.status || apiLoad.state || "",
+//     age: apiLoad.age,
+//     lastRefreshed: apiLoad.lastRefreshed,
+//     isDateRefreshed: apiLoad.isDateRefreshed,
+//     poster: apiLoad.poster,
+//     metadata: apiLoad.metadata,
+//     sortEquipCode: apiLoad.sortEquipCode,
+//     privateLoadNote: apiLoad.privateLoadNote || apiLoad.note || "",
+//     description: apiLoad.description || apiLoad.postReference || "",
+//     company: apiLoad.poster?.company || apiLoad.companyName || "",
+//     userId: apiLoad.poster?.userId || apiLoad.userId || "",
+//   }), []);
+
+//   // Fetch loads
+//   const fetchLoads = useCallback(async () => {
+//     try {
+//       const resp = await axios.get<Load[]>(`${API_BASE}/api/loads`);
+//       const data = resp.data || [];
+//       setLoads(data);
+//       const userId = localStorage.getItem("userId");
+//       if (userId) setUserLoads(data.filter((l) => l.userId === userId));
+//     } catch (err) {
+//       console.error("Error fetching loads:", err);
+//     }
+//   }, []);
+
+//   // Fetch drivers
+//   const fetchDrivers = useCallback(async () => {
+//     try {
+//       const resp = await axios.get<Driver[]>(`${API_BASE}/api/drivers`);
+//       const data = resp.data || [];
+//       setDriverList(data);
+//       const userId = localStorage.getItem("userId");
+//       if (userId) setUserDrivers(data.filter((d) => d.userId === userId));
+//     } catch (err) {
+//       console.error("Error fetching drivers:", err);
+//     }
+//   }, []);
+
+//   // OAuth callback
+//   const fetchLoadboardData = useCallback(
+//     async (authCode: string) => {
+//       if (!authCode) return;
+//       setLoading(true);
+//       setError(null);
+//       try {
+//         const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+//         const cookieToken = getCookie("lb_access_token");
+//         if (cookieToken) {
+//           localStorage.setItem("lb_access_token", cookieToken);
+//           setToken(cookieToken);
+//         }
+
+//         let apiLoads: Record<string, any>[] = [];
+//         if (resp.data) {
+//           if (Array.isArray(resp.data)) apiLoads = resp.data;
+//           else if (Array.isArray(resp.data.loads)) apiLoads = resp.data.loads;
+//           else if (Array.isArray(resp.data.data)) apiLoads = resp.data.data;
+//           else if (Array.isArray(resp.data.results)) apiLoads = resp.data.results;
+//           else if (Array.isArray(resp.data.payload)) apiLoads = resp.data.payload;
+//         }
+
+//         if (apiLoads.length > 0) {
+//           const mapped = apiLoads.map(mapApiLoadToDisplay);
+//           setSearchResults(mapped);
+//           setSuccess(true);
+//           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+//         }
+//       } catch (err) {
+//         console.error("Error fetching 123Loadboard data via callback:", err);
+//         setError("Failed to fetch 123Loadboard data via callback.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     [mapApiLoadToDisplay]
+//   );
+
+//   // On mount
+//   useEffect(() => {
+//     const cookieToken = getCookie("lb_access_token");
+//     if (cookieToken) {
+//       setToken(cookieToken);
+//       localStorage.setItem("lb_access_token", cookieToken);
+//     } else {
+//       const stored = localStorage.getItem("lb_access_token");
+//       if (stored) setToken(stored);
+//     }
+
+//     fetchLoads();
+//     fetchDrivers();
+//   }, [fetchLoads, fetchDrivers]);
+
+//   // Handle OAuth redirect
+//   useEffect(() => {
+//     if (!code) return;
+//     const alreadyUsedCode = localStorage.getItem("lb_auth_code");
+//     if (alreadyUsedCode === code) return;
+
+//     (async () => {
+//       await fetchLoadboardData(code);
+//       localStorage.setItem("lb_auth_code", code);
+//       const cleanUrl = window.location.origin + window.location.pathname;
+//       window.history.replaceState({}, document.title, cleanUrl);
+//     })();
+//   }, [code, fetchLoadboardData]);
+
+//   // Handlers
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//     const { name, value } = e.target;
+//     setSearchFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleAutoFill = () => {
+//     const today = new Date().toISOString().split("T")[0];
+//     const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split("T")[0];
+//     setSearchFormData({
+//       originCity: "Chicago",
+//       originState: "IL",
+//       radius: "100",
+//       destinationType: "Anywhere",
+//       equipmentTypes: "Flatbed",
+//       minWeight: "1000",
+//       maxMileage: "500",
+//       pickupDate: today,
+//       companyRating: "A",
+//       modifiedStartDate: lastMonth,
+//       modifiedEndDate: today,
+//     });
+//   };
+
+//   const handle123Search = useCallback(async () => {
+//     setError(null);
+//     setSuccess(false);
+//     const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
+//     if (!authToken) {
+//       setError("Authorization token missing — please click Authorize/Connect first.");
+//       return;
+//     }
+
+//     setLoading(true);
+//     try {
+//       const resp = await axios.post(`${API_BASE}/api/load-search`, searchFormData, {
+//         headers: { Authorization: `Bearer ${authToken}`, "Content-Type": "application/json" },
+//       });
+
+//       let apiLoads: Record<string, any>[] = [];
+//       if (resp.data) {
+//         if (Array.isArray(resp.data)) apiLoads = resp.data;
+//         else if (Array.isArray(resp.data.loads)) apiLoads = resp.data.loads;
+//         else if (Array.isArray(resp.data.data)) apiLoads = resp.data.data;
+//         else if (Array.isArray(resp.data.results)) apiLoads = resp.data.results;
+//         else if (Array.isArray(resp.data.payload)) apiLoads = resp.data.payload;
+//       }
+
+//       const mapped = apiLoads.map(mapApiLoadToDisplay);
+//       setSearchResults(mapped);
+//       setSuccess(true);
+//       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+//     } catch (err: any) {
+//       console.error("Error fetching 123Loadboard search results:", err);
+//       const msg = (err.response?.data?.error || err.response?.data?.message) || err.message || "Error fetching results";
+//       setError(String(msg));
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [searchFormData, token, mapApiLoadToDisplay]);
+
+//   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setNewLoad((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmitLoad = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) return setError("Please log in to add a load.");
+//     try {
+//       await axios.post(`${API_BASE}/api/loads`, { ...newLoad, userId });
+//       setNewLoad({ id: "", numberOfLoads: 0, pickupDateTimesUtc: [], equipments: [], status: "", deliveryDateTimeUtc: "", numberOfStops: 0, description: "", company: "", userId });
+//       fetchLoads();
+//     } catch (err) {
+//       console.error("Error creating load:", err);
+//       setError("Failed to create load.");
+//     }
+//   };
+
+//   const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setNewDriver((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmitDriver = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) return setError("Please log in to add a driver.");
+//     try {
+//       await axios.post(`${API_BASE}/api/drivers`, { ...newDriver, userId });
+//       setNewDriver({ description: "", company: "", userId: "" });
+//       fetchDrivers();
+//     } catch (err) {
+//       console.error("Error creating driver:", err);
+//       setError("Failed to create driver.");
+//     }
+//   };
+
+//   const handleAuthorizeNavigation = () => {
+//     const base = API_BASE || (process.env.NODE_ENV === "development" ? "http://localhost:3001" : "");
+//     const url = base ? `${base}/api/123Loads/authorize` : "/api/123Loads/authorize";
+//     window.location.href = url;
+//   };
+
+//   return (
+//     <div className={styles["at-container"]}>
+//       <header className={styles["at-hero"]}>
+//         <img src={GADZTruck} alt="Truck Animation" className={styles["at-truck"]} />
+//         <h1 className={styles["at-title"]}>🚛 GADZConnect Load Board</h1>
+//         <p className={styles["at-subtitle"]}>Manage drivers, loads, and connect with 123Loadboard</p>
+//         <Link to="/User" className={styles["at-homeLink"]}>Back to Dashboard</Link>
+//       </header>
+
+//       {/* Drivers */}
+//       <section className={styles["at-section"]}>
+//         <h2>👨‍✈️ Drivers</h2>
+//         <div style={{ marginBottom: 10 }}>
+//           <button className={styles["at-button"]} onClick={fetchDrivers}>Fetch Drivers</button>
+//         </div>
+//         <Table data={driverList} title="All Drivers" isUser={true} />
+//         <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
+//         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
+//           <h3>Add New Driver</h3>
+//           <input className={styles["at-input"]} type="text" name="description" placeholder="Driver Description" value={newDriver.description || ""} onChange={handleDriverInputChange} required />
+//           <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newDriver.company || ""} onChange={handleDriverInputChange} required />
+//           <button type="submit" className={styles["at-submitButton"]}>➕ Add Driver</button>
+//         </form>
+//       </section>
+
+//       {/* Loads */}
+//       <section className={styles["at-section"]}>
+//         <h2>📦 Loads</h2>
+//         <div style={{ marginBottom: 10 }}>
+//           <button className={styles["at-button"]} onClick={fetchLoads}>Fetch Loads</button>
+//         </div>
+//         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
+//         <h3>Your Loads</h3>
+//         <div className={styles["at-scrollableTableContainer"]}>
+//           <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 300 }}>
+//             <table className={styles["at-table"]}>
+//               <thead>
+//                 <tr>
+//                   <th>Load ID</th>
+//                   <th>Description</th>
+//                   <th>Company</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {userLoads.map((load) => (
+//                   <tr key={load.id}>
+//                     <td>{load.id}</td>
+//                     <td>{load.description}</td>
+//                     <td>
+//                       <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>{load.company}</Link>
+//                     </td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
+//           <h3>Add New Load</h3>
+//           <input className={styles["at-input"]} type="text" name="description" placeholder="Load Description" value={newLoad.description || ""} onChange={handleLoadInputChange} required />
+//           <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newLoad.company || ""} onChange={handleLoadInputChange} required />
+//           <button type="submit" className={styles["at-submitButton"]}>➕ Add Load</button>
+//         </form>
+//       </section>
+
+//       {/* 123Loadboard */}
+//       <section className={styles["at-section"]}>
+//         <h2>🌐 123Loadboard</h2>
+//         <div style={{ marginBottom: 12 }}>
+//           <button className={styles["at-buttonAlt"]} onClick={handleAuthorizeNavigation}>🔑 Authorize / Connect</button>
+//           <span style={{ marginLeft: 12, color: token ? "green" : "#777" }}>{token ? "Connected" : "Not connected"}</span>
+//         </div>
+
+//         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
+//           <h3>Search Loads</h3>
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+//             {Object.keys(searchFormData).map((key) => (
+//               <input
+//                 key={key}
+//                 className={styles["at-input"]}
+//                 name={key}
+//                 placeholder={key}
+//                 type={key.toLowerCase().includes("date") ? "date" : "text"}
+//                 value={searchFormData[key as keyof typeof searchFormData]}
+//                 onChange={handleInputChange}
+//               />
+//             ))}
+//           </div>
+
+//           <div style={{ marginTop: 12 }}>
+//             <button type="button" className={styles["at-buttonAlt"]} onClick={handleAutoFill}>Autofill Sample Data</button>
+//             <button type="button" className={styles["at-button"]} onClick={handle123Search} style={{ marginLeft: 8 }}>
+//               {loading ? "Searching..." : "Search 123Loadboard"}
+//             </button>
+//           </div>
+//         </form>
+
+//         {error && <p style={{ color: "red" }}>{error}</p>}
+//         {success && <p style={{ color: "green" }}>✅ 123Loadboard search completed successfully!</p>}
+
+//         <div ref={resultsRef} className={styles["at-scrollableTableContainer"]} style={{ marginTop: 10 }}>
+//           <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />
+//         </div>
+//       </section>
+//     </div>
+//   );
+// };
+
+// export default AvailableTable;
+
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
@@ -1040,7 +2015,7 @@ const getCookie = (name: string): string | null => {
   return null;
 };
 
-const API_BASE = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || ""; // e.g. http://localhost:3001
+const API_BASE = process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "";
 
 const AvailableTable: React.FC = () => {
   const [loads, setLoads] = useState<Load[]>([]);
@@ -1078,7 +2053,6 @@ const AvailableTable: React.FC = () => {
     company: "",
     userId: "",
   });
-
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -1089,8 +2063,8 @@ const AvailableTable: React.FC = () => {
   const code = queryParams.get("code");
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
-  // defensive mapping of API load objects -> our Load type
-  const mapApiLoadToDisplay = (apiLoad: any): Load => ({
+  // Defensive mapping of API load objects -> our Load type
+  const mapApiLoadToDisplay = useCallback((apiLoad: any): Load => ({
     id: apiLoad.id || apiLoad.loadId || `${Math.random()}`,
     postReference: apiLoad.postReference,
     numberOfLoads: apiLoad.numberOfLoads || 1,
@@ -1116,7 +2090,7 @@ const AvailableTable: React.FC = () => {
     description: apiLoad.description || apiLoad.postReference || "",
     company: apiLoad.poster?.company || apiLoad.companyName || "",
     userId: apiLoad.poster?.userId || apiLoad.userId || "",
-  });
+  }), []);
 
   // fetch local loads
   const fetchLoads = useCallback(async () => {
@@ -1144,27 +2118,20 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // If an auth code is present (from OAuth redirect) call the backend callback endpoint
-  // so the server can exchange the code for a token (and may set cookie or return loads).
+  // OAuth callback handler
   const fetchLoadboardData = useCallback(
     async (authCode: string) => {
       if (!authCode) return;
       setLoading(true);
       setError(null);
       try {
-        // call server callback to exchange code for token and (optionally) return loads
         const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
-
-        // if the server set a token cookie, read it
         const cookieToken = getCookie("lb_access_token");
         if (cookieToken) {
-          try {
-            localStorage.setItem("lb_access_token", cookieToken);
-          } catch { }
+          localStorage.setItem("lb_access_token", cookieToken);
           setToken(cookieToken);
         }
 
-        // server may return loads directly; handle several possible shapes
         let apiLoads: any[] = [];
         if (resp.data) {
           if (Array.isArray(resp.data)) apiLoads = resp.data;
@@ -1178,7 +2145,6 @@ const AvailableTable: React.FC = () => {
           const mapped = apiLoads.map(mapApiLoadToDisplay);
           setSearchResults(mapped);
           setSuccess(true);
-          // scroll into view
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
         }
       } catch (err) {
@@ -1191,14 +2157,12 @@ const AvailableTable: React.FC = () => {
     [mapApiLoadToDisplay]
   );
 
-  // On mount: load token (cookie or localStorage) and fetch local loads/drivers
+  // On mount
   useEffect(() => {
     const cookieToken = getCookie("lb_access_token");
     if (cookieToken) {
       setToken(cookieToken);
-      try {
-        localStorage.setItem("lb_access_token", cookieToken);
-      } catch { }
+      localStorage.setItem("lb_access_token", cookieToken);
     } else {
       const stored = localStorage.getItem("lb_access_token");
       if (stored) setToken(stored);
@@ -1208,51 +2172,25 @@ const AvailableTable: React.FC = () => {
     fetchDrivers();
   }, [fetchLoads, fetchDrivers]);
 
-  // If the OAuth provider redirected back with code=..., call server to exchange code
-  // useEffect(() => {
-  //   if (code) {
-  //     fetchLoadboardData(code);
-  //     try {
-  //       localStorage.setItem("lb_auth_code", code);
-  //     } catch {}
-  //   }
-  // }, [code, fetchLoadboardData]);
-
+  // Handle OAuth redirect
   useEffect(() => {
-    if (!code) return; // no code in URL
+    if (!code) return;
     const alreadyUsedCode = localStorage.getItem("lb_auth_code");
-    if (alreadyUsedCode === code) return; // prevent reprocessing same code
+    if (alreadyUsedCode === code) return;
 
     (async () => {
       await fetchLoadboardData(code);
-
-      // Mark code as used so it won't refire on re-render
-      try {
-        localStorage.setItem("lb_auth_code", code);
-      } catch { }
-
-      // Remove `?code=` from URL so user refreshes cleanly
+      localStorage.setItem("lb_auth_code", code);
       const cleanUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
     })();
   }, [code, fetchLoadboardData]);
 
-  // handle search form input
+  // search form handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("authorized") === "123") {
-      // Mark that user is authorized
-      localStorage.setItem("loadboardAuthorized", "true");
-
-      // Clean the URL (optional)
-      window.history.replaceState({}, "", "/AvailableTable");
-    }
-  }, []);
 
   const handleAutoFill = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -1272,12 +2210,10 @@ const AvailableTable: React.FC = () => {
     });
   };
 
-  // handle 123Loadboard search (user clicks search)
   const handle123Search = useCallback(async () => {
     setError(null);
     setSuccess(false);
 
-    // Prefer cookie first, then state, then localStorage
     const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
 
     if (!authToken) {
@@ -1294,7 +2230,6 @@ const AvailableTable: React.FC = () => {
         },
       });
 
-      // flexible parsing of response
       let apiLoads: any[] = [];
       if (resp.data) {
         if (Array.isArray(resp.data)) apiLoads = resp.data;
@@ -1308,7 +2243,6 @@ const AvailableTable: React.FC = () => {
       setSearchResults(mapped);
       setSuccess(true);
 
-      // scroll into view
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
     } catch (err: any) {
       console.error("Error fetching 123Loadboard search results:", err);
@@ -1317,7 +2251,7 @@ const AvailableTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchFormData, token]);
+  }, [searchFormData, token, mapApiLoadToDisplay]);
 
   // local load form handlers
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1359,9 +2293,7 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  // navigate to backend authorize endpoint
   const handleAuthorizeNavigation = () => {
-    // Use API_BASE if provided (e.g. http://localhost:3001), otherwise fallback to hard-coded dev URL
     const base = API_BASE || (process.env.NODE_ENV === "development" ? "http://localhost:3001" : "");
     const url = base ? `${base}/api/123Loads/authorize` : "/api/123Loads/authorize";
     window.location.href = url;
@@ -1382,10 +2314,8 @@ const AvailableTable: React.FC = () => {
         <div style={{ marginBottom: 10 }}>
           <button className={styles["at-button"]} onClick={fetchDrivers}>Fetch Drivers</button>
         </div>
-
-        <Table data={driverList} title="All Drivers" isUser={true} />
-        <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} />
-
+        <Table data={driverList} title="All Drivers" isUser={true} scrollable maxHeight="300px" />
+        <Table data={userDrivers} title="Your Drivers" isUser={true} showCompanyLink={false} scrollable maxHeight="300px" />
         <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
           <h3>Add New Driver</h3>
           <input className={styles["at-input"]} type="text" name="description" placeholder="Driver Description" value={newDriver.description || ""} onChange={handleDriverInputChange} required />
@@ -1400,35 +2330,8 @@ const AvailableTable: React.FC = () => {
         <div style={{ marginBottom: 10 }}>
           <button className={styles["at-button"]} onClick={fetchLoads}>Fetch Loads</button>
         </div>
-
-        <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
-
-        <h3>Your Loads</h3>
-        <div className={styles["at-scrollableTableContainer"]}>
-          <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 300 }}>
-            <table className={styles["at-table"]}>
-              <thead>
-                <tr>
-                  <th>Load ID</th>
-                  <th>Description</th>
-                  <th>Company</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userLoads.map((load) => (
-                  <tr key={load.id}>
-                    <td>{load.id}</td>
-                    <td>{load.description}</td>
-                    <td>
-                      <Link to={`/UserProfile/${load.userId}`} className={styles["at-link"]}>{load.company}</Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+        <Table data={loads} title="All Loads" isUser={false} showCompanyLink scrollable maxHeight="300px" />
+        <Table data={userLoads} title="Your Loads" isUser={false} showCompanyLink scrollable maxHeight="300px" />
         <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
           <h3>Add New Load</h3>
           <input className={styles["at-input"]} type="text" name="description" placeholder="Load Description" value={newLoad.description || ""} onChange={handleLoadInputChange} required />
@@ -1440,7 +2343,6 @@ const AvailableTable: React.FC = () => {
       {/* 123Loadboard */}
       <section className={styles["at-section"]}>
         <h2>🌐 123Loadboard</h2>
-
         <div style={{ marginBottom: 12 }}>
           <button className={styles["at-buttonAlt"]} onClick={handleAuthorizeNavigation}>🔑 Authorize / Connect</button>
           <span style={{ marginLeft: 12, color: token ? "green" : "#777" }}>{token ? "Connected" : "Not connected"}</span>
@@ -1448,7 +2350,6 @@ const AvailableTable: React.FC = () => {
 
         <form className={styles["at-form"]} onSubmit={(e) => e.preventDefault()}>
           <h3>Search Loads</h3>
-
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {Object.keys(searchFormData).map((key) => (
               <input
@@ -1469,56 +2370,13 @@ const AvailableTable: React.FC = () => {
               {loading ? "Searching..." : "Search 123Loadboard"}
             </button>
           </div>
-
-          {error && <p style={{ color: "red", marginTop: 8 }}>{error}</p>}
-          {success && <p style={{ color: "green", marginTop: 8 }}>Search completed!</p>}
         </form>
 
-        <div ref={resultsRef} className={styles["at-scrollableTableContainer"]} style={{ marginTop: 18 }}>
-          <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight: 400 }}>
-            {searchResults.length === 0 && !loading ? (
-              <div style={{ padding: 20, textAlign: "center" }}>No search results yet. Try a search.</div>
-            ) : (
-              <table className={styles["at-table"]}>
-                <thead>
-                  <tr>
-                    <th>Load ID</th>
-                    <th>Reference</th>
-                    <th>Company</th>
-                    <th>Delivery</th>
-                    <th>Stops</th>
-                    <th>Mileage</th>
-                    <th># Loads</th>
-                    <th>Pickup</th>
-                    <th>Equipment</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchResults.map((load) => (
-                    <tr key={load.id}>
-                      <td>{load.id}</td>
-                      <td>{load.postReference || load.description || "N/A"}</td>
-                      <td>{(load.poster && load.poster.company) || load.company || "N/A"}</td>
-                      <td>{load.deliveryDateTimeUtc ? new Date(load.deliveryDateTimeUtc).toLocaleString() : "N/A"}</td>
-                      <td>{load.numberOfStops ?? "N/A"}</td>
-                      <td>{load.computedMileage ?? "N/A"}</td>
-                      <td>{load.numberOfLoads ?? "N/A"}</td>
-                      <td>{load.pickupDateTimesUtc && load.pickupDateTimesUtc.length > 0 ? load.pickupDateTimesUtc.map((dt) => new Date(dt).toLocaleString()).join(", ") : "N/A"}</td>
-                      <td>{load.equipments && load.equipments.length > 0 ? load.equipments.map((e: any) => e.name || e.code || e).join(", ") : "N/A"}</td>
-                      <td>{load.privateLoadNote || ""}</td>
-                      <td>{load.status}</td>
-                      <td>{load.originLocation ? `${load.originLocation.city || ""}, ${load.originLocation.state || ""}` : "N/A"}</td>
-                      <td>{load.destinationLocation ? `${load.destinationLocation.city || ""}, ${load.destinationLocation.state || ""}` : "N/A"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {success && <p style={{ color: "green" }}>✅ 123Loadboard search completed successfully!</p>}
+
+        <div ref={resultsRef} className={styles["at-scrollableTableContainer"]} style={{ marginTop: 10 }}>
+          <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink scrollable maxHeight="400px" />
         </div>
       </section>
     </div>
