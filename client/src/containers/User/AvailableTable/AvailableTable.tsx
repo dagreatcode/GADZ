@@ -2790,7 +2790,6 @@ import styles from "./AvailableTable.module.css";
 import GADZTruck from "./GADZBoat.png";
 import Table from "./Table";
 
-// Types
 interface Load {
   id: string;
   postReference?: string;
@@ -2826,7 +2825,6 @@ interface Driver {
   userId?: string;
 }
 
-// helper to read cookie
 const getCookie = (name: string): string | null => {
   const v = `; ${document.cookie}`;
   const parts = v.split(`; ${name}=`);
@@ -2882,7 +2880,6 @@ const AvailableTable: React.FC = () => {
   const code = queryParams.get("code");
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
-  // Defensive mapping of API load objects -> our Load type
   const mapApiLoadToDisplay = useCallback((apiLoad: any): Load => ({
     id: apiLoad.id || apiLoad.loadId || `${Math.random()}`,
     postReference: apiLoad.postReference,
@@ -2911,7 +2908,6 @@ const AvailableTable: React.FC = () => {
     userId: apiLoad.poster?.userId || apiLoad.userId || "",
   }), []);
 
-  // fetch local loads
   const fetchLoads = useCallback(async () => {
     try {
       const resp = await axios.get(`${API_BASE}/api/loads`);
@@ -2924,7 +2920,6 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // fetch drivers
   const fetchDrivers = useCallback(async () => {
     try {
       const resp = await axios.get(`${API_BASE}/api/drivers`);
@@ -2937,7 +2932,6 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // OAuth callback handler
   const fetchLoadboardData = useCallback(
     async (authCode: string) => {
       if (!authCode) return;
@@ -2976,7 +2970,6 @@ const AvailableTable: React.FC = () => {
     [mapApiLoadToDisplay]
   );
 
-  // On mount
   useEffect(() => {
     const cookieToken = getCookie("lb_access_token");
     if (cookieToken) {
@@ -2991,7 +2984,6 @@ const AvailableTable: React.FC = () => {
     fetchDrivers();
   }, [fetchLoads, fetchDrivers]);
 
-  // Handle OAuth redirect
   useEffect(() => {
     if (!code) return;
     const alreadyUsedCode = localStorage.getItem("lb_auth_code");
@@ -3005,7 +2997,6 @@ const AvailableTable: React.FC = () => {
     })();
   }, [code, fetchLoadboardData]);
 
-  // search form handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
@@ -3034,7 +3025,6 @@ const AvailableTable: React.FC = () => {
     setSuccess(false);
 
     const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
-
     if (!authToken) {
       setError("Authorization token missing — please click Authorize/Connect first.");
       return;
@@ -3061,6 +3051,7 @@ const AvailableTable: React.FC = () => {
       const mapped = apiLoads.map(mapApiLoadToDisplay);
       setSearchResults(mapped);
       setSuccess(true);
+
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
     } catch (err: any) {
       console.error("Error fetching 123Loadboard search results:", err);
@@ -3071,7 +3062,6 @@ const AvailableTable: React.FC = () => {
     }
   }, [searchFormData, token, mapApiLoadToDisplay]);
 
-  // local load form handlers
   const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewLoad((prev) => ({ ...prev, [name]: value }));
@@ -3091,7 +3081,6 @@ const AvailableTable: React.FC = () => {
     }
   };
 
-  // driver form handlers
   const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewDriver((prev) => ({ ...prev, [name]: value }));
@@ -3129,126 +3118,102 @@ const AvailableTable: React.FC = () => {
       {/* Drivers */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
-        <div style={{ marginBottom: 10 }}>
-          <button className={styles["at-button"]} onClick={fetchDrivers}>Fetch Drivers</button>
+        <div className="mb-2">
+          <button className="btn btn-primary" onClick={fetchDrivers}>Fetch Drivers</button>
         </div>
-        <Table data={driverList} title="All Drivers" isUser showCompanyLink />
+        <Table data={driverList} title="All Drivers" isUser showCompanyLink={false} />
         <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
-        <form className={styles["at-form"]} onSubmit={handleSubmitDriver}>
+        <form className="mb-4" onSubmit={handleSubmitDriver}>
           <h3>Add New Driver</h3>
-          <input className={styles["at-input"]} type="text" name="description" placeholder="Driver Description" value={newDriver.description || ""} onChange={handleDriverInputChange} required />
-          <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newDriver.company || ""} onChange={handleDriverInputChange} required />
-          <button type="submit" className={styles["at-submitButton"]}>➕ Add Driver</button>
+          <div className="row g-2">
+            <div className="col-md-4">
+              <input type="text" className="form-control" placeholder="Driver Description" name="description" value={newDriver.description} onChange={handleDriverInputChange} />
+            </div>
+            <div className="col-md-4">
+              <input type="text" className="form-control" placeholder="Company" name="company" value={newDriver.company} onChange={handleDriverInputChange} />
+            </div>
+            <div className="col-md-4">
+              <button className="btn btn-success w-100" type="submit">Add Driver</button>
+            </div>
+          </div>
         </form>
       </section>
 
       {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
-        <div style={{ marginBottom: 10 }}>
-          <button className={styles["at-button"]} onClick={fetchLoads}>Fetch Loads</button>
+        <div className="mb-2">
+          <button className="btn btn-primary" onClick={fetchLoads}>Fetch Loads</button>
         </div>
-        <Table data={loads} title="All Loads" isUser={false} />
-        <Table data={userLoads} title="Your Loads" isUser={false} />
-        <form className={styles["at-form"]} onSubmit={handleSubmitLoad}>
+        <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
+        <Table data={userLoads} title="Your Loads" isUser={false} showCompanyLink />
+
+        <form className="mb-4" onSubmit={handleSubmitLoad}>
           <h3>Add New Load</h3>
-          <input className={styles["at-input"]} type="text" name="description" placeholder="Description" value={newLoad.description || ""} onChange={handleLoadInputChange} required />
-          <input className={styles["at-input"]} type="text" name="company" placeholder="Company" value={newLoad.company || ""} onChange={handleLoadInputChange} required />
-          <button type="submit" className={styles["at-submitButton"]}>➕ Add Load</button>
+          <div className="row g-2">
+            <div className="col-md-3">
+              <input type="text" className="form-control" placeholder="Description" name="description" value={newLoad.description} onChange={handleLoadInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="text" className="form-control" placeholder="Company" name="company" value={newLoad.company} onChange={handleLoadInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDateTimesUtc" value={newLoad.pickupDateTimesUtc?.[0] || ""} onChange={(e) => setNewLoad(prev => ({ ...prev, pickupDateTimesUtc: [e.target.value] }))} />
+            </div>
+            <div className="col-md-3">
+              <button className="btn btn-success w-100" type="submit">Add Load</button>
+            </div>
+          </div>
         </form>
       </section>
 
       {/* 123Loadboard Search */}
-      {/* <section className={styles["at-section"]} ref={resultsRef}>
-        <h2>🔍 123Loadboard Search</h2>
-        <div className={styles["at-form"]}>
-          <button className={styles["at-button"]} onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
-          <button className={styles["at-button"]} onClick={handle123Search}>Search Loads</button>
-          <button className={styles["at-button"]} onClick={handleAutoFill}>Auto Fill</button>
-        </div>
-        {error && <div className={styles["at-error"]}>{error}</div>}
-        {loading && <div className={styles["at-loading"]}>Loading...</div>}
-        {success && <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />}
-      </section> */}
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
-
-        <form
-          className={styles["at-form"]}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handle123Search();
-          }}
-        >
-          <div>
-            <input
-              type="text"
-              name="originCity"
-              placeholder="Origin City"
-              value={searchFormData.originCity}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="originState"
-              placeholder="Origin State"
-              value={searchFormData.originState}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="radius"
-              placeholder="Radius (miles)"
-              value={searchFormData.radius}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="equipmentTypes"
-              placeholder="Equipment Types"
-              value={searchFormData.equipmentTypes}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="minWeight"
-              placeholder="Min Weight"
-              value={searchFormData.minWeight}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="maxMileage"
-              placeholder="Max Mileage"
-              value={searchFormData.maxMileage}
-              onChange={handleInputChange}
-            />
-            <input
-              type="date"
-              name="pickupDate"
-              placeholder="Pickup Date"
-              value={searchFormData.pickupDate}
-              onChange={handleInputChange}
-            />
+        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
+          <div className="row g-2">
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Origin State" name="originState" value={searchFormData.originState} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Radius (miles)" name="radius" value={searchFormData.radius} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Equipment Types" name="equipmentTypes" value={searchFormData.equipmentTypes} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="number" className="form-control" placeholder="Min Weight" name="minWeight" value={searchFormData.minWeight} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="number" className="form-control" placeholder="Max Mileage" name="maxMileage" value={searchFormData.maxMileage} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDate" value={searchFormData.pickupDate} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="text" className="form-control" placeholder="Company Rating" name="companyRating" value={searchFormData.companyRating} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Modified Start Date" name="modifiedStartDate" value={searchFormData.modifiedStartDate} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Modified End Date" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
+            </div>
           </div>
-
-          <div style={{ marginTop: 10 }}>
-            <button type="submit" className={styles["at-button"]}>Search Loads</button>
-            <button type="button" className={styles["at-button"]} onClick={handleAutoFill}>
-              Auto Fill
-            </button>
-            <button type="button" className={styles["at-button"]} onClick={handleAuthorizeNavigation}>
-              Authorize / Connect
-            </button>
+          <div className="mt-3 d-flex gap-2">
+            <button type="submit" className="btn btn-primary">Search Loads</button>
+            <button type="button" className="btn btn-secondary" onClick={handleAutoFill}>Auto Fill</button>
+            <button type="button" className="btn btn-warning" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
           </div>
         </form>
 
-        {error && <div className={styles["at-error"]}>{error}</div>}
-        {loading && <div className={styles["at-loading"]}>Loading...</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+        {loading && <div className="alert alert-info">Loading...</div>}
         {success && <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />}
       </section>
-
-
     </div>
   );
 };
