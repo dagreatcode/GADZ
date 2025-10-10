@@ -543,7 +543,7 @@
 // export default React.memo(Table);
 
 import React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import styles from "./AvailableTable.module.css";
 
 interface TableProps {
