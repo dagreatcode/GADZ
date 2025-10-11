@@ -179,69 +179,304 @@
 
 // module.exports = router;
 
+// // config/123LoadBoards/123LoadBoards.js
+// const express = require("express");
+// const fetch = require("node-fetch"); // ensure node-fetch is installed
+// const router = express.Router();
+
+// /**
+//  * Environment variables expected:
+//  * - CLIENT_ID
+//  * - CLIENT_SECRET
+//  * - DEV_URI (frontend redirect / callback url, e.g. https://gadzconnect.com/auth/callback or http://localhost:3000/auth/callback)
+//  * - URI_123 (base 123LoadBoard API/authorize/token URL, e.g. https://api.123loadboard.com or their auth host)
+//  * - USER_AGENT
+//  * - LOADBOARD_AID (optional)
+//  *
+//  * NOTE: For production, ensure secure cookie settings (secure: true, sameSite, etc).
+//  */
+
+// // helper to build auth redirect
+// router.get("/authorize", (req, res) => {
+//   const {
+//     CLIENT_ID,
+//     DEV_URI,
+//     URI_123,
+//     USER_AGENT = "gadzconnect_dev",
+//   } = process.env;
+
+//   if (!CLIENT_ID || !DEV_URI || !URI_123) {
+//     console.error("Missing env vars for /authorize");
+//     return res.status(500).send("Server misconfigured (missing OAuth env vars).");
+//   }
+
+//   const query = new URLSearchParams({
+//     response_type: "code",
+//     client_id: CLIENT_ID,
+//     redirect_uri: DEV_URI,
+//     scope: "loadsearching", // keep same scope you used before
+//     state: "gadz_state", // you can create a real random state in production
+//     login_hint: USER_AGENT,
+//   }).toString();
+
+//   res.redirect(`${URI_123}/authorize?${query}`);
+// });
+
+// // callback route - exchange code for access token
+// router.get("/auth/callback", async (req, res) => {
+//   const {
+//     CLIENT_ID,
+//     CLIENT_SECRET,
+//     DEV_URI,
+//     URI_123,
+//     USER_AGENT = "gadzconnect_dev",
+//     LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+//   } = process.env;
+
+//   try {
+//     const authCode = req.query.code;
+//     if (!authCode) {
+//       return res.status(400).send("Missing authorization code.");
+//     }
+
+//     const formData = new URLSearchParams({
+//       grant_type: "authorization_code",
+//       code: authCode,
+//       client_id: CLIENT_ID,
+//       redirect_uri: DEV_URI,
+//     }).toString();
+
+//     const tokenResp = await fetch(`${URI_123}/token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "123LB-Api-Version": "1.3",
+//         "User-Agent": USER_AGENT,
+//         "123LB-AID": LOADBOARD_AID,
+//         Authorization:
+//           "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+//       },
+//       body: formData,
+//     });
+
+//     const tokenData = await tokenResp.json();
+//     console.log("Token response from 123:", tokenData);
+
+//     if (!tokenData.access_token) {
+//       console.error("No access_token in token response:", tokenData);
+//       return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
+//     }
+
+//     // Set cookies (accessible via JS) so frontend can read or you can return token JSON
+//     // Note: in production set secure: true and sameSite appropriately
+//     const cookieOptions = [
+//       `lb_access_token=${tokenData.access_token}; Path=/;`,
+//       tokenData.refresh_token ? `lb_refresh_token=${tokenData.refresh_token}; Path=/;` : "",
+//     ].filter(Boolean).join(" ");
+
+//     // Send cookies in header
+//     res.setHeader("Set-Cookie", cookieOptions);
+
+//     // Return token JSON (frontend can pick this up and store in localStorage)
+//     // This keeps previous behavior where frontend stored token in localStorage
+//     return res.json({
+//       access_token: tokenData.access_token,
+//       refresh_token: tokenData.refresh_token,
+//       expires_in: tokenData.expires_in,
+//       scope: tokenData.scope,
+//       raw: tokenData,
+//     });
+//   } catch (err) {
+//     console.error("Error during auth callback:", err);
+//     return res.status(500).json({ error: "Callback error", details: String(err) });
+//   }
+// });
+
+// // optional: refresh token endpoint (frontend can call to refresh)
+// router.post("/refresh-token", async (req, res) => {
+//   // Accept refresh_token in body or from cookie if present
+//   const { refresh_token } = req.body;
+//   const { CLIENT_ID, CLIENT_SECRET, URI_123, USER_AGENT = "gadzconnect_dev", LOADBOARD_AID } = process.env;
+
+//   const tokenToUse = refresh_token || (req.headers.cookie && req.headers.cookie.match(/lb_refresh_token=([^;]+)/)?.[1]);
+
+//   if (!tokenToUse) {
+//     return res.status(400).json({ error: "refresh_token missing" });
+//   }
+
+//   try {
+//     const formData = new URLSearchParams({
+//       grant_type: "refresh_token",
+//       refresh_token: tokenToUse,
+//       client_id: CLIENT_ID,
+//     }).toString();
+
+//     const tokenResp = await fetch(`${URI_123}/token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "123LB-Api-Version": "1.3",
+//         "User-Agent": USER_AGENT,
+//         "123LB-AID": LOADBOARD_AID || "",
+//         Authorization:
+//           "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+//       },
+//       body: formData,
+//     });
+
+//     const tokenData = await tokenResp.json();
+//     if (!tokenData.access_token) {
+//       return res.status(400).json({ error: "Failed to refresh token", details: tokenData });
+//     }
+
+//     const cookieOptions = [
+//       `lb_access_token=${tokenData.access_token}; Path=/;`,
+//       tokenData.refresh_token ? `lb_refresh_token=${tokenData.refresh_token}; Path=/;` : "",
+//     ].filter(Boolean).join(" ");
+
+//     res.setHeader("Set-Cookie", cookieOptions);
+
+//     // return res.json({
+//     //   access_token: tokenData.access_token,
+//     //   refresh_token: tokenData.refresh_token,
+//     //   expires_in: tokenData.expires_in,
+//     //   raw: tokenData,
+//     // });
+//     // ✅ NEW: redirect user back to frontend after auth success
+//     // Example frontend URL: http://localhost:3000/dashboard or whatever your app uses
+//     const FRONTEND_REDIRECT = process.env.FRONTEND_REDIRECT || "http://localhost:3000/AvailableTable";
+
+//     res.setHeader("Set-Cookie", cookieOptions);
+
+//     // Append a simple flag so frontend knows auth worked
+//     return res.redirect(`${FRONTEND_REDIRECT}?authorized=123`);
+
+//   } catch (err) {
+//     console.error("Error refreshing token:", err);
+//     return res.status(500).json({ error: "refresh error", details: String(err) });
+//   }
+// });
+
+// // Primary search endpoint used by frontend
+// router.post("/search", async (req, res) => {
+//   const {
+//     originCity,
+//     originState,
+//     radius,
+//     destinationType,
+//     equipmentTypes,
+//     minWeight,
+//     maxMileage,
+//     pickupDate,
+//     companyRating,
+//     modifiedStartDate,
+//     modifiedEndDate,
+//   } = req.body;
+
+//   // First try Authorization header, then cookie
+//   const authHeader = req.headers.authorization;
+//   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+//   const cookieToken = req.headers.cookie?.match(/lb_access_token=([^;]+)/)?.[1];
+
+//   const token = bearerToken || cookieToken;
+//   const { USER_AGENT = "gadzconnect_dev", LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf" } = process.env;
+
+//   if (!token) {
+//     return res.status(400).json({ error: "Missing authorization token" });
+//   }
+
+//   try {
+//     const response = await fetch(
+//       `${process.env.URI_123 || "https://api.dev.123loadboard.com"}/loads/search`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "123LB-Correlation-Id": "123GADZ",
+//           "123LB-Api-Version": "1.3",
+//           "User-Agent": USER_AGENT,
+//           "123LB-AID": LOADBOARD_AID,
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({
+//           metadata: {
+//             limit: 10,
+//             sortBy: { field: "Origin", direction: "Ascending" },
+//             fields: "all",
+//             type: "Regular",
+//           },
+//           includeWithGreaterPickupDates: true,
+//           origin: {
+//             city: originCity,
+//             states: originState ? [originState] : undefined,
+//             radius,
+//             type: "City",
+//           },
+//           destination: { type: destinationType || "Anywhere" },
+//           equipmentTypes,
+//           minWeight,
+//           maxMileage,
+//           pickupDates: pickupDate ? [pickupDate] : undefined,
+//           company: { minRating: companyRating },
+//           modifiedOnStart: modifiedStartDate,
+//           modifiedOnEnd: modifiedEndDate,
+//         }),
+//       }
+//     );
+
+//     const data = await response.json();
+//     if (!response.ok) {
+//       console.error("123Loadboard search responded with non-OK:", data);
+//       return res.status(response.status).json({ error: data || "Failed to fetch loads" });
+//     }
+
+//     return res.json(data);
+//   } catch (err) {
+//     console.error("Error fetching 123Loadboard search results:", err);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// module.exports = router;
+
 // config/123LoadBoards/123LoadBoards.js
 const express = require("express");
-const fetch = require("node-fetch"); // ensure node-fetch is installed
+const fetch = require("node-fetch");
 const router = express.Router();
 
-/**
- * Environment variables expected:
- * - CLIENT_ID
- * - CLIENT_SECRET
- * - DEV_URI (frontend redirect / callback url, e.g. https://gadzconnect.com/auth/callback or http://localhost:3000/auth/callback)
- * - URI_123 (base 123LoadBoard API/authorize/token URL, e.g. https://api.123loadboard.com or their auth host)
- * - USER_AGENT
- * - LOADBOARD_AID (optional)
- *
- * NOTE: For production, ensure secure cookie settings (secure: true, sameSite, etc).
- */
+const {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  DEV_URI,
+  URI_123,
+  USER_AGENT = "gadzconnect_dev",
+  LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+  FRONTEND_REDIRECT = "http://localhost:3000/AvailableTable",
+} = process.env;
 
-// helper to build auth redirect
+// ✅ 1. Authorize (frontend will redirect here)
 router.get("/authorize", (req, res) => {
-  const {
-    CLIENT_ID,
-    DEV_URI,
-    URI_123,
-    USER_AGENT = "gadzconnect_dev",
-  } = process.env;
-
-  if (!CLIENT_ID || !DEV_URI || !URI_123) {
-    console.error("Missing env vars for /authorize");
-    return res.status(500).send("Server misconfigured (missing OAuth env vars).");
-  }
-
   const query = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
     redirect_uri: DEV_URI,
-    scope: "loadsearching", // keep same scope you used before
-    state: "gadz_state", // you can create a real random state in production
+    scope: "loadsearching",
+    state: "string",
     login_hint: USER_AGENT,
   }).toString();
 
   res.redirect(`${URI_123}/authorize?${query}`);
 });
 
-// callback route - exchange code for access token
+// ✅ 2. OAuth Callback (sets cookie + returns JSON)
 router.get("/auth/callback", async (req, res) => {
-  const {
-    CLIENT_ID,
-    CLIENT_SECRET,
-    DEV_URI,
-    URI_123,
-    USER_AGENT = "gadzconnect_dev",
-    LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-  } = process.env;
-
   try {
-    const authCode = req.query.code;
-    if (!authCode) {
-      return res.status(400).send("Missing authorization code.");
-    }
+    const code = req.query.code;
+    if (!code) return res.status(400).send("Missing authorization code");
 
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
-      code: authCode,
+      code,
       client_id: CLIENT_ID,
       redirect_uri: DEV_URI,
     }).toString();
@@ -260,180 +495,76 @@ router.get("/auth/callback", async (req, res) => {
     });
 
     const tokenData = await tokenResp.json();
-    console.log("Token response from 123:", tokenData);
+    console.log("✅ 123Loadboard Token Response:", tokenData);
 
-    if (!tokenData.access_token) {
-      console.error("No access_token in token response:", tokenData);
-      return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
-    }
+    if (!tokenData.access_token)
+      return res.status(400).send("Failed to retrieve access token");
 
-    // Set cookies (accessible via JS) so frontend can read or you can return token JSON
-    // Note: in production set secure: true and sameSite appropriately
-    const cookieOptions = [
-      `lb_access_token=${tokenData.access_token}; Path=/;`,
-      tokenData.refresh_token ? `lb_refresh_token=${tokenData.refresh_token}; Path=/;` : "",
-    ].filter(Boolean).join(" ");
-
-    // Send cookies in header
-    res.setHeader("Set-Cookie", cookieOptions);
-
-    // Return token JSON (frontend can pick this up and store in localStorage)
-    // This keeps previous behavior where frontend stored token in localStorage
-    return res.json({
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-      scope: tokenData.scope,
-      raw: tokenData,
+    res.cookie("lb_access_token", tokenData.access_token, {
+      httpOnly: false,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 3600 * 1000,
     });
+
+    res.cookie("lb_refresh_token", tokenData.refresh_token || "", {
+      httpOnly: false,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 86400 * 1000,
+    });
+
+    res.redirect(`${FRONTEND_REDIRECT}?authorized=123`);
   } catch (err) {
-    console.error("Error during auth callback:", err);
-    return res.status(500).json({ error: "Callback error", details: String(err) });
+    console.error("Error in /auth/callback:", err);
+    res.status(500).json({ error: "Auth callback failed" });
   }
 });
 
-// optional: refresh token endpoint (frontend can call to refresh)
-router.post("/refresh-token", async (req, res) => {
-  // Accept refresh_token in body or from cookie if present
-  const { refresh_token } = req.body;
-  const { CLIENT_ID, CLIENT_SECRET, URI_123, USER_AGENT = "gadzconnect_dev", LOADBOARD_AID } = process.env;
+// ✅ 3. Search loads (called by frontend)
+router.post("/search", async (req, res) => {
+  const token =
+    req.headers.authorization?.split(" ")[1] ||
+    req.headers.cookie?.match(/lb_access_token=([^;]+)/)?.[1];
 
-  const tokenToUse = refresh_token || (req.headers.cookie && req.headers.cookie.match(/lb_refresh_token=([^;]+)/)?.[1]);
-
-  if (!tokenToUse) {
-    return res.status(400).json({ error: "refresh_token missing" });
-  }
+  if (!token)
+    return res.status(400).json({ error: "Authorization token missing" });
 
   try {
-    const formData = new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: tokenToUse,
-      client_id: CLIENT_ID,
-    }).toString();
-
-    const tokenResp = await fetch(`${URI_123}/token`, {
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
+        "123LB-Correlation-Id": "123GADZ",
         "123LB-Api-Version": "1.3",
         "User-Agent": USER_AGENT,
-        "123LB-AID": LOADBOARD_AID || "",
-        Authorization:
-          "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+        "123LB-AID": LOADBOARD_AID,
+        Authorization: `Bearer ${token}`,
       },
-      body: formData,
+      body: JSON.stringify({
+        metadata: {
+          limit: 10,
+          sortBy: { field: "Origin", direction: "Ascending" },
+          fields: "all",
+          type: "Regular",
+        },
+        includeWithGreaterPickupDates: true,
+        origin: {
+          city: req.body.originCity || "Chicago",
+          states: req.body.originState ? [req.body.originState] : ["IL"],
+          radius: req.body.radius || 100,
+          type: "City",
+        },
+        destination: { type: req.body.destinationType || "Anywhere" },
+        equipmentTypes: req.body.equipmentTypes || ["Van", "Flatbed", "Reefer"],
+      }),
     });
 
-    const tokenData = await tokenResp.json();
-    if (!tokenData.access_token) {
-      return res.status(400).json({ error: "Failed to refresh token", details: tokenData });
-    }
-
-    const cookieOptions = [
-      `lb_access_token=${tokenData.access_token}; Path=/;`,
-      tokenData.refresh_token ? `lb_refresh_token=${tokenData.refresh_token}; Path=/;` : "",
-    ].filter(Boolean).join(" ");
-
-    res.setHeader("Set-Cookie", cookieOptions);
-
-    // return res.json({
-    //   access_token: tokenData.access_token,
-    //   refresh_token: tokenData.refresh_token,
-    //   expires_in: tokenData.expires_in,
-    //   raw: tokenData,
-    // });
-    // ✅ NEW: redirect user back to frontend after auth success
-    // Example frontend URL: http://localhost:3000/dashboard or whatever your app uses
-    const FRONTEND_REDIRECT = process.env.FRONTEND_REDIRECT || "http://localhost:3000/AvailableTable";
-
-    res.setHeader("Set-Cookie", cookieOptions);
-
-    // Append a simple flag so frontend knows auth worked
-    return res.redirect(`${FRONTEND_REDIRECT}?authorized=123`);
-
+    const data = await loadResp.json();
+    res.status(loadResp.ok ? 200 : 400).json(data);
   } catch (err) {
-    console.error("Error refreshing token:", err);
-    return res.status(500).json({ error: "refresh error", details: String(err) });
-  }
-});
-
-// Primary search endpoint used by frontend
-router.post("/search", async (req, res) => {
-  const {
-    originCity,
-    originState,
-    radius,
-    destinationType,
-    equipmentTypes,
-    minWeight,
-    maxMileage,
-    pickupDate,
-    companyRating,
-    modifiedStartDate,
-    modifiedEndDate,
-  } = req.body;
-
-  // First try Authorization header, then cookie
-  const authHeader = req.headers.authorization;
-  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
-  const cookieToken = req.headers.cookie?.match(/lb_access_token=([^;]+)/)?.[1];
-
-  const token = bearerToken || cookieToken;
-  const { USER_AGENT = "gadzconnect_dev", LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf" } = process.env;
-
-  if (!token) {
-    return res.status(400).json({ error: "Missing authorization token" });
-  }
-
-  try {
-    const response = await fetch(
-      `${process.env.URI_123 || "https://api.dev.123loadboard.com"}/loads/search`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "123LB-Correlation-Id": "123GADZ",
-          "123LB-Api-Version": "1.3",
-          "User-Agent": USER_AGENT,
-          "123LB-AID": LOADBOARD_AID,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          metadata: {
-            limit: 10,
-            sortBy: { field: "Origin", direction: "Ascending" },
-            fields: "all",
-            type: "Regular",
-          },
-          includeWithGreaterPickupDates: true,
-          origin: {
-            city: originCity,
-            states: originState ? [originState] : undefined,
-            radius,
-            type: "City",
-          },
-          destination: { type: destinationType || "Anywhere" },
-          equipmentTypes,
-          minWeight,
-          maxMileage,
-          pickupDates: pickupDate ? [pickupDate] : undefined,
-          company: { minRating: companyRating },
-          modifiedOnStart: modifiedStartDate,
-          modifiedOnEnd: modifiedEndDate,
-        }),
-      }
-    );
-
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("123Loadboard search responded with non-OK:", data);
-      return res.status(response.status).json({ error: data || "Failed to fetch loads" });
-    }
-
-    return res.json(data);
-  } catch (err) {
-    console.error("Error fetching 123Loadboard search results:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching 123 loads:", err);
+    res.status(500).json({ error: "Load search failed" });
   }
 });
 

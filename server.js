@@ -359,6 +359,7 @@
 //   });
 
 
+// server.js
 require("dotenv").config();
 const express = require("express");
 const http = require("http");
@@ -366,9 +367,11 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const path = require("path");
 const db = require("./models");
+const axios = require("axios");
 const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
 
-// Import controllers and socket handlers
+// Controllers and Routers
 const handleVideoSocket = require("./config/videoSocket");
 const handleMessageSocket = require("./config/messageSocket");
 const loadController = require("./controllers/LoadController");
@@ -376,9 +379,15 @@ const driverController = require("./controllers/DriverController");
 const messageRouter = require("./controllers/MessageController");
 const LoadsRouter = require("./config/123LoadBoards/123LoadBoards");
 
-const { PORT = 3001, SOCKET_IO_SERVER_PORT } = process.env;
+const {
+  PORT = 3001,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  USER_AGENT,
+  URI_123,
+  DEV_URI,
+} = process.env;
 
-// Initialize express app and HTTP server
 const app = express();
 const server = http.createServer(app);
 
@@ -387,32 +396,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static("client/build"));
-app.use(express.static("images"));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
-// CORS setup
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-}));
-
-// Initialize socket.io
+// Socket.io
 const io = socketIo(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+  cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] },
 });
-
-// Socket.io events
 io.on("connection", (socket) => {
   handleVideoSocket(io, socket);
   handleMessageSocket(io, socket);
 });
 
-// Routers
+// ✅ 123 Loadboard Routes
 app.use("/api/123Loads", LoadsRouter);
+
+// ✅ Legacy alias for old frontend routes
+app.post("/api/load-search", async (req, res, next) => {
+  req.url = "/search";
+  LoadsRouter.handle(req, res, next);
+});
+
+// Message API route
 app.use("/api/message", messageRouter);
+
+// Other Controllers
 app.use("/api/agreement", require("./controllers/AgreementController"));
 app.use("/api/user", require("./controllers/UserAPIRoutes"));
 app.use("/api/admin", require("./controllers/AdminController"));
@@ -423,7 +430,7 @@ app.use("/api/mail", require("./config/nodeMailer/nodeMailer"));
 app.use("/api/stripe", require("./config/stripe"));
 app.use(require("./routes"));
 
-// Load & driver endpoints
+// ✅ Load and driver endpoints
 app.get("/api/loads/user/:userId", loadController.getAllUserLoads);
 app.get("/api/drivers/user/:userId", driverController.getAllUserDrivers);
 app.get("/api/loads", loadController.getAllLoads);
@@ -431,20 +438,21 @@ app.get("/api/drivers", driverController.getAllDrivers);
 app.post("/api/loads", loadController.createLoad);
 app.post("/api/drivers", driverController.createDriver);
 
-// Test routes
+// ✅ Test route
 app.get("/api/config", (req, res) => res.json({ success: true }));
-app.get("/apiFun", (req, res) => res.send("API FUN"));
 
-// Serve React app
+// ✅ Serve React frontend
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
-// Start
-db.sequelize.sync({}).then(() => {
-  server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}).catch((err) => {
-  console.error("Error syncing database:", err.message);
-});
+// ✅ Database + Server Start
+db.sequelize
+  .sync({})
+  .then(() => {
+    server.listen(PORT, () =>
+      console.log(`🚀 Server running at http://localhost:${PORT}`)
+    );
+  })
+  .catch((err) => console.error("DB sync error:", err.message));
+// { alter: true } { force: true }
