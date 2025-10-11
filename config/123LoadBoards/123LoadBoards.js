@@ -444,39 +444,44 @@ const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
 
-const {
-  CLIENT_ID,
-  CLIENT_SECRET,
-  DEV_URI,
-  URI_123,
-  USER_AGENT = "gadzconnect_dev",
-  LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-  FRONTEND_REDIRECT = "http://localhost:3000/AvailableTable",
-} = process.env;
-
-// ✅ 1. Authorize (frontend will redirect here)
+// 🔐 AUTHORIZATION STEP
 router.get("/authorize", (req, res) => {
+  const { CLIENT_ID, DEV_URI, URI_123, USER_AGENT = "gadzconnect_dev" } = process.env;
+
+  if (!CLIENT_ID || !DEV_URI || !URI_123) {
+    return res.status(500).send("Missing environment configuration");
+  }
+
   const query = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
     redirect_uri: DEV_URI,
     scope: "loadsearching",
-    state: "string",
+    state: "gadz_state",
     login_hint: USER_AGENT,
   }).toString();
 
   res.redirect(`${URI_123}/authorize?${query}`);
 });
 
-// ✅ 2. OAuth Callback (sets cookie + returns JSON)
+// 🧾 TOKEN EXCHANGE CALLBACK
 router.get("/auth/callback", async (req, res) => {
-  try {
-    const code = req.query.code;
-    if (!code) return res.status(400).send("Missing authorization code");
+  const {
+    CLIENT_ID,
+    CLIENT_SECRET,
+    DEV_URI,
+    URI_123,
+    USER_AGENT = "gadzconnect_dev",
+    LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+  } = process.env;
 
+  const authCode = req.query.code;
+  if (!authCode) return res.status(400).send("Missing authorization code.");
+
+  try {
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
-      code,
+      code: authCode,
       client_id: CLIENT_ID,
       redirect_uri: DEV_URI,
     }).toString();
@@ -495,50 +500,94 @@ router.get("/auth/callback", async (req, res) => {
     });
 
     const tokenData = await tokenResp.json();
-    console.log("✅ 123Loadboard Token Response:", tokenData);
+    console.log("✅ Token Response from 123:", tokenData);
 
-    if (!tokenData.access_token)
-      return res.status(400).send("Failed to retrieve access token");
+    if (!tokenData.access_token) {
+      console.error("❌ No access_token found:", tokenData);
+      return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
+    }
 
-    res.cookie("lb_access_token", tokenData.access_token, {
-      httpOnly: false,
-      secure: false,
-      sameSite: "Lax",
-      maxAge: 3600 * 1000,
+    // Send token JSON back to frontend so it can store and use it
+    return res.json({
+      success: true,
+      access_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
+      expires_in: tokenData.expires_in,
+      scope: tokenData.scope,
     });
-
-    res.cookie("lb_refresh_token", tokenData.refresh_token || "", {
-      httpOnly: false,
-      secure: false,
-      sameSite: "Lax",
-      maxAge: 86400 * 1000,
-    });
-
-    res.redirect(`${FRONTEND_REDIRECT}?authorized=123`);
   } catch (err) {
     console.error("Error in /auth/callback:", err);
-    res.status(500).json({ error: "Auth callback failed" });
+    res.status(500).json({ error: "Token exchange failed", details: String(err) });
   }
 });
 
-// ✅ 3. Search loads (called by frontend)
-router.post("/search", async (req, res) => {
-  const token =
-    req.headers.authorization?.split(" ")[1] ||
-    req.headers.cookie?.match(/lb_access_token=([^;]+)/)?.[1];
-
-  if (!token)
-    return res.status(400).json({ error: "Authorization token missing" });
+// ♻️ REFRESH TOKEN (OPTIONAL)
+router.post("/refresh-token", async (req, res) => {
+  const { CLIENT_ID, CLIENT_SECRET, URI_123, USER_AGENT, LOADBOARD_AID } = process.env;
+  const { refresh_token } = req.body;
+  if (!refresh_token) return res.status(400).json({ error: "Missing refresh_token" });
 
   try {
-    const loadResp = await fetch(`${URI_123}/loads/search`, {
+    const formData = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token,
+      client_id: CLIENT_ID,
+    }).toString();
+
+    const resp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT || "gadzconnect_dev",
+        "123LB-AID": LOADBOARD_AID,
+        Authorization:
+          "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await resp.json();
+    if (!tokenData.access_token) return res.status(400).json(tokenData);
+
+    return res.json({
+      access_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
+      expires_in: tokenData.expires_in,
+    });
+  } catch (err) {
+    console.error("Error refreshing token:", err);
+    res.status(500).json({ error: "Refresh failed", details: String(err) });
+  }
+});
+
+// 🔍 LOAD SEARCH ENDPOINT
+router.post("/search", async (req, res) => {
+  const {
+    originCity,
+    originState,
+    radius,
+    destinationType,
+    equipmentTypes,
+    minWeight,
+    maxMileage,
+    pickupDate,
+    companyRating,
+    modifiedStartDate,
+    modifiedEndDate,
+  } = req.body;
+
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(400).json({ error: "Missing authorization token" });
+
+  try {
+    const response = await fetch(`${process.env.URI_123}/loads/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "123LB-Correlation-Id": "123GADZ",
         "123LB-Api-Version": "1.3",
-        "User-Agent": USER_AGENT,
-        "123LB-AID": LOADBOARD_AID,
+        "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
+        "123LB-AID": process.env.LOADBOARD_AID || "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -550,21 +599,29 @@ router.post("/search", async (req, res) => {
         },
         includeWithGreaterPickupDates: true,
         origin: {
-          city: req.body.originCity || "Chicago",
-          states: req.body.originState ? [req.body.originState] : ["IL"],
-          radius: req.body.radius || 100,
+          city: originCity,
+          states: [originState],
+          radius,
           type: "City",
         },
-        destination: { type: req.body.destinationType || "Anywhere" },
-        equipmentTypes: req.body.equipmentTypes || ["Van", "Flatbed", "Reefer"],
+        destination: { type: destinationType || "Anywhere" },
+        equipmentTypes,
+        minWeight,
+        maxMileage,
+        pickupDates: [pickupDate],
+        company: { minRating: companyRating },
+        modifiedOnStart: modifiedStartDate,
+        modifiedOnEnd: modifiedEndDate,
       }),
     });
 
-    const data = await loadResp.json();
-    res.status(loadResp.ok ? 200 : 400).json(data);
+    const data = await response.json();
+    if (!response.ok) return res.status(response.status).json({ error: data });
+
+    res.json(data);
   } catch (err) {
-    console.error("Error fetching 123 loads:", err);
-    res.status(500).json({ error: "Load search failed" });
+    console.error("Error fetching loads:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
