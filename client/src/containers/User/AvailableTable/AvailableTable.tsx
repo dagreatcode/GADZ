@@ -4101,7 +4101,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:3001";
 
 // ---------- Main Component ----------
 const AvailableTable: React.FC = () => {
-  // ---------- State ----------
+  // State
   const [loads, setLoads] = useState<Load[]>([]);
   const [userLoads, setUserLoads] = useState<Load[]>([]);
   const [driverList, setDriverList] = useState<Driver[]>([]);
@@ -4204,21 +4204,13 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // ---------- 123Loadboard OAuth Callback ----------
+  // ---------- 123Loadboard Auth Callback ----------
   const fetchLoadboardData = useCallback(
-    async (authCode: string) => {
-      if (!authCode) return;
+    async () => {
       setLoading(true);
       setError(null);
       try {
-        const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
-
-        const cookieToken = getCookie("lb_access_token");
-        if (cookieToken) {
-          localStorage.setItem("lb_access_token", cookieToken);
-          setToken(cookieToken);
-        }
-
+        const resp = await axios.post(`${API_BASE}/api/123Loads/load-search`, searchFormData, { withCredentials: true });
         let apiLoads: any[] = [];
         const d = resp.data;
         if (Array.isArray(d)) apiLoads = d;
@@ -4232,49 +4224,38 @@ const AvailableTable: React.FC = () => {
           setSuccess(true);
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data via callback.");
+        setError(err.response?.data?.error || err.message || "Failed to fetch 123Loadboard data");
       } finally {
         setLoading(false);
       }
     },
-    [mapApiLoadToDisplay]
+    [mapApiLoadToDisplay, searchFormData]
   );
 
   // ---------- Init ----------
   useEffect(() => {
-    const cookieToken = getCookie("lb_access_token");
-    const storedToken = localStorage.getItem("lb_access_token");
-
-    if (cookieToken) setToken(cookieToken);
-    else if (storedToken) setToken(storedToken);
-
     fetchLoads();
     fetchDrivers();
   }, [fetchLoads, fetchDrivers]);
 
-  // Handle 123Loadboard OAuth redirect
-  useEffect(() => {
-    if (!code) return;
-    const usedCode = localStorage.getItem("lb_auth_code");
-    if (usedCode === code) return;
-
-    (async () => {
-      await fetchLoadboardData(code);
-      localStorage.setItem("lb_auth_code", code);
-      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-    })();
-  }, [code, fetchLoadboardData]);
-
-  // Autofill on URL param
+  // ---------- Handle OAuth redirect ----------
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const autofill = params.get("autofill");
-    if (autofill) handle123Search();
-  }, []);
 
-  // ---------- Handlers ----------
+    if (autofill) {
+      fetchLoadboardData();
+      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+    }
+  }, [fetchLoadboardData]);
+
+  const handleAuthorizeNavigation = () => {
+    window.location.href = `${API_BASE}/api/123Loads/authorize`;
+  };
+
+  // ---------- Form Handlers ----------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setSearchFormData((prev) => ({ ...prev, [name]: value }));
@@ -4299,84 +4280,8 @@ const AvailableTable: React.FC = () => {
   };
 
   const handle123Search = useCallback(async () => {
-    setError(null);
-    setSuccess(false);
-
-    const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
-    if (!authToken) {
-      setError("Authorization token missing — please click Authorize/Connect first.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const resp = await axios.post(`${API_BASE}/api/load-search`, searchFormData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      let apiLoads: any[] = [];
-      const d = resp.data;
-      if (Array.isArray(d)) apiLoads = d;
-      else if (Array.isArray(d.loads)) apiLoads = d.loads;
-      else if (Array.isArray(d.data)) apiLoads = d.data;
-      else if (Array.isArray(d.results)) apiLoads = d.results;
-      else if (Array.isArray(d.payload)) apiLoads = d.payload;
-
-      setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-      setSuccess(true);
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-    } catch (err: any) {
-      console.error("Error fetching 123Loadboard search results:", err);
-      setError(err.response?.data?.error || err.message || "Error fetching results");
-    } finally {
-      setLoading(false);
-    }
-  }, [searchFormData, token, mapApiLoadToDisplay]);
-
-  const handleAuthorizeNavigation = () => {
-    window.location.href = `${API_BASE}/api/123Loads/authorize`;
-  };
-
-  const handleLoadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewLoad((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmitLoad = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const userId = localStorage.getItem("userId");
-    if (!userId) return setError("Please log in to add a load.");
-    try {
-      await axios.post(`${API_BASE}/api/loads`, { ...newLoad, userId });
-      setNewLoad({ description: "", company: "", userId });
-      fetchLoads();
-    } catch (err) {
-      console.error("Error creating load:", err);
-      setError("Failed to create load.");
-    }
-  };
-
-  const handleDriverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewDriver((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmitDriver = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const userId = localStorage.getItem("userId");
-    if (!userId) return setError("Please log in to add a driver.");
-    try {
-      await axios.post(`${API_BASE}/api/drivers`, { ...newDriver, userId });
-      setNewDriver({ description: "", company: "", userId: "" });
-      fetchDrivers();
-    } catch (err) {
-      console.error("Error creating driver:", err);
-      setError("Failed to create driver.");
-    }
-  };
+    fetchLoadboardData();
+  }, [fetchLoadboardData]);
 
   // ---------- Render ----------
   return (
@@ -4388,96 +4293,30 @@ const AvailableTable: React.FC = () => {
         <Link to="/User" className={styles["at-homeLink"]}>Back to Dashboard</Link>
       </header>
 
-      {/* Drivers Section */}
+      {/* Drivers */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
         <button className="btn btn-primary mb-2" onClick={fetchDrivers}>Fetch Drivers</button>
         <Table data={driverList} title="All Drivers" isUser showCompanyLink={false} />
         <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
-        <form className="mt-3" onSubmit={handleSubmitDriver}>
-          <h3>Add New Driver</h3>
-          <div className="row g-2">
-            <div className="col-md-4">
-              <input type="text" className="form-control" placeholder="Driver Description" name="description" value={newDriver.description} onChange={handleDriverInputChange} />
-            </div>
-            <div className="col-md-4">
-              <input type="text" className="form-control" placeholder="Company" name="company" value={newDriver.company} onChange={handleDriverInputChange} />
-            </div>
-            <div className="col-md-4">
-              <button className="btn btn-success w-100" type="submit">Add Driver</button>
-            </div>
-          </div>
-        </form>
       </section>
 
-      {/* Loads Section */}
+      {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
         <button className="btn btn-primary mb-2" onClick={fetchLoads}>Fetch Loads</button>
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
         <Table data={userLoads} title="Your Loads" isUser={false} showCompanyLink />
-        <form className="mt-3" onSubmit={handleSubmitLoad}>
-          <h3>Add New Load</h3>
-          <div className="row g-2">
-            <div className="col-md-4">
-              <input type="text" className="form-control" placeholder="Description" name="description" value={newLoad.description} onChange={handleLoadInputChange} />
-            </div>
-            <div className="col-md-4">
-              <input type="text" className="form-control" placeholder="Company" name="company" value={newLoad.company} onChange={handleLoadInputChange} />
-            </div>
-            <div className="col-md-4">
-              <button className="btn btn-success w-100" type="submit">Add Load</button>
-            </div>
-          </div>
-        </form>
       </section>
 
-      {/* 123Loadboard Section */}
+      {/* 123Loadboard */}
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
-        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
-          <div className="row g-3">
-            <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Origin State" name="originState" value={searchFormData.originState} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Radius" name="radius" value={searchFormData.radius} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-2">
-              <input type="text" className="form-control" placeholder="Equipment Types" name="equipmentTypes" value={searchFormData.equipmentTypes} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-2">
-              <input type="number" className="form-control" placeholder="Min Weight" name="minWeight" value={searchFormData.minWeight} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-2">
-              <input type="number" className="form-control" placeholder="Max Mileage" name="maxMileage" value={searchFormData.maxMileage} onChange={handleInputChange} />
-            </div>
-          </div>
-
-          <div className="row g-3 mt-2">
-            <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDate" value={searchFormData.pickupDate} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-3">
-              <input type="text" className="form-control" placeholder="Company Rating" name="companyRating" value={searchFormData.companyRating} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Modified Start" name="modifiedStartDate" value={searchFormData.modifiedStartDate} onChange={handleInputChange} />
-            </div>
-            <div className="col-md-3">
-              <input type="date" className="form-control" placeholder="Modified End" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
-            </div>
-          </div>
-
-          <div className="mt-3 d-flex gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
-            <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
-            <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
-          </div>
-        </form>
+        <div className="mt-2 d-flex gap-2">
+          <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
+          <button type="button" className="btn btn-primary" onClick={handle123Search}>Search 123Loadboard</button>
+          <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
+        </div>
 
         {loading && <p>Loading search results...</p>}
         {error && <p className="text-danger">{error}</p>}

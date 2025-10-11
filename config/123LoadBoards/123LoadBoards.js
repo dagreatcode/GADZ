@@ -439,10 +439,10 @@
 
 // module.exports = router;
 
-// backend/config/123LoadBoards/123LoadBoards.js
-const fetch = require("node-fetch");
 const express = require("express");
+const fetch = require("node-fetch");
 const router = express.Router();
+require("dotenv").config();
 
 const CLIENT_ID = process.env.LOADBOARD_CLIENT_ID;
 const CLIENT_SECRET = process.env.LOADBOARD_CLIENT_SECRET;
@@ -451,108 +451,102 @@ const URI_123 = process.env.URI_123;
 const USER_AGENT = process.env.USER_AGENT;
 const LOADBOARD_AID = process.env.LOADBOARD_AID;
 
-// ---------- Authorization Route ----------
+// ---------- Step 1: Redirect to 123Loadboard Authorization ----------
 router.get("/authorize", (req, res) => {
   const query = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     scope: "loadsearching",
-    state: "gadzconnect",
-    login_hint: "gadzconnect_dev",
+    state: "gadz_state",
+    login_hint: USER_AGENT,
   }).toString();
 
   res.redirect(`${URI_123}/authorize?${query}`);
 });
 
-// ---------- Callback Route ----------
+// ---------- Step 2: Handle OAuth callback ----------
 router.get("/auth/callback", async (req, res) => {
-  try {
-    const authCode = req.query.code;
-    console.log("Authorization Code:", authCode);
+  const authCode = req.query.code;
+  if (!authCode) return res.status(400).send("Missing authorization code");
 
-    // Exchange code for access token
+  try {
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
       code: authCode,
-      client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
+      client_id: CLIENT_ID,
     }).toString();
 
     const tokenResp = await fetch(`${URI_123}/token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "123LB-Api-Version": "1.3",
         "User-Agent": USER_AGENT,
         "123LB-AID": LOADBOARD_AID,
-        Authorization:
-          "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+        Authorization: "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
       },
       body: formData,
     });
 
     const tokenData = await tokenResp.json();
-    console.log("Access Token Response:", tokenData);
-
     if (!tokenData.access_token) {
+      console.error("No access token returned:", tokenData);
       return res.status(400).send("Failed to retrieve access token.");
     }
 
-    const bearerToken = tokenData.access_token;
-
-    // Save token in cookie for frontend
-    res.cookie("lb_access_token", bearerToken, {
+    // Set token as HTTP-only cookie
+    res.cookie("lb_access_token", tokenData.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
-      maxAge: 3600 * 1000, // 1 hour
+      secure: true,
+      sameSite: "Strict",
+      maxAge: tokenData.expires_in * 1000,
     });
 
-    // ---------- Default Search (Autofill) ----------
-    const today = new Date().toISOString().split("T")[0];
-    const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split("T")[0];
+    // Redirect back to frontend
+    res.redirect(`${process.env.FRONTEND_REDIRECT}?autofill=true`);
+  } catch (err) {
+    console.error("OAuth callback error:", err);
+    res.status(500).send("OAuth callback failed");
+  }
+});
 
-    const defaultSearchBody = {
+// ---------- Step 3: Search loads with stored token ----------
+router.post("/load-search", async (req, res) => {
+  try {
+    const authToken = req.cookies.lb_access_token;
+    if (!authToken) return res.status(401).send({ error: "Missing access token" });
+
+    const body = {
       metadata: {
-        limit: 10,
+        nextToken: "string",
+        limit: 25,
         sortBy: { field: "Origin", direction: "Ascending" },
         fields: "all",
         type: "Regular",
       },
-      includeWithGreaterPickupDates: true,
-      origin: { states: ["IL"], city: "Chicago", radius: 100, type: "City" },
-      destination: { type: "Anywhere" },
-      equipmentTypes: ["Flatbed"],
-      pickupDates: [today],
-      minWeight: 1000,
-      maxMileage: 500,
-      modifiedOnStart: lastMonth,
-      modifiedOnEnd: today,
+      equipmentSpecifications: "AirRide,BlanketWrap,Conestoga,Chains,HazMat,Tarps,TeamDriver",
+      ...req.body, // Merge search parameters from frontend
     };
 
     const loadResp = await fetch(`${URI_123}/loads/search`, {
       method: "POST",
       headers: {
-        "123LB-Correlation-Id": "123GADZ",
+        "123LB-Correlation-Id": "GADZ123",
         "Content-Type": "application/json",
         "123LB-Api-Version": "1.3",
         "User-Agent": USER_AGENT,
         "123LB-AID": LOADBOARD_AID,
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(defaultSearchBody),
+      body: JSON.stringify(body),
     });
 
     const loadData = await loadResp.json();
-    console.log("Default Load Search Response:", loadData);
-
-    // Redirect to frontend with loads in session/localStorage
-    res.redirect(`${process.env.FRONTEND_REDIRECT}?autofill=1`);
-
+    res.json(loadData);
   } catch (err) {
-    console.error("Error in /auth/callback:", err);
-    res.status(500).send("Error during OAuth callback or default search");
+    console.error("Error fetching loads:", err);
+    res.status(500).send({ error: "Load search failed" });
   }
 });
 
