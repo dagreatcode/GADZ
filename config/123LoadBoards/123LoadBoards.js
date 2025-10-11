@@ -61,6 +61,67 @@ async function authCallback(req, res) {
 
     const bearerToken = tokenData.access_token;
 
+
+    app.get("/auth/callback-test", async (req, res) => {
+      try {
+        const authCode = req.query.code;
+        if (!authCode) return res.status(400).send("Missing auth code");
+
+        // Exchange code for access token
+        const tokenResp = await fetch(`${URI_123}/token`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "123LB-Api-Version": "1.3",
+            "User-Agent": USER_AGENT,
+            "123LB-AID": LOADBOARD_AID,
+            Authorization: "Basic " + Buffer.from(`${LOADBOARD_CLIENT_ID}:${LOADBOARD_CLIENT_SECRET}`).toString("base64"),
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            code: authCode,
+            client_id: LOADBOARD_CLIENT_ID,
+            redirect_uri: LOADBOARD_REDIRECT_URI,
+          }),
+        });
+
+        const tokenData = await tokenResp.json();
+        if (!tokenData.access_token) return res.status(400).send("No access token");
+
+        // Hardcoded search body (old working version)
+        const hardcodedBody = {
+          metadata: { limit: 10, sortBy: { field: "Origin", direction: "Ascending" }, fields: "all", type: "Regular" },
+          includeWithGreaterPickupDates: true,
+          origin: { states: ["IL"], city: "Chicago", radius: 100, type: "City" },
+          destination: { type: "Anywhere" },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"],
+          includeLoadsWithoutWeight: true,
+          includeLoadsWithoutLength: true,
+        };
+
+        // Call 123LoadBoard search API
+        const loadResp = await fetch(`${URI_123}/loads/search`, {
+          method: "POST",
+          headers: {
+            "123LB-Correlation-Id": "GADZ123",
+            "Content-Type": "application/json",
+            "123LB-Api-Version": "1.3",
+            "User-Agent": USER_AGENT,
+            "123LB-AID": LOADBOARD_AID,
+            Authorization: `Bearer ${tokenData.access_token}`,
+          },
+          body: JSON.stringify(hardcodedBody),
+        });
+
+        const loadData = await loadResp.json();
+        res.json(loadData);
+
+      } catch (err) {
+        console.error("Error in test callback:", err);
+        res.status(500).send({ error: "Test callback failed" });
+      }
+    });
+
     // -----------------------------
     // Endpoint to receive POST request from frontend
     // -----------------------------
