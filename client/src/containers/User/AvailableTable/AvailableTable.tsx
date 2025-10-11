@@ -4111,6 +4111,7 @@ const AvailableTable: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState(null);
 
   const [searchFormData, setSearchFormData] = useState({
     originCity: "",
@@ -4275,7 +4276,7 @@ const AvailableTable: React.FC = () => {
   //     handle123Search();
   //   }
   // }, []);
-  
+
 // (Removed duplicate useEffect to ensure handle123Search is not used before its declaration)
 //   useEffect(() => {
 //   const params = new URLSearchParams(window.location.search);

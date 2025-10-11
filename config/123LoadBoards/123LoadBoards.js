@@ -511,6 +511,45 @@ router.get("/auth/callback", async (req, res) => {
   }
 });
 
+// On server, inside /load-search endpoint:
+router.post("/load-search-test", async (req, res) => {
+  try {
+    const authToken = req.cookies.lb_access_token;
+    if (!authToken) return res.status(401).send({ error: "Missing access token" });
+
+    // Hardcoded body like old server code
+    const hardcodedBody = {
+      metadata: { limit: 10, sortBy: { field: "Origin", direction: "Ascending" }, fields: "all", type: "Regular" },
+      includeWithGreaterPickupDates: true,
+      origin: { states: ["IL"], city: "Chicago", radius: 100, type: "City" },
+      destination: { type: "Anywhere" },
+      equipmentTypes: ["Van", "Flatbed", "Reefer"],
+      includeLoadsWithoutWeight: true,
+      includeLoadsWithoutLength: true,
+    };
+
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "123LB-Correlation-Id": "GADZ123",
+        "Content-Type": "application/json",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT,
+        "123LB-AID": LOADBOARD_AID,
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(hardcodedBody),
+    });
+
+    const loadData = await loadResp.json();
+    console.log("Hardcoded Load Response:", loadData);
+    res.json(loadData);
+  } catch (err) {
+    console.error("Error fetching hardcoded loads:", err);
+    res.status(500).send({ error: "Load search test failed" });
+  }
+});
+
 // ---------- Step 3: Search loads with stored token ----------
 router.post("/load-search", async (req, res) => {
   try {
