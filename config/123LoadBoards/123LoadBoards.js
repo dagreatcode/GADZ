@@ -439,51 +439,44 @@
 
 // module.exports = router;
 
-// config/123LoadBoards/123LoadBoards.js
-const express = require("express");
+// backend/config/123LoadBoards/123LoadBoards.js
 const fetch = require("node-fetch");
+const express = require("express");
 const router = express.Router();
 
-// 🔐 AUTHORIZATION STEP
+const CLIENT_ID = process.env.LOADBOARD_CLIENT_ID;
+const CLIENT_SECRET = process.env.LOADBOARD_CLIENT_SECRET;
+const REDIRECT_URI = process.env.LOADBOARD_REDIRECT_URI;
+const URI_123 = process.env.URI_123;
+const USER_AGENT = process.env.USER_AGENT;
+const LOADBOARD_AID = process.env.LOADBOARD_AID;
+
+// ---------- Authorization Route ----------
 router.get("/authorize", (req, res) => {
-  const { CLIENT_ID, DEV_URI, URI_123, USER_AGENT = "gadzconnect_dev" } = process.env;
-
-  if (!CLIENT_ID || !DEV_URI || !URI_123) {
-    return res.status(500).send("Missing environment configuration");
-  }
-
   const query = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
-    redirect_uri: DEV_URI,
+    redirect_uri: REDIRECT_URI,
     scope: "loadsearching",
-    state: "gadz_state",
-    login_hint: USER_AGENT,
+    state: "gadzconnect",
+    login_hint: "gadzconnect_dev",
   }).toString();
 
   res.redirect(`${URI_123}/authorize?${query}`);
 });
 
-// 🧾 TOKEN EXCHANGE CALLBACK
+// ---------- Callback Route ----------
 router.get("/auth/callback", async (req, res) => {
-  const {
-    CLIENT_ID,
-    CLIENT_SECRET,
-    DEV_URI,
-    URI_123,
-    USER_AGENT = "gadzconnect_dev",
-    LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-  } = process.env;
-
-  const authCode = req.query.code;
-  if (!authCode) return res.status(400).send("Missing authorization code.");
-
   try {
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
+
+    // Exchange code for access token
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
       code: authCode,
       client_id: CLIENT_ID,
-      redirect_uri: DEV_URI,
+      redirect_uri: REDIRECT_URI,
     }).toString();
 
     const tokenResp = await fetch(`${URI_123}/token`, {
@@ -500,128 +493,66 @@ router.get("/auth/callback", async (req, res) => {
     });
 
     const tokenData = await tokenResp.json();
-    console.log("✅ Token Response from 123:", tokenData);
+    console.log("Access Token Response:", tokenData);
 
     if (!tokenData.access_token) {
-      console.error("❌ No access_token found:", tokenData);
-      return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
+      return res.status(400).send("Failed to retrieve access token.");
     }
 
-    // Send token JSON back to frontend so it can store and use it
-    return res.json({
-      success: true,
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-      scope: tokenData.scope,
+    const bearerToken = tokenData.access_token;
+
+    // Save token in cookie for frontend
+    res.cookie("lb_access_token", bearerToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 3600 * 1000, // 1 hour
     });
-  } catch (err) {
-    console.error("Error in /auth/callback:", err);
-    res.status(500).json({ error: "Token exchange failed", details: String(err) });
-  }
-});
 
-// ♻️ REFRESH TOKEN (OPTIONAL)
-router.post("/refresh-token", async (req, res) => {
-  const { CLIENT_ID, CLIENT_SECRET, URI_123, USER_AGENT, LOADBOARD_AID } = process.env;
-  const { refresh_token } = req.body;
-  if (!refresh_token) return res.status(400).json({ error: "Missing refresh_token" });
+    // ---------- Default Search (Autofill) ----------
+    const today = new Date().toISOString().split("T")[0];
+    const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split("T")[0];
 
-  try {
-    const formData = new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token,
-      client_id: CLIENT_ID,
-    }).toString();
-
-    const resp = await fetch(`${URI_123}/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "123LB-Api-Version": "1.3",
-        "User-Agent": USER_AGENT || "gadzconnect_dev",
-        "123LB-AID": LOADBOARD_AID,
-        Authorization:
-          "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+    const defaultSearchBody = {
+      metadata: {
+        limit: 10,
+        sortBy: { field: "Origin", direction: "Ascending" },
+        fields: "all",
+        type: "Regular",
       },
-      body: formData,
-    });
+      includeWithGreaterPickupDates: true,
+      origin: { states: ["IL"], city: "Chicago", radius: 100, type: "City" },
+      destination: { type: "Anywhere" },
+      equipmentTypes: ["Flatbed"],
+      pickupDates: [today],
+      minWeight: 1000,
+      maxMileage: 500,
+      modifiedOnStart: lastMonth,
+      modifiedOnEnd: today,
+    };
 
-    const tokenData = await resp.json();
-    if (!tokenData.access_token) return res.status(400).json(tokenData);
-
-    return res.json({
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-    });
-  } catch (err) {
-    console.error("Error refreshing token:", err);
-    res.status(500).json({ error: "Refresh failed", details: String(err) });
-  }
-});
-
-// 🔍 LOAD SEARCH ENDPOINT
-router.post("/search", async (req, res) => {
-  const {
-    originCity,
-    originState,
-    radius,
-    destinationType,
-    equipmentTypes,
-    minWeight,
-    maxMileage,
-    pickupDate,
-    companyRating,
-    modifiedStartDate,
-    modifiedEndDate,
-  } = req.body;
-
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(400).json({ error: "Missing authorization token" });
-
-  try {
-    const response = await fetch(`${process.env.URI_123}/loads/search`, {
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
       method: "POST",
       headers: {
+        "123LB-Correlation-Id": "123GADZ",
         "Content-Type": "application/json",
         "123LB-Api-Version": "1.3",
-        "User-Agent": process.env.USER_AGENT || "gadzconnect_dev",
-        "123LB-AID": process.env.LOADBOARD_AID || "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-        Authorization: `Bearer ${token}`,
+        "User-Agent": USER_AGENT,
+        "123LB-AID": LOADBOARD_AID,
+        Authorization: `Bearer ${bearerToken}`,
       },
-      body: JSON.stringify({
-        metadata: {
-          limit: 10,
-          sortBy: { field: "Origin", direction: "Ascending" },
-          fields: "all",
-          type: "Regular",
-        },
-        includeWithGreaterPickupDates: true,
-        origin: {
-          city: originCity,
-          states: [originState],
-          radius,
-          type: "City",
-        },
-        destination: { type: destinationType || "Anywhere" },
-        equipmentTypes,
-        minWeight,
-        maxMileage,
-        pickupDates: [pickupDate],
-        company: { minRating: companyRating },
-        modifiedOnStart: modifiedStartDate,
-        modifiedOnEnd: modifiedEndDate,
-      }),
+      body: JSON.stringify(defaultSearchBody),
     });
 
-    const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data });
+    const loadData = await loadResp.json();
+    console.log("Default Load Search Response:", loadData);
 
-    res.json(data);
+    // Redirect to frontend with loads in session/localStorage
+    res.redirect(`${process.env.FRONTEND_REDIRECT}?autofill=1`);
+
   } catch (err) {
-    console.error("Error fetching loads:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in /auth/callback:", err);
+    res.status(500).send("Error during OAuth callback or default search");
   }
 });
 
