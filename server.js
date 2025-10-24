@@ -396,12 +396,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static("client/build"));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://gadzconnect.com",
+  "https://www.gadzconnect.com",
+  "https://api.gadzconnect.com"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 // Socket.io
+// const io = socketIo(server, {
+//   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] },
+// });
 const io = socketIo(server, {
-  cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] },
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
+
 io.on("connection", (socket) => {
   handleVideoSocket(io, socket);
   handleMessageSocket(io, socket);
