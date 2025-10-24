@@ -62,7 +62,7 @@ async function authCallback(req, res) {
     const bearerToken = tokenData.access_token;
 
 
-    app.get("/auth/callback-test", async (req, res) => {
+    app.get("/auth/callback", async (req, res) => {
       try {
         const authCode = req.query.code;
         if (!authCode) return res.status(400).send("Missing auth code");
