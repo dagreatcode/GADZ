@@ -442,6 +442,87 @@ app.post("/api/load-search", async (req, res, next) => {
   LoadsRouter.handle(req, res, next);
 });
 
+// Route to handle token exchange and fetch loads
+app.get("/auth/callback", async (req, res) => {
+  try {
+    const authCode = req.query.code;
+    console.log("Authorization Code:", authCode);
+
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (tokenData.access_token) {
+      const bearerToken = tokenData.access_token;
+
+      // Use access token to fetch loads
+      const loadResp = await fetch(`${URI_123}/loads/search`, {
+        method: "POST",
+        headers: {
+          "123LB-Correlation-Id": "123GADZ",
+          "Content-Type": "application/json",
+          "123LB-Api-Version": "1.3",
+          "User-Agent": USER_AGENT,
+          "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+          Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify({
+          metadata: {
+            limit: 10,
+            sortBy: { field: "Origin", direction: "Ascending" },
+            fields: "all",
+            type: "Regular",
+          },
+          includeWithGreaterPickupDates: true,
+          origin: {
+            states: ["IL"],
+            city: "Chicago",
+            radius: 100,
+            type: "City",
+          },
+          destination: {
+            type: "Anywhere",
+          },
+          equipmentTypes: ["Van", "Flatbed", "Reefer"],
+          includeLoadsWithoutWeight: true,
+          includeLoadsWithoutLength: true,
+        }),
+      });
+
+      const loadData = await loadResp.json();
+      console.log("Load Response:", loadData);
+      res.send(loadData);
+    } else {
+      console.error("Access token not found in response:", tokenData);
+      res.status(400).send("Failed to retrieve access token.");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred during the process.");
+  }
+});
+
 // Message API route
 app.use("/api/message", messageRouter);
 
