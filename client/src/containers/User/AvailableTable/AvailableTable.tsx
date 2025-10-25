@@ -4111,7 +4111,7 @@ const AvailableTable: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState(null);
+  // const [data, setData] = useState(null);
 
   const [searchFormData, setSearchFormData] = useState({
     originCity: "",
@@ -4205,44 +4205,44 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // ---------- 123Loadboard Auth Callback ----------
-  const fetchLoadboardData = useCallback(
-    async (authCode: string) => {
-      if (!authCode) return;
-      setLoading(true);
-      setError(null);
-      try {
-        // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+  // // ---------- 123Loadboard Auth Callback ----------
+  // const fetchLoadboardData = useCallback(
+  //   async (authCode: string) => {
+  //     if (!authCode) return;
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
+  //       const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
 
-        const cookieToken = getCookie("lb_access_token");
-        if (cookieToken) {
-          localStorage.setItem("lb_access_token", cookieToken);
-          setToken(cookieToken);
-        }
+  //       const cookieToken = getCookie("lb_access_token");
+  //       if (cookieToken) {
+  //         localStorage.setItem("lb_access_token", cookieToken);
+  //         setToken(cookieToken);
+  //       }
 
-        let apiLoads: any[] = [];
-        const d = resp.data;
-        if (Array.isArray(d)) apiLoads = d;
-        else if (Array.isArray(d.loads)) apiLoads = d.loads;
-        else if (Array.isArray(d.data)) apiLoads = d.data;
-        else if (Array.isArray(d.results)) apiLoads = d.results;
-        else if (Array.isArray(d.payload)) apiLoads = d.payload;
+  //       let apiLoads: any[] = [];
+  //       const d = resp.data;
+  //       if (Array.isArray(d)) apiLoads = d;
+  //       else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  //       else if (Array.isArray(d.data)) apiLoads = d.data;
+  //       else if (Array.isArray(d.results)) apiLoads = d.results;
+  //       else if (Array.isArray(d.payload)) apiLoads = d.payload;
 
-        if (apiLoads.length > 0) {
-          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-          setSuccess(true);
-          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-        }
-      } catch (err) {
-        console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data via callback.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [mapApiLoadToDisplay]
-  );
+  //       if (apiLoads.length > 0) {
+  //         setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  //         setSuccess(true);
+  //         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching 123Loadboard data:", err);
+  //       setError("Failed to fetch 123Loadboard data via callback.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [mapApiLoadToDisplay]
+  // );
 
   // ---------- Init ----------
   useEffect(() => {
@@ -4257,17 +4257,17 @@ const AvailableTable: React.FC = () => {
   }, [fetchLoads, fetchDrivers]);
 
   // Handle 123Loadboard OAuth redirect
-  useEffect(() => {
-    if (!code) return;
-    const usedCode = localStorage.getItem("lb_auth_code");
-    if (usedCode === code) return;
+  // useEffect(() => {
+  //   if (!code) return;
+  //   const usedCode = localStorage.getItem("lb_auth_code");
+  //   if (usedCode === code) return;
 
-    (async () => {
-      await fetchLoadboardData(code);
-      localStorage.setItem("lb_auth_code", code);
-      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-    })();
-  }, [code, fetchLoadboardData]);
+  //   (async () => {
+  //     await fetchLoadboardData(code);
+  //     localStorage.setItem("lb_auth_code", code);
+  //     window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+  //   })();
+  // }, [code, fetchLoadboardData]);
 
   // useEffect(() => {
   //   const params = new URLSearchParams(window.location.search);
@@ -4287,6 +4287,42 @@ const AvailableTable: React.FC = () => {
 //     handle123Search();
 //   }
 // }, [handle123Search]);
+
+// After redirect, automatically run full callback + search
+useEffect(() => {
+  if (!code) return;
+  const usedCode = localStorage.getItem("lb_auth_code");
+  if (usedCode === code) return;
+
+  (async () => {
+    try {
+      const resp = await axios.post(`${API_BASE}/api/123Loads/callback?code=${code}`, searchFormData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      const { access_token, search } = resp.data;
+
+      // Save token and update results
+      localStorage.setItem("lb_access_token", access_token);
+      setToken(access_token);
+
+      const apiLoads = Array.isArray(search.loads)
+        ? search.loads
+        : Array.isArray(search.data)
+        ? search.data
+        : Array.isArray(search.results)
+        ? search.results
+        : [];
+
+      setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+      localStorage.setItem("lb_auth_code", code);
+
+      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+    } catch (err: any) {
+      console.error("Error fetching 123Loadboard data via callback:", err);
+      setError(err.response?.data?.error || err.message || "Error fetching 123Loadboard data via callback.");
+    }
+  })();
+}, [code, searchFormData, mapApiLoadToDisplay]);
 
   // ---------- Handlers ----------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

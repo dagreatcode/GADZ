@@ -523,6 +523,105 @@ app.get("/auth/callback", async (req, res) => {
   }
 });
 
+// Combined route: handle token exchange + dynamic search in one step
+app.post("/api/123Loads/callback", async (req, res) => {
+  try {
+    const authCode = req.query.code;
+    const formOptions = req.body; // Frontend form data
+    console.log("Authorization Code:", authCode);
+    console.log("Form Options:", formOptions);
+
+    if (!authCode) {
+      return res.status(400).json({ error: "Missing authorization code" });
+    }
+
+    // Step 1: Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization: "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (!tokenData.access_token) {
+      console.error("Access token not found in response:", tokenData);
+      return res.status(400).json({ error: "Failed to retrieve access token." });
+    }
+
+    const bearerToken = tokenData.access_token;
+
+    // Step 2: Build dynamic search body using frontend data
+    const searchBody = {
+      metadata: {
+        limit: Number(formOptions.limit) || 10,
+        sortBy: formOptions.sortBy || { field: "Origin", direction: "Ascending" },
+        fields: "all",
+        type: "Regular",
+      },
+      includeWithGreaterPickupDates: true,
+      origin: {
+        states: formOptions.originState ? [formOptions.originState] : [],
+        city: formOptions.originCity || "",
+        radius: Number(formOptions.radius) || 100,
+        type: formOptions.originType || "City",
+      },
+      destination: {
+        type: formOptions.destinationType || "Anywhere",
+      },
+      equipmentTypes: formOptions.equipmentTypes?.length
+        ? formOptions.equipmentTypes
+        : ["Van", "Flatbed", "Reefer"],
+      includeLoadsWithoutWeight: true,
+      includeLoadsWithoutLength: true,
+      weight: formOptions.minWeight
+        ? { min: Number(formOptions.minWeight) }
+        : undefined,
+      companyRating: formOptions.companyRating || undefined,
+    };
+
+    // Step 3: Use access token to fetch loads dynamically
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "123LB-Correlation-Id": "123GADZ",
+        "Content-Type": "application/json",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT,
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify(searchBody),
+    });
+
+    const loadData = await loadResp.json();
+    console.log("Load Search Response:", loadData);
+
+    // Step 4: Return combined token + results to frontend
+    res.json({
+      access_token: bearerToken,
+      search: loadData,
+    });
+  } catch (error) {
+    console.error("Error during 123Loadboard callback:", error);
+    res.status(500).json({ error: "An error occurred during the process." });
+  }
+});
+
 // Message API route
 app.use("/api/message", messageRouter);
 
