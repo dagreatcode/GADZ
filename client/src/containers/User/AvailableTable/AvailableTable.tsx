@@ -4212,7 +4212,8 @@ const AvailableTable: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
+        // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
+        const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
 
         const cookieToken = getCookie("lb_access_token");
         if (cookieToken) {
