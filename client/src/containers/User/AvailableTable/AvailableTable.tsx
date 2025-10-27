@@ -4256,8 +4256,8 @@ const AvailableTable: React.FC = () => {
       setError(null);
 
       try {
-        // const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-        const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
           params: { code },
         });
@@ -4563,12 +4563,12 @@ const AvailableTable: React.FC = () => {
 
           <div className="mt-3 d-flex gap-2">
             <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
-            <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
-            <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
+            {/* <button type="submit" className="btn btn-primary">Search 123Loadboard</button> */}
+            {/* <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button> */}
           </div>
 
           {/* 123Loadboard Manual Fetch */}
-          <h2>🔍 123Loadboard Search Testing</h2>
+          {/* <h2>🔍 123Loadboard Search Testing</h2> */}
 
           <div className="d-flex gap-2 mb-3">
             <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
@@ -4583,33 +4583,27 @@ const AvailableTable: React.FC = () => {
             </button>
           </div>
 
-          <form
-            className="mb-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handle123Search(); // Your existing search logic
-            }}
-          >
-            {/* form fields here */}
-            <div className="mt-3">
-              <button
-                className="btn btn-success"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Searching..." : "Search Loads"}
-              </button>
-            </div>
-          </form>
+          {/* form fields here */}
+          <div className="mt-3">
+            <button
+              className="btn btn-success"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Searching..." : "Search Loads"}
+            </button>
+          </div>
 
-          {error && <div className="alert alert-danger mt-3">{error}</div>}
-          {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>}
+          {/* {error && <div className="alert alert-danger mt-3">{error}</div>}
+          {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>} */}
 
         </form>
 
         {loading && <p>Loading search results...</p>}
-        {error && <p className="text-danger">{error}</p>}
-        {success && <p className="text-success">Search completed successfully!</p>}
+        {/* {error && <p className="text-danger">{error}</p>}
+        {success && <p className="text-success">Search completed successfully!</p>} */}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
+        {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>}
 
         <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />
       </section>
