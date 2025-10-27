@@ -4256,8 +4256,8 @@ const AvailableTable: React.FC = () => {
       setError(null);
 
       try {
-        // const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-        const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+        // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
           params: { code },
         });
@@ -4561,10 +4561,10 @@ const AvailableTable: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-3 d-flex gap-2">
-            {/* <button type="submit" className="btn btn-primary">Search 123Loadboard</button> */}
-            {/* <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button> */}
-          </div>
+          {/* <div className="mt-3 d-flex gap-2">
+            <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
+            <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
+          </div> */}
 
           {/* 123Loadboard Manual Fetch */}
           {/* <h2>🔍 123Loadboard Search Testing</h2> */}
@@ -4584,7 +4584,7 @@ const AvailableTable: React.FC = () => {
             </button>
           </div>
 
-          {/* form fields here */}
+          {/* form fields here
           <div className="mt-3">
             <button
               className="btn btn-success"
@@ -4593,7 +4593,7 @@ const AvailableTable: React.FC = () => {
             >
               {loading ? "Searching..." : "Search Loads"}
             </button>
-          </div>
+          </div> */}
 
           {/* {error && <div className="alert alert-danger mt-3">{error}</div>}
           {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>} */}
