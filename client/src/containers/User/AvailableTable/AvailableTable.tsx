@@ -4205,44 +4205,45 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  // ---------- 123Loadboard Auth Callback ----------
-  const fetchLoadboardData = useCallback(
-    async (authCode: string) => {
-      if (!authCode) return;
-      setLoading(true);
-      setError(null);
-      try {
-        // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+  //TODO: This Works on auto fill...
+  // // ---------- 123Loadboard Auth Callback ----------
+  // const fetchLoadboardData = useCallback(
+  //   async (authCode: string) => {
+  //     if (!authCode) return;
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
+  //       const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
 
-        const cookieToken = getCookie("lb_access_token");
-        if (cookieToken) {
-          localStorage.setItem("lb_access_token", cookieToken);
-          setToken(cookieToken);
-        }
+  //       const cookieToken = getCookie("lb_access_token");
+  //       if (cookieToken) {
+  //         localStorage.setItem("lb_access_token", cookieToken);
+  //         setToken(cookieToken);
+  //       }
 
-        let apiLoads: any[] = [];
-        const d = resp.data;
-        if (Array.isArray(d)) apiLoads = d;
-        else if (Array.isArray(d.loads)) apiLoads = d.loads;
-        else if (Array.isArray(d.data)) apiLoads = d.data;
-        else if (Array.isArray(d.results)) apiLoads = d.results;
-        else if (Array.isArray(d.payload)) apiLoads = d.payload;
+  //       let apiLoads: any[] = [];
+  //       const d = resp.data;
+  //       if (Array.isArray(d)) apiLoads = d;
+  //       else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  //       else if (Array.isArray(d.data)) apiLoads = d.data;
+  //       else if (Array.isArray(d.results)) apiLoads = d.results;
+  //       else if (Array.isArray(d.payload)) apiLoads = d.payload;
 
-        if (apiLoads.length > 0) {
-          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-          setSuccess(true);
-          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-        }
-      } catch (err) {
-        console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data via callback.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [mapApiLoadToDisplay]
-  );
+  //       if (apiLoads.length > 0) {
+  //         setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  //         setSuccess(true);
+  //         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching 123Loadboard data:", err);
+  //       setError("Failed to fetch 123Loadboard data via callback.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [mapApiLoadToDisplay]
+  // );
 
   // ---------- Init ----------
   useEffect(() => {
@@ -4256,18 +4257,19 @@ const AvailableTable: React.FC = () => {
     fetchDrivers();
   }, [fetchLoads, fetchDrivers]);
 
-  // Handle 123Loadboard OAuth redirect
-  useEffect(() => {
-    if (!code) return;
-    const usedCode = localStorage.getItem("lb_auth_code");
-    if (usedCode === code) return;
+  //TODO: This Works on auto fill...
+  // // Handle 123Loadboard OAuth redirect
+  // useEffect(() => {
+  //   if (!code) return;
+  //   const usedCode = localStorage.getItem("lb_auth_code");
+  //   if (usedCode === code) return;
 
-    (async () => {
-      await fetchLoadboardData(code);
-      localStorage.setItem("lb_auth_code", code);
-      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-    })();
-  }, [code, fetchLoadboardData]);
+  //   (async () => {
+  //     await fetchLoadboardData(code);
+  //     localStorage.setItem("lb_auth_code", code);
+  //     window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+  //   })();
+  // }, [code, fetchLoadboardData]);
 
   // useEffect(() => {
   //   const params = new URLSearchParams(window.location.search);
@@ -4278,15 +4280,34 @@ const AvailableTable: React.FC = () => {
   //   }
   // }, []);
 
-// (Removed duplicate useEffect to ensure handle123Search is not used before its declaration)
-//   useEffect(() => {
-//   const params = new URLSearchParams(window.location.search);
-//   const autofill = params.get("autofill");
+  // (Removed duplicate useEffect to ensure handle123Search is not used before its declaration)
+  //   useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search);
+  //   const autofill = params.get("autofill");
 
-//   if (autofill) {
-//     handle123Search();
-//   }
-// }, [handle123Search]);
+  //   if (autofill) {
+  //     handle123Search();
+  //   }
+  // }, [handle123Search]);
+
+  // //Test
+  // const searchData = {
+  //   code: code,
+  //   searchParams: {
+  //     originCity: "Chicago",
+  //     originStates: ["IL"],
+  //     radius: 50,
+  //     destinationType: "Anywhere",
+  //     equipmentTypes: ["Van"],
+  //     limit: 5,
+  //     sortBy: { field: "Origin", direction: "Ascending" },
+  //     fields: "all",
+  //   },
+  // };
+
+  // axios.post(`${API_BASE}/auth/callback/1`, searchData)
+  //   .then(res => console.log("Load Results:", res.data))
+  //   .catch(err => console.error(err));
 
   // ---------- Handlers ----------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -4345,11 +4366,13 @@ const AvailableTable: React.FC = () => {
       setLoading(false);
     }
   }, [searchFormData, token, mapApiLoadToDisplay]);
-  
+
+  // Removed the auto-trigger for handle123Search; users will now submit manually.
+  // We keep only the initial load and auth logic above.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const autofill = params.get("autofill");
-  
+
     if (autofill) {
       handle123Search();
     }
