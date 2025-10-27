@@ -4257,7 +4257,7 @@ const AvailableTable: React.FC = () => {
 
       try {
         const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-        // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
           params: { code },
         });
@@ -4467,6 +4467,21 @@ const AvailableTable: React.FC = () => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `/api/loadboard/auth/callback?code=${code}`,
+        searchFormData,
+        { withCredentials: true }
+      );
+      console.log("Fetched Loads:", response.data);
+      alert("Load search successful! Check console for results.");
+    } catch (error) {
+      console.error("Error fetching loads:", error);
+      alert("Error fetching loads. Check console for details.");
+    }
+  };
   // ---------- Render ----------
   return (
     <div className={styles["at-container"]}>
@@ -4600,6 +4615,56 @@ const AvailableTable: React.FC = () => {
 
         </form>
 
+        <h1>Testing Only</h1>
+        {/* <form onSubmit={handleSubmit}>
+        <button type="submit" className="btn btn-primary">
+          Fetch Loads with Auth Code
+        </button>
+      </form>  */}
+
+        <form onSubmit={handleSubmit} className="load-search-form">
+          <h2>Search Loads</h2>
+          <button type="button" onClick={handleAutoFill}>
+            AutoFill Test Data
+          </button>
+
+          <input
+            type="text"
+            name="originCity"
+            placeholder="Origin City"
+            value={searchFormData.originCity}
+            onChange={handleInputChange}
+          />
+
+          <input
+            type="text"
+            name="originState"
+            placeholder="Origin State"
+            value={searchFormData.originState}
+            onChange={handleInputChange}
+          />
+
+          <input
+            type="number"
+            name="radius"
+            placeholder="Radius (miles)"
+            value={searchFormData.radius}
+            onChange={handleInputChange}
+          />
+
+          <select
+            name="equipmentTypes"
+            value={searchFormData.equipmentTypes}
+            onChange={handleInputChange}
+          >
+            <option value="">Select Equipment</option>
+            <option value="Van">Van</option>
+            <option value="Flatbed">Flatbed</option>
+            <option value="Reefer">Reefer</option>
+          </select>
+
+          <button type="submit">Search Loads</button>
+        </form>
         {loading && <p>Loading search results...</p>}
         {/* {error && <p className="text-danger">{error}</p>}
         {success && <p className="text-success">Search completed successfully!</p>} */}
@@ -4608,6 +4673,7 @@ const AvailableTable: React.FC = () => {
 
         <Table data={searchResults} title="Search Results" isUser={false} showCompanyLink />
       </section>
+
     </div>
   );
 };
