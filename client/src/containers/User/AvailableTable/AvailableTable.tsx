@@ -4244,6 +4244,50 @@ const AvailableTable: React.FC = () => {
   //   },
   //   [mapApiLoadToDisplay]
   // );
+  // ---------- 123Loadboard Manual Fetch ----------
+  const fetchLoadboardData = useCallback(
+    async () => {
+      if (!code) {
+        setError("Missing authorization code — please connect your account first.");
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+          params: { code },
+        });
+
+        const cookieToken = getCookie("lb_access_token");
+        if (cookieToken) {
+          localStorage.setItem("lb_access_token", cookieToken);
+          setToken(cookieToken);
+        }
+
+        let apiLoads: any[] = [];
+        const d = resp.data;
+        if (Array.isArray(d)) apiLoads = d;
+        else if (Array.isArray(d.loads)) apiLoads = d.loads;
+        else if (Array.isArray(d.data)) apiLoads = d.data;
+        else if (Array.isArray(d.results)) apiLoads = d.results;
+        else if (Array.isArray(d.payload)) apiLoads = d.payload;
+
+        if (apiLoads.length > 0) {
+          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+          setSuccess(true);
+          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+        }
+      } catch (err) {
+        console.error("Error fetching 123Loadboard data:", err);
+        setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [code, mapApiLoadToDisplay]
+  );
 
   // ---------- Init ----------
   useEffect(() => {
@@ -4369,14 +4413,14 @@ const AvailableTable: React.FC = () => {
 
   // Removed the auto-trigger for handle123Search; users will now submit manually.
   // We keep only the initial load and auth logic above.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const autofill = params.get("autofill");
+  // useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search);
+  //   const autofill = params.get("autofill");
 
-    if (autofill) {
-      handle123Search();
-    }
-  }, [handle123Search]);
+  //   if (autofill) {
+  //     handle123Search();
+  //   }
+  // }, [handle123Search]);
 
   const handleAuthorizeNavigation = () => {
     const base = API_BASE || "http://localhost:3001";
@@ -4520,6 +4564,45 @@ const AvailableTable: React.FC = () => {
             <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
             <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
           </div>
+
+          {/* 123Loadboard Manual Fetch */}
+          <h2>🔍 123Loadboard Search Testing</h2>
+
+          <div className="d-flex gap-2 mb-3">
+            <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
+              Connect / Authorize
+            </button>
+            <button
+              className="btn btn-outline-success"
+              onClick={fetchLoadboardData}
+              disabled={loading}
+            >
+              {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
+            </button>
+          </div>
+
+          <form
+            className="mb-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handle123Search(); // Your existing search logic
+            }}
+          >
+            {/* form fields here */}
+            <div className="mt-3">
+              <button
+                className="btn btn-success"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Searching..." : "Search Loads"}
+              </button>
+            </div>
+          </form>
+
+          {error && <div className="alert alert-danger mt-3">{error}</div>}
+          {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>}
+
         </form>
 
         {loading && <p>Loading search results...</p>}
