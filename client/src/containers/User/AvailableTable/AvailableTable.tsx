@@ -4256,8 +4256,8 @@ const AvailableTable: React.FC = () => {
       setError(null);
 
       try {
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+        // const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+        const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
           params: { code },
         });
@@ -4562,7 +4562,6 @@ const AvailableTable: React.FC = () => {
           </div>
 
           <div className="mt-3 d-flex gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
             {/* <button type="submit" className="btn btn-primary">Search 123Loadboard</button> */}
             {/* <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button> */}
           </div>
@@ -4571,6 +4570,8 @@ const AvailableTable: React.FC = () => {
           {/* <h2>🔍 123Loadboard Search Testing</h2> */}
 
           <div className="d-flex gap-2 mb-3">
+            <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
+
             <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
               Connect / Authorize
             </button>
