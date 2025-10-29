@@ -4512,17 +4512,36 @@ const AvailableTable: React.FC = () => {
   //   }
   // };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const payload = {
+  //       code, // the authorization code from URL params or context
+  //       ...searchFormData, // includes originCity, originState, radius, etc.
+  //     };
+
+  //     const response = await axios.post(
+  //       "/api/loadboard/auth/callMeBack",
+  //       payload,
+  //       { withCredentials: true }
+  //     );
+
+  //     console.log("Fetched Loads:", response.data);
+  //     alert("Load search successful! Check console for results.");
+  //   } catch (error) {
+  //     console.error("Error fetching loads:", error);
+  //     alert("Error fetching loads. Check console for details.");
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      const payload = {
-        code, // the authorization code from URL params or context
-        ...searchFormData, // includes originCity, originState, radius, etc.
-      };
+      const payload = { code, ...searchFormData };
 
       const response = await axios.post(
-        "/api/loadboard/auth/callMeBack",
+        "/auth/callMeBack",
         payload,
         { withCredentials: true }
       );
