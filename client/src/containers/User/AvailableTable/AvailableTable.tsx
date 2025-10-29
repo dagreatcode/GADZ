@@ -4256,8 +4256,8 @@ const AvailableTable: React.FC = () => {
       setError(null);
 
       try {
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+        // const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+          const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
           params: { code },
         });

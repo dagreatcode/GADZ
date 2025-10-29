@@ -264,6 +264,118 @@ router.get("/auth/callback", async (req, res) => {
   }
 });
 
+// Route to handle token exchange and fetch loads dynamically
+app.post("/api/loadboard/auth/callback/test", async (req, res) => {
+  try {
+    const { code } = req.query; // from redirect URL
+    const searchData = req.body; // from frontend form
+
+    console.log("Authorization Code:", code);
+    console.log("Search Data from Frontend:", searchData);
+
+    if (!code) {
+      return res.status(400).json({ error: "Missing authorization code" });
+    }
+
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "GadzConnect-LoadSearch/1.0.0 (support@gadzconnect.com)",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+    console.log("Access Token Response:", tokenData);
+
+    if (!tokenData.access_token) {
+      return res.status(400).json({ error: "Failed to retrieve access token." });
+    }
+
+    const bearerToken = tokenData.access_token;
+
+    // Use access token to fetch loads with user input
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": "GadzConnect-LoadSearch/1.0.0 (support@gadzconnect.com)",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        "123LB-Correlation-Id": "123GADZ",
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify({
+        metadata: {
+          limit: searchData.limit || 10,
+          sortBy: { field: "Origin", direction: "Ascending" },
+          fields: "all",
+          type: "Regular",
+        },
+        equipmentSpecifications: "None",
+        includeWithGreaterPickupDates: true,
+        maxAge: 2147483647,
+        maxExtraDrops: 2147483647,
+        hasTeam: true,
+        hasRate: true,
+        company: {
+          name: "GadzConnect",
+          types: "None",
+          minRating: 5,
+          isFavorite: true,
+          isFactorable: true,
+          isTiaMember: false,
+          isTiaCertified: false,
+        },
+        modifiedOnStart: searchData.modifiedStartDate || "2025-09-27T00:00:00Z",
+        modifiedOnEnd: searchData.modifiedEndDate || "2025-10-27T00:00:00Z",
+        minMileage: 0,
+        maxMileage: parseInt(searchData.maxMileage || 500),
+        minOriginRadius: parseFloat(searchData.radius || 100),
+        minWeight: parseInt(searchData.minWeight || 0),
+        origin: {
+          states: [searchData.originState],
+          city: searchData.originCity,
+          radius: parseInt(searchData.radius || 100),
+          type: "City",
+        },
+        destination: {
+          type: searchData.destinationType || "Anywhere",
+        },
+        equipmentTypes: searchData.equipmentTypes
+          ? [searchData.equipmentTypes]
+          : ["Van", "Flatbed", "Reefer"],
+        pickupDates: [searchData.pickupDate || new Date().toISOString()],
+        loadSize: "Tl",
+        includeLoadsWithoutWeight: true,
+        includeLoadsWithoutLength: true,
+      }),
+    });
+
+    const loadData = await loadResp.json();
+    console.log("Load Response:", loadData);
+
+    res.status(200).json(loadData);
+  } catch (error) {
+    console.error("Error in /auth/callback:", error);
+    res.status(500).json({ error: "Server error during callback process." });
+  }
+});
+
 /**
  * Refresh access token
  */
