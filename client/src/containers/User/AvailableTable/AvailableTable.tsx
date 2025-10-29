@@ -4547,6 +4547,17 @@ const AvailableTable: React.FC = () => {
       );
 
       console.log("Fetched Loads:", response.data);
+
+      // Map API data to your Load type
+      if (response.data && response.data.loads) {
+        const mappedLoads = response.data.loads.map(mapApiLoadToDisplay);
+        setLoads(mappedLoads);
+        console.log("Mapped Loads in State:", mappedLoads);
+      } else {
+        console.warn("No loads found in response.");
+        setLoads([]);
+      }
+
       alert("Load search successful! Check console for results.");
     } catch (error) {
       console.error("Error fetching loads:", error);

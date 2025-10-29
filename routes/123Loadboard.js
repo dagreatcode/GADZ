@@ -265,23 +265,106 @@ router.get("/auth/callback", async (req, res) => {
 });
 
 
-router.post("/auth/callMeBack", async (req, res) => {
-  const {
-    CLIENT_ID,
-    CLIENT_SECRET,
-    DEV_URI,
-    URI_123,
-    USER_AGENT = "gadzconnect_dev",
-    LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
-  } = process.env;
+// router.post("/auth/callMeBack", async (req, res) => {
+//   const {
+//     CLIENT_ID,
+//     CLIENT_SECRET,
+//     DEV_URI,
+//     URI_123,
+//     USER_AGENT = "gadzconnect_dev",
+//     LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+//   } = process.env;
 
+//   try {
+//     // Extract data sent from frontend
+//     const { code, originCity, originState, radius, equipmentTypes } = req.body;
+
+//     if (!code) return res.status(400).json({ error: "Missing authorization code." });
+
+//     // Exchange authorization code for access token
+//     const formData = new URLSearchParams({
+//       grant_type: "authorization_code",
+//       code,
+//       client_id: CLIENT_ID,
+//       redirect_uri: DEV_URI,
+//     }).toString();
+
+//     const tokenResp = await fetch(`${URI_123}/token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "123LB-Api-Version": "1.3",
+//         "User-Agent": USER_AGENT,
+//         "123LB-AID": LOADBOARD_AID,
+//         Authorization:
+//           "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+//       },
+//       body: formData,
+//     });
+
+//     const tokenData = await tokenResp.json();
+
+//     if (!tokenData.access_token) {
+//       console.error("No access_token in response:", tokenData);
+//       return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
+//     }
+
+//     const bearerToken = tokenData.access_token;
+
+//     // Use frontend data to fetch loads
+//     const loadResp = await fetch(`${URI_123}/loads/search`, {
+//       method: "POST",
+//       headers: {
+//         "123LB-Correlation-Id": "123GADZ",
+//         "Content-Type": "application/json",
+//         "123LB-Api-Version": "1.3",
+//         "User-Agent": USER_AGENT,
+//         "123LB-AID": LOADBOARD_AID,
+//         Authorization: `Bearer ${bearerToken}`,
+//       },
+//       body: JSON.stringify({
+//         metadata: {
+//           limit: 10,
+//           sortBy: { field: "Origin", direction: "Ascending" },
+//           fields: "all",
+//           type: "Regular",
+//         },
+//         includeWithGreaterPickupDates: true,
+//         origin: {
+//           states: [originState || "IL"],
+//           city: originCity || "Chicago",
+//           radius: radius || 100,
+//           type: "City",
+//         },
+//         destination: {
+//           type: "Anywhere",
+//         },
+//         equipmentTypes: equipmentTypes || ["Van", "Flatbed", "Reefer"],
+//         includeLoadsWithoutWeight: true,
+//         includeLoadsWithoutLength: true,
+//       }),
+//     });
+
+//     const loadData = await loadResp.json();
+
+//     return res.json({
+//       token: tokenData.access_token,
+//       loads: loadData,
+//     });
+//   } catch (err) {
+//     console.error("Error during auth callback:", err);
+//     return res.status(500).json({ error: "Callback error", details: String(err) });
+//   }
+// });
+app.post("/auth/callMeBack", async (req, res) => {
   try {
-    // Extract data sent from frontend
-    const { code, originCity, originState, radius, equipmentTypes } = req.body;
+    const { code, ...searchData } = req.body;
+    console.log("Authorization Code:", code);
+    console.log("Search Data from Frontend:", searchData);
 
-    if (!code) return res.status(400).json({ error: "Missing authorization code." });
+    if (!code) return res.status(400).json({ error: "Missing authorization code" });
 
-    // Exchange authorization code for access token
+    // 1️⃣ Exchange authorization code for access token
     const formData = new URLSearchParams({
       grant_type: "authorization_code",
       code,
@@ -294,8 +377,8 @@ router.post("/auth/callMeBack", async (req, res) => {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "123LB-Api-Version": "1.3",
-        "User-Agent": USER_AGENT,
-        "123LB-AID": LOADBOARD_AID,
+        "User-Agent": "gadzconnect_dev",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
         Authorization:
           "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
       },
@@ -303,57 +386,50 @@ router.post("/auth/callMeBack", async (req, res) => {
     });
 
     const tokenData = await tokenResp.json();
-
-    if (!tokenData.access_token) {
-      console.error("No access_token in response:", tokenData);
-      return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
-    }
+    if (!tokenData.access_token)
+      return res.status(400).json({ error: "Failed to retrieve access token." });
 
     const bearerToken = tokenData.access_token;
 
-    // Use frontend data to fetch loads
+    // 2️⃣ Fetch loads using user-provided search data
     const loadResp = await fetch(`${URI_123}/loads/search`, {
       method: "POST",
       headers: {
-        "123LB-Correlation-Id": "123GADZ",
         "Content-Type": "application/json",
         "123LB-Api-Version": "1.3",
-        "User-Agent": USER_AGENT,
-        "123LB-AID": LOADBOARD_AID,
+        "User-Agent": "GadzConnect-LoadSearch/1.0.0 (support@gadzconnect.com)",
+        "123LB-AID": "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+        "123LB-Correlation-Id": "123GADZ",
         Authorization: `Bearer ${bearerToken}`,
       },
       body: JSON.stringify({
         metadata: {
-          limit: 10,
+          limit: searchData.limit || 10,
           sortBy: { field: "Origin", direction: "Ascending" },
           fields: "all",
           type: "Regular",
         },
         includeWithGreaterPickupDates: true,
         origin: {
-          states: [originState || "IL"],
-          city: originCity || "Chicago",
-          radius: radius || 100,
+          states: [searchData.originState],
+          city: searchData.originCity,
+          radius: parseInt(searchData.radius || 100),
           type: "City",
         },
-        destination: {
-          type: "Anywhere",
-        },
-        equipmentTypes: equipmentTypes || ["Van", "Flatbed", "Reefer"],
+        destination: { type: searchData.destinationType || "Anywhere" },
+        equipmentTypes: searchData.equipmentTypes
+          ? [searchData.equipmentTypes]
+          : ["Van", "Flatbed", "Reefer"],
         includeLoadsWithoutWeight: true,
         includeLoadsWithoutLength: true,
       }),
     });
 
     const loadData = await loadResp.json();
-
-    return res.json({
-      token: tokenData.access_token,
-      loads: loadData,
-    });
-  } catch (err) {
-    console.error("Error during auth callback:", err);
-    return res.status(500).json({ error: "Callback error", details: String(err) });
+    res.status(200).json(loadData);
+  } catch (error) {
+    console.error("Error in /auth/callMeBack:", error);
+    res.status(500).json({ error: "Server error during callback process." });
   }
 });
 
