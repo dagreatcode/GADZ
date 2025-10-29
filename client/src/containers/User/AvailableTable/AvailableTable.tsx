@@ -4484,31 +4484,54 @@ const AvailableTable: React.FC = () => {
   // };
 
   // /auth/callMeBack
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   // use the `code` from the URL (defined above) and values from searchFormData
+  //   const payload = {
+  //     code: code || null,
+  //     originCity: searchFormData.originCity,
+  //     originState: searchFormData.originState,
+  //     radius: searchFormData.radius,
+  //     equipmentTypes: searchFormData.equipmentTypes,
+  //   };
+
+  //   try {
+  //     const res = await fetch(`${API_BASE}/auth/callMeBack`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       credentials: "include",
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     const data = await res.json();
+  //     console.log("Response:", data);
+  //   } catch (err) {
+  //     console.error("Error submitting auth callback:", err);
+  //     setError("Failed to submit auth callback. See console for details.");
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // use the `code` from the URL (defined above) and values from searchFormData
-    const payload = {
-      code: code || null,
-      originCity: searchFormData.originCity,
-      originState: searchFormData.originState,
-      radius: searchFormData.radius,
-      equipmentTypes: searchFormData.equipmentTypes,
-    };
-
     try {
-      const res = await fetch(`${API_BASE}/auth/callMeBack`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const payload = {
+        code, // the authorization code from URL params or context
+        ...searchFormData, // includes originCity, originState, radius, etc.
+      };
 
-      const data = await res.json();
-      console.log("Response:", data);
-    } catch (err) {
-      console.error("Error submitting auth callback:", err);
-      setError("Failed to submit auth callback. See console for details.");
+      const response = await axios.post(
+        "/api/loadboard/auth/callMeBack",
+        payload,
+        { withCredentials: true }
+      );
+
+      console.log("Fetched Loads:", response.data);
+      alert("Load search successful! Check console for results.");
+    } catch (error) {
+      console.error("Error fetching loads:", error);
+      alert("Error fetching loads. Check console for details.");
     }
   };
 
