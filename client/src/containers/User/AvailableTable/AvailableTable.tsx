@@ -4471,7 +4471,7 @@ const AvailableTable: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `/api/loadboard/auth/callback/test?code=${code}`,
+        `/api/loadboard/auth/callback?code=${code}`,
         searchFormData,
         { withCredentials: true }
       );
