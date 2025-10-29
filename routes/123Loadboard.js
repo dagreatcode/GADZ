@@ -264,6 +264,99 @@ router.get("/auth/callback", async (req, res) => {
   }
 });
 
+
+router.post("/auth/callMeBack", async (req, res) => {
+  const {
+    CLIENT_ID,
+    CLIENT_SECRET,
+    DEV_URI,
+    URI_123,
+    USER_AGENT = "gadzconnect_dev",
+    LOADBOARD_AID = "Ba76be66d-dc2e-4045-87a3-adec3ae60eaf",
+  } = process.env;
+
+  try {
+    // Extract data sent from frontend
+    const { code, originCity, originState, radius, equipmentTypes } = req.body;
+
+    if (!code) return res.status(400).json({ error: "Missing authorization code." });
+
+    // Exchange authorization code for access token
+    const formData = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      client_id: CLIENT_ID,
+      redirect_uri: DEV_URI,
+    }).toString();
+
+    const tokenResp = await fetch(`${URI_123}/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT,
+        "123LB-AID": LOADBOARD_AID,
+        Authorization:
+          "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResp.json();
+
+    if (!tokenData.access_token) {
+      console.error("No access_token in response:", tokenData);
+      return res.status(400).json({ error: "Failed to retrieve access token", details: tokenData });
+    }
+
+    const bearerToken = tokenData.access_token;
+
+    // Use frontend data to fetch loads
+    const loadResp = await fetch(`${URI_123}/loads/search`, {
+      method: "POST",
+      headers: {
+        "123LB-Correlation-Id": "123GADZ",
+        "Content-Type": "application/json",
+        "123LB-Api-Version": "1.3",
+        "User-Agent": USER_AGENT,
+        "123LB-AID": LOADBOARD_AID,
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify({
+        metadata: {
+          limit: 10,
+          sortBy: { field: "Origin", direction: "Ascending" },
+          fields: "all",
+          type: "Regular",
+        },
+        includeWithGreaterPickupDates: true,
+        origin: {
+          states: [originState || "IL"],
+          city: originCity || "Chicago",
+          radius: radius || 100,
+          type: "City",
+        },
+        destination: {
+          type: "Anywhere",
+        },
+        equipmentTypes: equipmentTypes || ["Van", "Flatbed", "Reefer"],
+        includeLoadsWithoutWeight: true,
+        includeLoadsWithoutLength: true,
+      }),
+    });
+
+    const loadData = await loadResp.json();
+
+    return res.json({
+      token: tokenData.access_token,
+      loads: loadData,
+    });
+  } catch (err) {
+    console.error("Error during auth callback:", err);
+    return res.status(500).json({ error: "Callback error", details: String(err) });
+  }
+});
+
 // Route to handle token exchange and fetch loads dynamically
 app.post("/api/loadboard/auth/callback/test", async (req, res) => {
   try {
