@@ -542,15 +542,82 @@
 
 // export default React.memo(Table);
 
+// import React from "react";
+// // import { Link } from "react-router-dom";
+// import styles from "./AvailableTable.module.css";
+
+// interface TableProps {
+//   data: any[];
+//   title: string;
+//   showCompanyLink?: boolean;
+//   isUser?: boolean; // ✅ optional now
+//   scrollable?: boolean;
+//   maxHeight?: string;
+// }
+
+// const Table: React.FC<TableProps> = ({
+//   data,
+//   title,
+//   showCompanyLink = false,
+//   isUser = false,
+//   scrollable = true,
+//   maxHeight = "300px",
+// }) => {
+//   // Dynamically generate table header based on first data item
+//   const renderHeader = () => {
+//     if (!data || data.length === 0) return null;
+//     return (
+//       <tr>
+//         {Object.keys(data[0]).map((key) => (
+//           <th key={key}>{key}</th>
+//         ))}
+//       </tr>
+//     );
+//   };
+
+//   // Render each row dynamically based on object values
+//   const renderRow = (item: any) => (
+//     <tr key={item.id || item.loadId || JSON.stringify(item)}>
+//       {Object.entries(item).map(([key, val], i) => (
+//         <td key={i}>
+//           {/* Handle arrays, nulls, and convert values to strings */}
+//           {Array.isArray(val) ? val.join(", ") : val?.toString() || ""}
+//         </td>
+//       ))}
+//     </tr>
+//   );
+
+//   return (
+//     <div className={styles["at-tableContainer"]}>
+//       <h3>{title}</h3>
+//       {scrollable ? (
+//         <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight }}>
+//           <table className={styles["at-table"]}>
+//             <thead>{renderHeader()}</thead>
+//             <tbody>{data.map(renderRow)}</tbody>
+//           </table>
+//         </div>
+//       ) : (
+//         <table className={styles["at-table"]}>
+//           <thead>{renderHeader()}</thead>
+//           <tbody>{data.map(renderRow)}</tbody>
+//         </table>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default React.memo(Table);
+
 import React from "react";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "./AvailableTable.module.css";
 
 interface TableProps {
   data: any[];
   title: string;
   showCompanyLink?: boolean;
-  isUser?: boolean; // ✅ optional now
+  isUser?: boolean;
   scrollable?: boolean;
   maxHeight?: string;
 }
@@ -563,7 +630,6 @@ const Table: React.FC<TableProps> = ({
   scrollable = true,
   maxHeight = "300px",
 }) => {
-  // Dynamically generate table header based on first data item
   const renderHeader = () => {
     if (!data || data.length === 0) return null;
     return (
@@ -575,15 +641,43 @@ const Table: React.FC<TableProps> = ({
     );
   };
 
-  // Render each row dynamically based on object values
   const renderRow = (item: any) => (
     <tr key={item.id || item.loadId || JSON.stringify(item)}>
-      {Object.entries(item).map(([key, val], i) => (
-        <td key={i}>
-          {/* Handle arrays, nulls, and convert values to strings */}
-          {Array.isArray(val) ? val.join(", ") : val?.toString() || ""}
-        </td>
-      ))}
+      {(Object.entries(item as Record<string, any>) as [string, any][]).map(([key, val], i) => {
+        // Wrap the company name in a Link if showCompanyLink is true
+        if (showCompanyLink && key === "company" && item.userId) {
+          return (
+            <td key={i}>
+              <Link
+                to={`/UserProfile/${item.userId}`}
+                className={styles["at-link"]}
+              >
+                {val?.toString() ?? ""}
+              </Link>
+            </td>
+          );
+        }
+
+        // Optionally link userId directly if isUser is true
+        if (isUser && key === "userId") {
+          return (
+            <td key={i}>
+              <Link
+                to={`/UserProfile/${String(val)}`}
+                className={styles["at-link"]}
+              >
+                {String(val)}
+              </Link>
+            </td>
+          );
+        }
+
+        return (
+          <td key={i}>
+            {Array.isArray(val) ? val.join(", ") : val?.toString() ?? ""}
+          </td>
+        );
+      })}
     </tr>
   );
 
@@ -591,7 +685,10 @@ const Table: React.FC<TableProps> = ({
     <div className={styles["at-tableContainer"]}>
       <h3>{title}</h3>
       {scrollable ? (
-        <div className={styles["at-scrollableTableWrapper"]} style={{ maxHeight }}>
+        <div
+          className={styles["at-scrollableTableWrapper"]}
+          style={{ maxHeight }}
+        >
           <table className={styles["at-table"]}>
             <thead>{renderHeader()}</thead>
             <tbody>{data.map(renderRow)}</tbody>
