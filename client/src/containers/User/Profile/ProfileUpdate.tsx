@@ -11,7 +11,6 @@
 
 // type User = {
 //   id: string;
-//   image: string;
 //   email: string;
 //   password?: string;
 //   description: string;
@@ -24,26 +23,29 @@
 //   phoneNumber: string;
 //   driversLicense: string;
 //   comments: string;
+//   qrCode?: string; // ✅ added QR support
 // };
 
 // const ServerPort =
 //   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
-// // Cloudinary constants (replace with your Cloudinary cloud name & preset)
-// const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload";
-// const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
+// // ✅ Replace these with your actual Cloudinary credentials
+// // const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload`;
+// // const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
+// const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+// const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 // const ProfileUpdate: React.FC = () => {
-//   const userId = localStorage.userId;
+//   const userId = localStorage.getItem("userId");
 //   const [error, setError] = useState<string | null>(null);
 //   const [loading, setLoading] = useState<boolean>(false);
 //   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [imagePreview, setImagePreview] = useState<string | null>(null);
+//   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // ✅ QR code state
 
 //   const [formData, setFormData] = useState<User>({
 //     id: "",
-//     image: "",
 //     email: "",
 //     password: "",
 //     description: "",
@@ -56,10 +58,12 @@
 //     phoneNumber: "",
 //     driversLicense: "",
 //     comments: "",
+//     qrCode: "",
 //   });
 
 //   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+//   // ✅ Load user profile
 //   useEffect(() => {
 //     const fetchUserData = async () => {
 //       setLoading(true);
@@ -69,10 +73,12 @@
 //         setLoading(false);
 //         return;
 //       }
+
 //       try {
-//         const response = await axios.get(`/api/user/view/${userId}`, {
+//         const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
+
 //         if (response.status === 200) {
 //           const userData = response.data;
 //           const availableFromDate =
@@ -86,7 +92,9 @@
 //             password: "",
 //             newPassword: "",
 //           });
+
 //           setImagePreview(userData.profileImage || null);
+//           setQrCodeImage(userData.qrCode || null);
 //         }
 //       } catch (err) {
 //         handleApiError(err);
@@ -98,16 +106,19 @@
 //     if (userId) fetchUserData();
 //   }, [userId]);
 
+//   // ✅ Upload image to Cloudinary
 //   const handleImageUpload = async (file: File) => {
 //     setLoading(true);
 //     try {
 //       const data = new FormData();
 //       data.append("file", file);
-//       data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+//       data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET!);
 
 //       const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
-//       setFormData({ ...formData, profileImage: res.data.secure_url });
-//       setImagePreview(res.data.secure_url);
+//       const imageUrl = res.data.secure_url;
+
+//       setFormData({ ...formData, profileImage: imageUrl });
+//       setImagePreview(imageUrl);
 //     } catch (err) {
 //       console.error("Upload error:", err);
 //       setError("Image upload failed. Please try again.");
@@ -116,11 +127,12 @@
 //     }
 //   };
 
+//   // ✅ Validate before sending update
 //   const validateForm = () => {
 //     const errors: any = {};
 //     if (!formData.email) errors.email = "Email is required";
 //     else if (!/\S+@\S+\.\S+/.test(formData.email))
-//       errors.email = "Email is invalid";
+//       errors.email = "Invalid email format";
 //     if (!formData.description) errors.description = "Description is required";
 //     if (!formData.userType) errors.userType = "User Type is required";
 //     if (!formData.experienceLevel)
@@ -136,16 +148,19 @@
 //     return Object.keys(errors).length === 0;
 //   };
 
+//   // ✅ Submit update to backend
 //   const handleUserUpdate = async (e: React.FormEvent) => {
 //     e.preventDefault();
 //     if (!validateForm()) return;
 
 //     setIsSubmitting(true);
 //     setLoading(true);
-//     const token = localStorage.getItem("token");
 //     setError(null);
 //     setSuccessMessage(null);
 
+//     const token = localStorage.getItem("token");
+
+//     // Remove password if not updating it
 //     const updatedData: Partial<User> = { ...formData };
 //     if (!formData.newPassword) delete updatedData.password;
 
@@ -160,10 +175,30 @@
 //           },
 //         }
 //       );
+
+//       // if (response.status === 200) {
+//       //   setSuccessMessage("✅ Profile updated successfully!");
+//       //   setQrCodeImage(response.data.qrCode || qrCodeImage); // ✅ refresh QR code if regenerated
+//       //   setFormData({ ...formData, newPassword: "" });
+//       // }
 //       if (response.status === 200) {
-//         setSuccessMessage("Profile updated successfully 🎉");
-//         setFormData({ ...formData, newPassword: "" });
+//         const updatedUser = response.data.user; // ✅ this comes from backend
+
+//         // ✅ Update state with fresh user data
+//         setFormData({
+//           ...updatedUser,
+//           password: "",
+//           newPassword: "",
+//         });
+
+//         // ✅ Update any images or QR codes returned
+//         setImagePreview(updatedUser.profileImage || imagePreview);
+//         setQrCodeImage(updatedUser.qrCode || qrCodeImage);
+
+//         // ✅ Show success message
+//         setSuccessMessage("✅ Profile updated successfully!");
 //       }
+
 //     } catch (err) {
 //       handleApiError(err);
 //     } finally {
@@ -172,9 +207,10 @@
 //     }
 //   };
 
+//   // ✅ Handle API errors
 //   const handleApiError = (error: any) => {
 //     if (axios.isAxiosError(error)) {
-//       setError(error.response?.data.message || error.message);
+//       setError(error.response?.data?.message || error.message);
 //     } else {
 //       setError("An unknown error occurred");
 //     }
@@ -182,8 +218,8 @@
 
 //   return (
 //     <Card className="p-4 shadow-lg rounded-lg">
-//       <h2 className="mb-4">Update Your Profile</h2>
-//       {loading && <Spinner animation="border" />}
+//       <h2 className="mb-4 text-center">Update Your Profile</h2>
+//       {loading && <Spinner animation="border" className="d-block mx-auto mb-3" />}
 //       {error && <Alert variant="danger">{error}</Alert>}
 //       {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
@@ -195,7 +231,7 @@
 //               imagePreview ||
 //               "https://via.placeholder.com/150?text=Upload+Profile+Image"
 //             }
-//             alt="Profile Preview"
+//             alt="Profile"
 //             style={{
 //               width: 120,
 //               height: 120,
@@ -207,15 +243,27 @@
 //           <Form.Control
 //             type="file"
 //             accept="image/*"
+//             className="mt-2"
 //             onChange={(e) => {
 //               const target = e.target as HTMLInputElement;
 //               if (target.files?.[0]) {
 //                 handleImageUpload(target.files[0]);
 //               }
 //             }}
-//             className="mt-2"
 //           />
 //         </div>
+
+//         {/* ✅ QR Code Section */}
+//         {qrCodeImage && (
+//           <div className="mb-4 text-center">
+//             <h5>Your QR Code</h5>
+//             <img
+//               src={qrCodeImage}
+//               alt="QR Code"
+//               style={{ width: 150, height: 150 }}
+//             />
+//           </div>
+//         )}
 
 //         {/* Email + Description */}
 //         <Row className="mb-3">
@@ -233,6 +281,7 @@
 //               {formErrors.email}
 //             </Form.Control.Feedback>
 //           </Form.Group>
+
 //           <Form.Group as={Col} md="6" controlId="description">
 //             <Form.Label>Description</Form.Label>
 //             <Form.Control
@@ -254,41 +303,28 @@
 //           <Form.Group as={Col} md="6" controlId="userType">
 //             <Form.Label>User Type</Form.Label>
 //             <Form.Control
-//               as="select"
+//               type="text"
 //               value={formData.userType}
 //               onChange={(e) =>
 //                 setFormData({ ...formData, userType: e.target.value })
 //               }
 //               isInvalid={!!formErrors.userType}
-//             >
-//               <option value="">Select User Type</option>
-//               <option value="shipper">Shipper</option>
-//               <option value="carrier">Carrier</option>
-//               <option value="broker">Broker</option>
-//               <option value="contractor">Contractor</option>
-//             </Form.Control>
+//             />
 //             <Form.Control.Feedback type="invalid">
 //               {formErrors.userType}
 //             </Form.Control.Feedback>
 //           </Form.Group>
+
 //           <Form.Group as={Col} md="6" controlId="experienceLevel">
 //             <Form.Label>Experience Level</Form.Label>
 //             <Form.Control
-//               as="select"
+//               type="text"
 //               value={formData.experienceLevel}
 //               onChange={(e) =>
-//                 setFormData({
-//                   ...formData,
-//                   experienceLevel: e.target.value,
-//                 })
+//                 setFormData({ ...formData, experienceLevel: e.target.value })
 //               }
 //               isInvalid={!!formErrors.experienceLevel}
-//             >
-//               <option value="">Select Experience Level</option>
-//               <option value="beginner">Beginner</option>
-//               <option value="intermediate">Intermediate</option>
-//               <option value="expert">Expert</option>
-//             </Form.Control>
+//             />
 //             <Form.Control.Feedback type="invalid">
 //               {formErrors.experienceLevel}
 //             </Form.Control.Feedback>
@@ -311,6 +347,7 @@
 //               {formErrors.location}
 //             </Form.Control.Feedback>
 //           </Form.Group>
+
 //           <Form.Group as={Col} md="6" controlId="availableFrom">
 //             <Form.Label>Available From</Form.Label>
 //             <Form.Control
@@ -327,22 +364,8 @@
 //           </Form.Group>
 //         </Row>
 
-//         {/* Password + Phone */}
+//         {/* Phone + License */}
 //         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="newPassword">
-//             <Form.Label>New Password</Form.Label>
-//             <Form.Control
-//               type="password"
-//               value={formData.newPassword}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, newPassword: e.target.value })
-//               }
-//               isInvalid={!!formErrors.newPassword}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.newPassword}
-//             </Form.Control.Feedback>
-//           </Form.Group>
 //           <Form.Group as={Col} md="6" controlId="phoneNumber">
 //             <Form.Label>Phone Number</Form.Label>
 //             <Form.Control
@@ -357,12 +380,9 @@
 //               {formErrors.phoneNumber}
 //             </Form.Control.Feedback>
 //           </Form.Group>
-//         </Row>
 
-//         {/* License + Comments */}
-//         <Row className="mb-3">
 //           <Form.Group as={Col} md="6" controlId="driversLicense">
-//             <Form.Label>Drivers License</Form.Label>
+//             <Form.Label>Driver’s License</Form.Label>
 //             <Form.Control
 //               type="text"
 //               value={formData.driversLicense}
@@ -375,23 +395,38 @@
 //               {formErrors.driversLicense}
 //             </Form.Control.Feedback>
 //           </Form.Group>
-//           <Form.Group as={Col} md="6" controlId="comments">
-//             <Form.Label>Comments</Form.Label>
-//             <Form.Control
-//               as="textarea"
-//               rows={3}
-//               value={formData.comments}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, comments: e.target.value })
-//               }
-//               isInvalid={!!formErrors.comments}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.comments}
-//             </Form.Control.Feedback>
-//           </Form.Group>
 //         </Row>
 
+//         {/* Comments */}
+//         <Form.Group className="mb-3" controlId="comments">
+//           <Form.Label>Comments</Form.Label>
+//           <Form.Control
+//             as="textarea"
+//             rows={3}
+//             value={formData.comments}
+//             onChange={(e) =>
+//               setFormData({ ...formData, comments: e.target.value })
+//             }
+//             isInvalid={!!formErrors.comments}
+//           />
+//           <Form.Control.Feedback type="invalid">
+//             {formErrors.comments}
+//           </Form.Control.Feedback>
+//         </Form.Group>
+
+//         {/* Password Update */}
+//         <Form.Group className="mb-4" controlId="newPassword">
+//           <Form.Label>New Password</Form.Label>
+//           <Form.Control
+//             type="password"
+//             value={formData.newPassword}
+//             onChange={(e) =>
+//               setFormData({ ...formData, newPassword: e.target.value })
+//             }
+//           />
+//         </Form.Group>
+
+//         {/* Buttons */}
 //         <div className="d-flex justify-content-between">
 //           <Button
 //             type="submit"
@@ -436,15 +471,12 @@ type User = {
   phoneNumber: string;
   driversLicense: string;
   comments: string;
-  qrCode?: string; // ✅ added QR support
+  qrCode?: string; // ✅ QR support
 };
 
 const ServerPort =
   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
-// ✅ Replace these with your actual Cloudinary credentials
-// const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload`;
-// const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
@@ -455,7 +487,7 @@ const ProfileUpdate: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // ✅ QR code state
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<User>({
     id: "",
@@ -476,7 +508,7 @@ const ProfileUpdate: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // ✅ Load user profile
+  // ✅ Load user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
@@ -542,7 +574,7 @@ const ProfileUpdate: React.FC = () => {
 
   // ✅ Validate before sending update
   const validateForm = () => {
-    const errors: any = {};
+    const errors: Record<string, string> = {};
     if (!formData.email) errors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Invalid email format";
@@ -555,13 +587,13 @@ const ProfileUpdate: React.FC = () => {
       errors.availableFrom = "Available From date is required";
     if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
     if (!formData.driversLicense)
-      errors.driversLicense = "Drivers License is required";
+      errors.driversLicense = "Driver’s License is required";
     if (!formData.comments) errors.comments = "Comments are required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // ✅ Submit update to backend
+  // ✅ Submit update
   const handleUserUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -573,9 +605,14 @@ const ProfileUpdate: React.FC = () => {
 
     const token = localStorage.getItem("token");
 
-    // Remove password if not updating it
     const updatedData: Partial<User> = { ...formData };
+
+    // Only send password if updating
     if (!formData.newPassword) delete updatedData.password;
+    else {
+      updatedData.password = formData.newPassword;
+      delete updatedData.newPassword;
+    }
 
     try {
       const response = await axios.put(
@@ -589,29 +626,19 @@ const ProfileUpdate: React.FC = () => {
         }
       );
 
-      // if (response.status === 200) {
-      //   setSuccessMessage("✅ Profile updated successfully!");
-      //   setQrCodeImage(response.data.qrCode || qrCodeImage); // ✅ refresh QR code if regenerated
-      //   setFormData({ ...formData, newPassword: "" });
-      // }
       if (response.status === 200) {
-        const updatedUser = response.data.user; // ✅ this comes from backend
+        const updatedUser = response.data.user;
 
-        // ✅ Update state with fresh user data
         setFormData({
           ...updatedUser,
           password: "",
           newPassword: "",
         });
 
-        // ✅ Update any images or QR codes returned
         setImagePreview(updatedUser.profileImage || imagePreview);
         setQrCodeImage(updatedUser.qrCode || qrCodeImage);
-
-        // ✅ Show success message
         setSuccessMessage("✅ Profile updated successfully!");
       }
-
     } catch (err) {
       handleApiError(err);
     } finally {
@@ -620,7 +647,7 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
-  // ✅ Handle API errors
+  // ✅ Handle API error formatting
   const handleApiError = (error: any) => {
     if (axios.isAxiosError(error)) {
       setError(error.response?.data?.message || error.message);
@@ -637,7 +664,7 @@ const ProfileUpdate: React.FC = () => {
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
       <Form onSubmit={handleUserUpdate}>
-        {/* Profile Image Upload */}
+        {/* ✅ Profile Image Upload */}
         <div className="mb-4 text-center">
           <img
             src={
@@ -666,7 +693,7 @@ const ProfileUpdate: React.FC = () => {
           />
         </div>
 
-        {/* ✅ QR Code Section */}
+        {/* ✅ QR Code */}
         {qrCodeImage && (
           <div className="mb-4 text-center">
             <h5>Your QR Code</h5>
@@ -678,7 +705,7 @@ const ProfileUpdate: React.FC = () => {
           </div>
         )}
 
-        {/* Email + Description */}
+        {/* ✅ Email + Description */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="email">
             <Form.Label>Email</Form.Label>
@@ -711,7 +738,7 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* User Type + Experience */}
+        {/* ✅ User Type + Experience */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="userType">
             <Form.Label>User Type</Form.Label>
@@ -744,7 +771,7 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* Location + Available From */}
+        {/* ✅ Location + Available From */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="location">
             <Form.Label>Location</Form.Label>
@@ -777,7 +804,7 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* Phone + License */}
+        {/* ✅ Phone + License */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="phoneNumber">
             <Form.Label>Phone Number</Form.Label>
@@ -810,7 +837,7 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* Comments */}
+        {/* ✅ Comments */}
         <Form.Group className="mb-3" controlId="comments">
           <Form.Label>Comments</Form.Label>
           <Form.Control
@@ -827,7 +854,7 @@ const ProfileUpdate: React.FC = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        {/* Password Update */}
+        {/* ✅ Password Update */}
         <Form.Group className="mb-4" controlId="newPassword">
           <Form.Label>New Password</Form.Label>
           <Form.Control
@@ -839,7 +866,7 @@ const ProfileUpdate: React.FC = () => {
           />
         </Form.Group>
 
-        {/* Buttons */}
+        {/* ✅ Buttons */}
         <div className="d-flex justify-content-between">
           <Button
             type="submit"
