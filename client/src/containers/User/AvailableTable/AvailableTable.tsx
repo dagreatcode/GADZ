@@ -4244,52 +4244,52 @@ const AvailableTable: React.FC = () => {
   //   },
   //   [mapApiLoadToDisplay]
   // );
-  // ---------- 123Loadboard Manual Fetch ----------
-  const fetchLoadboardData = useCallback(
-    async () => {
-      if (!code) {
-        setError("Missing authorization code — please connect your account first.");
-        return;
-      }
+  // // ---------- 123Loadboard Manual Fetch ----------
+  // const fetchLoadboardData = useCallback(
+  //   async () => {
+  //     if (!code) {
+  //       setError("Missing authorization code — please connect your account first.");
+  //       return;
+  //     }
 
-      setLoading(true);
-      setError(null);
+  //     setLoading(true);
+  //     setError(null);
 
-      try {
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+  //     try {
+  //       const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+  //         // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
 
-          params: { code },
-        });
+  //         params: { code },
+  //       });
 
-        const cookieToken = getCookie("lb_access_token");
-        if (cookieToken) {
-          localStorage.setItem("lb_access_token", cookieToken);
-          setToken(cookieToken);
-        }
+  //       const cookieToken = getCookie("lb_access_token");
+  //       if (cookieToken) {
+  //         localStorage.setItem("lb_access_token", cookieToken);
+  //         setToken(cookieToken);
+  //       }
 
-        let apiLoads: any[] = [];
-        const d = resp.data;
-        if (Array.isArray(d)) apiLoads = d;
-        else if (Array.isArray(d.loads)) apiLoads = d.loads;
-        else if (Array.isArray(d.data)) apiLoads = d.data;
-        else if (Array.isArray(d.results)) apiLoads = d.results;
-        else if (Array.isArray(d.payload)) apiLoads = d.payload;
+  //       let apiLoads: any[] = [];
+  //       const d = resp.data;
+  //       if (Array.isArray(d)) apiLoads = d;
+  //       else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  //       else if (Array.isArray(d.data)) apiLoads = d.data;
+  //       else if (Array.isArray(d.results)) apiLoads = d.results;
+  //       else if (Array.isArray(d.payload)) apiLoads = d.payload;
 
-        if (apiLoads.length > 0) {
-          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-          setSuccess(true);
-          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-        }
-      } catch (err) {
-        console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [code, mapApiLoadToDisplay]
-  );
+  //       if (apiLoads.length > 0) {
+  //         setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  //         setSuccess(true);
+  //         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching 123Loadboard data:", err);
+  //       setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [code, mapApiLoadToDisplay]
+  // );
 
   // ---------- Init ----------
   useEffect(() => {

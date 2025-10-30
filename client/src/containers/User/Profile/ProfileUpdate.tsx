@@ -589,11 +589,29 @@ const ProfileUpdate: React.FC = () => {
         }
       );
 
+      // if (response.status === 200) {
+      //   setSuccessMessage("✅ Profile updated successfully!");
+      //   setQrCodeImage(response.data.qrCode || qrCodeImage); // ✅ refresh QR code if regenerated
+      //   setFormData({ ...formData, newPassword: "" });
+      // }
       if (response.status === 200) {
+        const updatedUser = response.data.user; // ✅ this comes from backend
+
+        // ✅ Update state with fresh user data
+        setFormData({
+          ...updatedUser,
+          password: "",
+          newPassword: "",
+        });
+
+        // ✅ Update any images or QR codes returned
+        setImagePreview(updatedUser.profileImage || imagePreview);
+        setQrCodeImage(updatedUser.qrCode || qrCodeImage);
+
+        // ✅ Show success message
         setSuccessMessage("✅ Profile updated successfully!");
-        setQrCodeImage(response.data.qrCode || qrCodeImage); // ✅ refresh QR code if regenerated
-        setFormData({ ...formData, newPassword: "" });
       }
+
     } catch (err) {
       handleApiError(err);
     } finally {
