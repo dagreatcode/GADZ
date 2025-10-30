@@ -4617,7 +4617,7 @@ const AvailableTable: React.FC = () => {
       {/* Drivers */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
-        <button className="btn btn-primary mb-2" onClick={fetchDrivers}>Fetch Drivers</button>
+        {/* <button className="btn btn-primary mb-2" onClick={fetchDrivers}>Fetch Drivers</button> */}
         <Table data={driverList} title="All Drivers" isUser showCompanyLink={false} />
         <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
         <form className="mt-3" onSubmit={handleSubmitDriver}>
@@ -4639,7 +4639,7 @@ const AvailableTable: React.FC = () => {
       {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
-        <button className="btn btn-primary mb-2" onClick={fetchLoads}>Fetch Loads</button>
+        {/* <button className="btn btn-primary mb-2" onClick={fetchLoads}>Fetch Loads</button> */}
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
         <Table data={userLoads} title="Your Loads" isUser={false} showCompanyLink />
         <form className="mt-3" onSubmit={handleSubmitLoad}>
