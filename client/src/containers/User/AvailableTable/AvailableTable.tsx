@@ -4662,7 +4662,7 @@ const AvailableTable: React.FC = () => {
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
         <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
-          <div className="row g-3">
+          {/* <div className="row g-3">
             <div className="col-md-2">
               <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
             </div>
@@ -4696,7 +4696,7 @@ const AvailableTable: React.FC = () => {
             <div className="col-md-3">
               <input type="date" className="form-control" placeholder="Modified End" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="mt-3 d-flex gap-2">
             <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
@@ -4712,13 +4712,13 @@ const AvailableTable: React.FC = () => {
             <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
               Connect / Authorize
             </button>
-            <button
+            {/* <button
               className="btn btn-outline-success"
               onClick={fetchLoadboardData}
               disabled={loading}
             >
               {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
-            </button>
+            </button> */}
           </div>
 
           {/* form fields here
@@ -4737,7 +4737,7 @@ const AvailableTable: React.FC = () => {
 
         </form>
 
-        <h1>Testing Only</h1>
+        {/* <h1>Testing Only</h1> */}
         {/* <form onSubmit={handleSubmit}>
         <button type="submit" className="btn btn-primary">
           Fetch Loads with Auth Code
@@ -4745,47 +4745,78 @@ const AvailableTable: React.FC = () => {
       </form>  */}
 
         <form onSubmit={handleSubmit} className="load-search-form">
-          <h2>Search Loads</h2>
+          {/* <h2>Search Loads</h2>
           <button type="button" onClick={handleAutoFill}>
             AutoFill Test Data
-          </button>
+          </button> */}
 
-          <input
-            type="text"
-            name="originCity"
-            placeholder="Origin City"
-            value={searchFormData.originCity}
-            onChange={handleInputChange}
-          />
+          <div className="row g-3">
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Origin State" name="originState" value={searchFormData.originState} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Radius" name="radius" value={searchFormData.radius} onChange={handleInputChange} />
+            </div>
+            {/* <div className="col-md-2">
+              <input type="text" className="form-control" placeholder="Equipment Types" name="equipmentTypes" value={searchFormData.equipmentTypes} onChange={handleInputChange} />
+            </div> */}
+            <div className="col-md-2">
+              <select
+                name="equipmentTypes"
+                value={searchFormData.equipmentTypes}
+                onChange={handleInputChange}
+              >
+                <option value="">Select Equipment</option>
+                <option value="Van">Van</option>
+                <option value="Flatbed">Flatbed</option>
+                <option value="Reefer">Reefer</option>
+              </select>
+            </div>
+            <div className="col-md-2">
+              <input type="number" className="form-control" placeholder="Min Weight" name="minWeight" value={searchFormData.minWeight} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="number" className="form-control" placeholder="Max Mileage" name="maxMileage" value={searchFormData.maxMileage} onChange={handleInputChange} />
+            </div>
+          </div>
 
-          <input
-            type="text"
-            name="originState"
-            placeholder="Origin State"
-            value={searchFormData.originState}
-            onChange={handleInputChange}
-          />
+          <div className="row g-3 mt-2">
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Pickup Date" name="pickupDate" value={searchFormData.pickupDate} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="text" className="form-control" placeholder="Company Rating" name="companyRating" value={searchFormData.companyRating} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Modified Start" name="modifiedStartDate" value={searchFormData.modifiedStartDate} onChange={handleInputChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="date" className="form-control" placeholder="Modified End" name="modifiedEndDate" value={searchFormData.modifiedEndDate} onChange={handleInputChange} />
+            </div>
+          </div>
 
-          <input
-            type="number"
-            name="radius"
-            placeholder="Radius (miles)"
-            value={searchFormData.radius}
-            onChange={handleInputChange}
-          />
 
-          <select
-            name="equipmentTypes"
-            value={searchFormData.equipmentTypes}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Equipment</option>
-            <option value="Van">Van</option>
-            <option value="Flatbed">Flatbed</option>
-            <option value="Reefer">Reefer</option>
-          </select>
 
-          <button type="submit">Search Loads</button>
+          {/* <button type="submit">Search Loads</button> */}
+
+          <div className="d-flex gap-2 mb-3">
+            {/* <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
+
+            <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
+              Connect / Authorize
+            </button> */}
+            <button
+              className="btn btn-outline-success"
+              type="submit"
+              // onClick={fetchLoadboardData}
+              disabled={loading}
+            >
+              {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
+            </button>
+          </div>
         </form>
         {loading && <p>Loading search results...</p>}
         {/* {error && <p className="text-danger">{error}</p>}
