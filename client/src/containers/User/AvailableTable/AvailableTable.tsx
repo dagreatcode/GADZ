@@ -4661,7 +4661,7 @@ const AvailableTable: React.FC = () => {
       {/* 123Loadboard */}
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
-        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
+        <form className="mb-4" onSubmit={handleSubmit}>
           <div className="row g-3">
             <div className="col-md-2">
               <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
@@ -4737,14 +4737,14 @@ const AvailableTable: React.FC = () => {
 
         </form>
 
-        <h1>Testing Only</h1>
+        {/* <h1>Testing Only</h1> */}
         {/* <form onSubmit={handleSubmit}>
         <button type="submit" className="btn btn-primary">
           Fetch Loads with Auth Code
         </button>
       </form>  */}
 
-        <form onSubmit={handleSubmit} className="load-search-form">
+        {/* <form onSubmit={handleSubmit} className="load-search-form">
           <h2>Search Loads</h2>
           <button type="button" onClick={handleAutoFill}>
             AutoFill Test Data
@@ -4786,7 +4786,7 @@ const AvailableTable: React.FC = () => {
           </select>
 
           <button type="submit">Search Loads</button>
-        </form>
+        </form> */}
         {loading && <p>Loading search results...</p>}
         {/* {error && <p className="text-danger">{error}</p>}
         {success && <p className="text-success">Search completed successfully!</p>} */}
