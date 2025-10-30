@@ -4535,33 +4535,72 @@ const AvailableTable: React.FC = () => {
   //   }
   // };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const payload = { code, ...searchFormData };
+
+  //     const response = await axios.post(
+  //       "/auth/callMeBack",
+  //       payload,
+  //       { withCredentials: true }
+  //     );
+
+  //     console.log("Fetched Loads:", response.data);
+
+  //     // Map API data to your Load type
+  //     if (response.data && response.data.loads) {
+  //       const mappedLoads = response.data.loads.map(mapApiLoadToDisplay);
+  //       setLoads(mappedLoads);
+  //       console.log("Mapped Loads in State:", mappedLoads);
+  //     } else {
+  //       console.warn("No loads found in response.");
+  //       setLoads([]);
+  //     }
+
+  //     alert("Load search successful! Check console for results.");
+  //   } catch (error) {
+  //     console.error("Error fetching loads:", error);
+  //     alert("Error fetching loads. Check console for details.");
+  //   }
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const payload = { code, ...searchFormData };
 
       const response = await axios.post(
-        "/auth/callMeBack",
+        `${API_BASE}/auth/callMeBack`,
         payload,
         { withCredentials: true }
       );
 
       console.log("Fetched Loads:", response.data);
 
-      // Map API data to your Load type
-      if (response.data && response.data.loads) {
-        const mappedLoads = response.data.loads.map(mapApiLoadToDisplay);
-        setLoads(mappedLoads);
-        console.log("Mapped Loads in State:", mappedLoads);
+      // Map API data and set to searchResults (so the <Table> renders it)
+      let apiLoads: any[] = [];
+      const d = response.data;
+      if (Array.isArray(d)) apiLoads = d;
+      else if (Array.isArray(d.loads)) apiLoads = d.loads;
+      else if (Array.isArray(d.data)) apiLoads = d.data;
+      else if (Array.isArray(d.results)) apiLoads = d.results;
+      else if (Array.isArray(d.payload)) apiLoads = d.payload;
+
+      if (apiLoads.length > 0) {
+        const mappedLoads = apiLoads.map(mapApiLoadToDisplay);
+        setSearchResults(mappedLoads);
+        setSuccess(true);
+        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+        console.log("Mapped Search Results:", mappedLoads);
       } else {
         console.warn("No loads found in response.");
-        setLoads([]);
+        setSearchResults([]);
       }
-
-      alert("Load search successful! Check console for results.");
     } catch (error) {
       console.error("Error fetching loads:", error);
-      alert("Error fetching loads. Check console for details.");
+      setError("Error fetching loads. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
