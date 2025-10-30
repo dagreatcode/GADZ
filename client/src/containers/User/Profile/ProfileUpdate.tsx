@@ -458,7 +458,7 @@ import Spinner from "react-bootstrap/Spinner";
 import { Link } from "react-router-dom";
 
 type User = {
-  id: string;
+  id?: string;
   email: string;
   password?: string;
   description: string;
@@ -467,21 +467,24 @@ type User = {
   location: string;
   availableFrom: string;
   newPassword?: string;
-  profileImage?: string;
+  profileImage?: string | null;
   phoneNumber: string;
   driversLicense: string;
   comments: string;
-  qrCode?: string; // ✅ QR support
+  qrCode?: string | null;
 };
 
 const ServerPort =
-  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+  process.env.REACT_APP_API_URL || process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
-const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
+const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_UPLOAD_URL = CLOUDINARY_CLOUD_NAME
+  ? `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
+  : "";
 
 const ProfileUpdate: React.FC = () => {
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId") || "";
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -490,7 +493,7 @@ const ProfileUpdate: React.FC = () => {
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<User>({
-    id: "",
+    id: userId || undefined,
     email: "",
     password: "",
     description: "",
@@ -499,16 +502,15 @@ const ProfileUpdate: React.FC = () => {
     location: "",
     availableFrom: "",
     newPassword: "",
-    profileImage: "",
+    profileImage: null,
     phoneNumber: "",
     driversLicense: "",
     comments: "",
-    qrCode: "",
+    qrCode: null,
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // ✅ Load user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
@@ -519,24 +521,31 @@ const ProfileUpdate: React.FC = () => {
         return;
       }
 
+      if (!userId) {
+        setError("No userId found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.status === 200) {
-          const userData = response.data;
+          const userData = response.data?.user || response.data || {};
           const availableFromDate =
             typeof userData.availableFrom === "string"
               ? userData.availableFrom.split("T")[0]
               : "";
 
-          setFormData({
+          setFormData((prev) => ({
+            ...prev,
             ...userData,
             availableFrom: availableFromDate,
             password: "",
             newPassword: "",
-          });
+          }));
 
           setImagePreview(userData.profileImage || null);
           setQrCodeImage(userData.qrCode || null);
@@ -551,19 +560,29 @@ const ProfileUpdate: React.FC = () => {
     if (userId) fetchUserData();
   }, [userId]);
 
-  // ✅ Upload image to Cloudinary
   const handleImageUpload = async (file: File) => {
     setLoading(true);
+
+    if (!CLOUDINARY_UPLOAD_URL || !CLOUDINARY_UPLOAD_PRESET) {
+      setError("Cloudinary is not configured. Skipping upload.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = new FormData();
       data.append("file", file);
-      data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET!);
+      data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
       const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
-      const imageUrl = res.data.secure_url;
+      const imageUrl = res.data?.secure_url;
 
-      setFormData({ ...formData, profileImage: imageUrl });
-      setImagePreview(imageUrl);
+      if (imageUrl) {
+        setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
+        setImagePreview(imageUrl);
+      } else {
+        setError("Unexpected response from image upload.");
+      }
     } catch (err) {
       console.error("Upload error:", err);
       setError("Image upload failed. Please try again.");
@@ -572,28 +591,22 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
-  // ✅ Validate before sending update
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!formData.email) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      errors.email = "Invalid email format";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email format";
     if (!formData.description) errors.description = "Description is required";
     if (!formData.userType) errors.userType = "User Type is required";
-    if (!formData.experienceLevel)
-      errors.experienceLevel = "Experience Level is required";
+    if (!formData.experienceLevel) errors.experienceLevel = "Experience Level is required";
     if (!formData.location) errors.location = "Location is required";
-    if (!formData.availableFrom)
-      errors.availableFrom = "Available From date is required";
+    if (!formData.availableFrom) errors.availableFrom = "Available From date is required";
     if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
-    if (!formData.driversLicense)
-      errors.driversLicense = "Driver’s License is required";
+    if (!formData.driversLicense) errors.driversLicense = "Driver’s License is required";
     if (!formData.comments) errors.comments = "Comments are required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // ✅ Submit update
   const handleUserUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -605,9 +618,15 @@ const ProfileUpdate: React.FC = () => {
 
     const token = localStorage.getItem("token");
 
+    if (!userId) {
+      setError("No userId found. Please log in.");
+      setLoading(false);
+      setIsSubmitting(false);
+      return;
+    }
+
     const updatedData: Partial<User> = { ...formData };
 
-    // Only send password if updating
     if (!formData.newPassword) delete updatedData.password;
     else {
       updatedData.password = formData.newPassword;
@@ -627,13 +646,14 @@ const ProfileUpdate: React.FC = () => {
       );
 
       if (response.status === 200) {
-        const updatedUser = response.data.user;
+        const updatedUser = response.data?.user || response.data || {};
 
-        setFormData({
+        setFormData((prev) => ({
+          ...prev,
           ...updatedUser,
           password: "",
           newPassword: "",
-        });
+        }));
 
         setImagePreview(updatedUser.profileImage || imagePreview);
         setQrCodeImage(updatedUser.qrCode || qrCodeImage);
@@ -647,7 +667,6 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
-  // ✅ Handle API error formatting
   const handleApiError = (error: any) => {
     if (axios.isAxiosError(error)) {
       setError(error.response?.data?.message || error.message);
@@ -664,7 +683,6 @@ const ProfileUpdate: React.FC = () => {
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
       <Form onSubmit={handleUserUpdate}>
-        {/* ✅ Profile Image Upload */}
         <div className="mb-4 text-center">
           <img
             src={
@@ -693,7 +711,6 @@ const ProfileUpdate: React.FC = () => {
           />
         </div>
 
-        {/* ✅ QR Code */}
         {qrCodeImage && (
           <div className="mb-4 text-center">
             <h5>Your QR Code</h5>
@@ -705,15 +722,14 @@ const ProfileUpdate: React.FC = () => {
           </div>
         )}
 
-        {/* ✅ Email + Description */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="email">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
-              value={formData.email}
+              value={formData.email ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
+                setFormData((prev) => ({ ...prev, email: e.target.value }))
               }
               isInvalid={!!formErrors.email}
             />
@@ -726,9 +742,9 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Description</Form.Label>
             <Form.Control
               type="text"
-              value={formData.description}
+              value={formData.description ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+                setFormData((prev) => ({ ...prev, description: e.target.value }))
               }
               isInvalid={!!formErrors.description}
             />
@@ -738,15 +754,14 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* ✅ User Type + Experience */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="userType">
             <Form.Label>User Type</Form.Label>
             <Form.Control
               type="text"
-              value={formData.userType}
+              value={formData.userType ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, userType: e.target.value })
+                setFormData((prev) => ({ ...prev, userType: e.target.value }))
               }
               isInvalid={!!formErrors.userType}
             />
@@ -759,9 +774,9 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Experience Level</Form.Label>
             <Form.Control
               type="text"
-              value={formData.experienceLevel}
+              value={formData.experienceLevel ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, experienceLevel: e.target.value })
+                setFormData((prev) => ({ ...prev, experienceLevel: e.target.value }))
               }
               isInvalid={!!formErrors.experienceLevel}
             />
@@ -771,15 +786,14 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* ✅ Location + Available From */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="location">
             <Form.Label>Location</Form.Label>
             <Form.Control
               type="text"
-              value={formData.location}
+              value={formData.location ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
+                setFormData((prev) => ({ ...prev, location: e.target.value }))
               }
               isInvalid={!!formErrors.location}
             />
@@ -792,9 +806,9 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Available From</Form.Label>
             <Form.Control
               type="date"
-              value={formData.availableFrom}
+              value={formData.availableFrom ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, availableFrom: e.target.value })
+                setFormData((prev) => ({ ...prev, availableFrom: e.target.value }))
               }
               isInvalid={!!formErrors.availableFrom}
             />
@@ -804,15 +818,14 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* ✅ Phone + License */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="phoneNumber">
             <Form.Label>Phone Number</Form.Label>
             <Form.Control
               type="text"
-              value={formData.phoneNumber}
+              value={formData.phoneNumber ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, phoneNumber: e.target.value })
+                setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
               }
               isInvalid={!!formErrors.phoneNumber}
             />
@@ -825,9 +838,9 @@ const ProfileUpdate: React.FC = () => {
             <Form.Label>Driver’s License</Form.Label>
             <Form.Control
               type="text"
-              value={formData.driversLicense}
+              value={formData.driversLicense ?? ""}
               onChange={(e) =>
-                setFormData({ ...formData, driversLicense: e.target.value })
+                setFormData((prev) => ({ ...prev, driversLicense: e.target.value }))
               }
               isInvalid={!!formErrors.driversLicense}
             />
@@ -837,15 +850,14 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* ✅ Comments */}
         <Form.Group className="mb-3" controlId="comments">
           <Form.Label>Comments</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
-            value={formData.comments}
+            value={formData.comments ?? ""}
             onChange={(e) =>
-              setFormData({ ...formData, comments: e.target.value })
+              setFormData((prev) => ({ ...prev, comments: e.target.value }))
             }
             isInvalid={!!formErrors.comments}
           />
@@ -854,19 +866,17 @@ const ProfileUpdate: React.FC = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        {/* ✅ Password Update */}
         <Form.Group className="mb-4" controlId="newPassword">
           <Form.Label>New Password</Form.Label>
           <Form.Control
             type="password"
-            value={formData.newPassword}
+            value={formData.newPassword ?? ""}
             onChange={(e) =>
-              setFormData({ ...formData, newPassword: e.target.value })
+              setFormData((prev) => ({ ...prev, newPassword: e.target.value }))
             }
           />
         </Form.Group>
 
-        {/* ✅ Buttons */}
         <div className="d-flex justify-content-between">
           <Button
             type="submit"
