@@ -193,39 +193,39 @@ const AvailableTable: React.FC = () => {
     });
   };
 
-  const handle123Search = useCallback(async () => {
-    setError(null);
-    setSuccess(false);
-    const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
-    if (!authToken) {
-      setError("Authorization token missing — please click Authorize/Connect first.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const resp = await axios.post(`${API_BASE}/api/123Loads/search`, searchFormData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      let apiLoads: any[] = [];
-      const d = resp.data;
-      if (Array.isArray(d)) apiLoads = d;
-      else if (Array.isArray(d.loads)) apiLoads = d.loads;
-      else if (Array.isArray(d.data)) apiLoads = d.data;
-      else if (Array.isArray(d.results)) apiLoads = d.results;
-      else if (Array.isArray(d.payload)) apiLoads = d.payload;
-      setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-      setSuccess(true);
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-    } catch (err: any) {
-      console.error("Error fetching 123Loadboard search results:", err);
-      setError(err.response?.data?.error || err.message || "Error fetching results");
-    } finally {
-      setLoading(false);
-    }
-  }, [searchFormData, token, mapApiLoadToDisplay]);
+  // const handle123Search = useCallback(async () => {
+  //   setError(null);
+  //   setSuccess(false);
+  //   const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
+  //   if (!authToken) {
+  //     setError("Authorization token missing — please click Authorize/Connect first.");
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   try {
+  //     const resp = await axios.post(`${API_BASE}/api/123Loads/search`, searchFormData, {
+  //       headers: {
+  //         Authorization: `Bearer ${authToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     let apiLoads: any[] = [];
+  //     const d = resp.data;
+  //     if (Array.isArray(d)) apiLoads = d;
+  //     else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  //     else if (Array.isArray(d.data)) apiLoads = d.data;
+  //     else if (Array.isArray(d.results)) apiLoads = d.results;
+  //     else if (Array.isArray(d.payload)) apiLoads = d.payload;
+  //     setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  //     setSuccess(true);
+  //     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  //   } catch (err: any) {
+  //     console.error("Error fetching 123Loadboard search results:", err);
+  //     setError(err.response?.data?.error || err.message || "Error fetching results");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [searchFormData, token, mapApiLoadToDisplay]);
 
   const handleAuthorizeNavigation = () => {
     const base = API_BASE || "http://localhost:3001";
@@ -368,14 +368,22 @@ const AvailableTable: React.FC = () => {
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
 
-        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
-          <div className="d-flex gap-2 mb-3">
-            <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
-              Connect / Authorize
-            </button>
-            <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
-          </div>
-        </form>
+        {/* <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}> */}
+        {React.createElement(
+          "div",
+          { className: "d-flex gap-2 mb-3" },
+          React.createElement(
+            "button",
+            { type: "button", className: "btn btn-outline-primary", onClick: handleAuthorizeNavigation },
+            "Connect / Authorize"
+          ),
+          React.createElement(
+            "button",
+            { type: "button", className: "btn btn-outline-secondary", onClick: handleAutoFill },
+            "Auto-Fill"
+          )
+        )}
+        {/* </form> */}
 
         <form onSubmit={handleSubmit} className="load-search-form">
           <div className="row g-3">
