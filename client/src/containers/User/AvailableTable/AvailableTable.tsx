@@ -367,7 +367,8 @@ const AvailableTable: React.FC = () => {
       {/* 123Loadboard */}
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
-        <form className="mb-4">
+
+        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
           <div className="d-flex gap-2 mb-3">
             <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
               Connect / Authorize
