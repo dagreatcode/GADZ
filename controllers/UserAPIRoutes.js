@@ -524,55 +524,136 @@ router.post("/login", async (req, res) => {
 // 🔹 UPDATE USER (Image Upload + Password Change + Cloudinary)
 // ────────────────────────────────────────────────────────────────
 //
+
+// router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
+//   try {
+//     // 1️⃣ Find user
+//     const user = await db.User.findByPk(req.params.id);
+//     if (!user)
+//       return res.status(404).json({ success: false, message: "User not found" });
+
+//     // 2️⃣ Handle new password
+//     if (req.body.newPassword) {
+//       const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+//       req.body.password = hashedPassword;
+//       delete req.body.newPassword;
+//     }
+
+//     // 3️⃣ Handle image upload
+//     let imageUrl = user.profileImage;
+//     if (req.file) {
+//       try {
+//         const result = await cloudinary.uploader.upload(req.file.path, {
+//           folder: "users",
+//           public_id: `user_${user.id}_${Date.now()}`,
+//           transformation: [{ width: 500, height: 500, crop: "fill" }],
+//         });
+//         imageUrl = result.secure_url;
+//       } catch (uploadErr) {
+//         console.error("Cloudinary upload failed:", uploadErr);
+//         return res
+//           .status(500)
+//           .json({ success: false, message: "Image upload failed" });
+//       }
+//     }
+
+//     // 4️⃣ Prepare update data
+//     const updateData = { ...req.body, profileImage: imageUrl };
+
+//     // 5️⃣ Apply update
+//     await db.User.update(updateData, { where: { id: req.params.id } });
+
+//     // 6️⃣ Fetch updated user
+//     const updatedUser = await db.User.findByPk(req.params.id);
+
+//     res.status(200).json({
+//       success: true,
+//       message: "User updated successfully",
+//       user: updatedUser,
+//     });
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// });
+
+// const upload = multer({ storage });
+
+// 🧠 Update user info
 router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
   try {
-    // 1️⃣ Find user
-    const user = await db.User.findByPk(req.params.id);
-    if (!user)
+    const userId = req.params.id;
+    const existingUser = await db.User.findByPk(userId);
+
+    if (!existingUser) {
       return res.status(404).json({ success: false, message: "User not found" });
-
-    // 2️⃣ Handle new password
-    if (req.body.newPassword) {
-      const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
-      req.body.password = hashedPassword;
-      delete req.body.newPassword;
     }
 
-    // 3️⃣ Handle image upload
-    let imageUrl = user.profileImage;
+    // 🧩 Prepare update data
+    const updateData = { ...req.body };
+
+    // ✅ Handle new password if provided
+    if (updateData.newPassword) {
+      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+      updateData.password = hashedPassword;
+      delete updateData.newPassword;
+    }
+
+    // ✅ Handle uploaded profile image
     if (req.file) {
-      try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: "users",
-          public_id: `user_${user.id}_${Date.now()}`,
-          transformation: [{ width: 500, height: 500, crop: "fill" }],
-        });
-        imageUrl = result.secure_url;
-      } catch (uploadErr) {
-        console.error("Cloudinary upload failed:", uploadErr);
-        return res
-          .status(500)
-          .json({ success: false, message: "Image upload failed" });
+      // Remove old image if exists
+      if (existingUser.profileImage && fs.existsSync(path.join(__dirname, "../uploads/profile_images", existingUser.profileImage))) {
+        fs.unlinkSync(path.join(__dirname, "../uploads/profile_images", existingUser.profileImage));
       }
+
+      updateData.profileImage = req.file.filename;
     }
 
-    // 4️⃣ Prepare update data
-    const updateData = { ...req.body, profileImage: imageUrl };
+    // ✅ Determine if QR code needs to be updated
+    const shouldRegenerateQR =
+      updateData.username ||
+      updateData.email ||
+      updateData.companyName ||
+      !existingUser.qrCode;
 
-    // 5️⃣ Apply update
-    await db.User.update(updateData, { where: { id: req.params.id } });
+    if (shouldRegenerateQR) {
+      const qrData = `User: ${updateData.username || existingUser.username}\nEmail: ${
+        updateData.email || existingUser.email
+      }\nCompany: ${updateData.companyName || existingUser.companyName}`;
+      const qrImagePath = path.join(__dirname, "../uploads/qrcodes", `${userId}-qrcode.png`);
 
-    // 6️⃣ Fetch updated user
-    const updatedUser = await db.User.findByPk(req.params.id);
+      // Ensure folder exists
+      const qrDir = path.dirname(qrImagePath);
+      if (!fs.existsSync(qrDir)) {
+        fs.mkdirSync(qrDir, { recursive: true });
+      }
 
-    res.status(200).json({
+      // Generate and save QR code
+      await QRCode.toFile(qrImagePath, qrData);
+      updateData.qrCode = `${userId}-qrcode.png`;
+    }
+
+    // ✅ Perform the update
+    await db.User.update(updateData, { where: { id: userId } });
+
+    // ✅ Fetch and return the updated user
+    const updatedUser = await db.User.findByPk(userId);
+
+    // ✅ Clean sensitive fields
+    const safeUser = { ...updatedUser.get(), password: undefined };
+
+    return res.status(200).json({
       success: true,
-      message: "User updated successfully",
-      user: updatedUser,
+      message: "✅ User updated successfully",
+      user: safeUser,
     });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("❌ Error updating user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 });
 
