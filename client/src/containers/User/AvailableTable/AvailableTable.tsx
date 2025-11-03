@@ -4205,16 +4205,62 @@ const AvailableTable: React.FC = () => {
     }
   }, []);
 
-  //TODO: This Works on auto fill...
-  // // ---------- 123Loadboard Auth Callback ----------
+  // //TODO: This Works on auto fill...
+  // // // ---------- 123Loadboard Auth Callback ----------
+  // // const fetchLoadboardData = useCallback(
+  // //   async (authCode: string) => {
+  // //     if (!authCode) return;
+  // //     setLoading(true);
+  // //     setError(null);
+  // //     try {
+  // //       // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
+  // //       const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+
+  // //       const cookieToken = getCookie("lb_access_token");
+  // //       if (cookieToken) {
+  // //         localStorage.setItem("lb_access_token", cookieToken);
+  // //         setToken(cookieToken);
+  // //       }
+
+  // //       let apiLoads: any[] = [];
+  // //       const d = resp.data;
+  // //       if (Array.isArray(d)) apiLoads = d;
+  // //       else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  // //       else if (Array.isArray(d.data)) apiLoads = d.data;
+  // //       else if (Array.isArray(d.results)) apiLoads = d.results;
+  // //       else if (Array.isArray(d.payload)) apiLoads = d.payload;
+
+  // //       if (apiLoads.length > 0) {
+  // //         setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  // //         setSuccess(true);
+  // //         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  // //       }
+  // //     } catch (err) {
+  // //       console.error("Error fetching 123Loadboard data:", err);
+  // //       setError("Failed to fetch 123Loadboard data via callback.");
+  // //     } finally {
+  // //       setLoading(false);
+  // //     }
+  // //   },
+  // //   [mapApiLoadToDisplay]
+  // // );
+  // // ---------- 123Loadboard Manual Fetch ----------
   // const fetchLoadboardData = useCallback(
-  //   async (authCode: string) => {
-  //     if (!authCode) return;
+  //   async () => {
+  //     if (!code) {
+  //       setError("Missing authorization code — please connect your account first.");
+  //       return;
+  //     }
+
   //     setLoading(true);
   //     setError(null);
+
   //     try {
-  //       // const resp = await axios.get(`${API_BASE}/api/123Loads/auth/callback/`, { params: { code: authCode } });
-  //       const resp = await axios.get(`${API_BASE}/auth/callback/`, { params: { code: authCode } });
+  //       const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+  //         // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
+
+  //         params: { code },
+  //       });
 
   //       const cookieToken = getCookie("lb_access_token");
   //       if (cookieToken) {
@@ -4237,59 +4283,13 @@ const AvailableTable: React.FC = () => {
   //       }
   //     } catch (err) {
   //       console.error("Error fetching 123Loadboard data:", err);
-  //       setError("Failed to fetch 123Loadboard data via callback.");
+  //       setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
   //     } finally {
   //       setLoading(false);
   //     }
   //   },
-  //   [mapApiLoadToDisplay]
+  //   [code, mapApiLoadToDisplay]
   // );
-  // ---------- 123Loadboard Manual Fetch ----------
-  const fetchLoadboardData = useCallback(
-    async () => {
-      if (!code) {
-        setError("Missing authorization code — please connect your account first.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
-          // const resp = await axios.get(`${API_BASE}/auth/callback/test`, {
-
-          params: { code },
-        });
-
-        const cookieToken = getCookie("lb_access_token");
-        if (cookieToken) {
-          localStorage.setItem("lb_access_token", cookieToken);
-          setToken(cookieToken);
-        }
-
-        let apiLoads: any[] = [];
-        const d = resp.data;
-        if (Array.isArray(d)) apiLoads = d;
-        else if (Array.isArray(d.loads)) apiLoads = d.loads;
-        else if (Array.isArray(d.data)) apiLoads = d.data;
-        else if (Array.isArray(d.results)) apiLoads = d.results;
-        else if (Array.isArray(d.payload)) apiLoads = d.payload;
-
-        if (apiLoads.length > 0) {
-          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-          setSuccess(true);
-          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-        }
-      } catch (err) {
-        console.error("Error fetching 123Loadboard data:", err);
-        setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [code, mapApiLoadToDisplay]
-  );
 
   // ---------- Init ----------
   useEffect(() => {
@@ -4379,39 +4379,39 @@ const AvailableTable: React.FC = () => {
     });
   };
 
-  const handle123Search = useCallback(async () => {
-    setError(null);
-    setSuccess(false);
-    const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
-    if (!authToken) {
-      setError("Authorization token missing — please click Authorize/Connect first.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const resp = await axios.post(`${API_BASE}/api/123Loads/search`, searchFormData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      let apiLoads: any[] = [];
-      const d = resp.data;
-      if (Array.isArray(d)) apiLoads = d;
-      else if (Array.isArray(d.loads)) apiLoads = d.loads;
-      else if (Array.isArray(d.data)) apiLoads = d.data;
-      else if (Array.isArray(d.results)) apiLoads = d.results;
-      else if (Array.isArray(d.payload)) apiLoads = d.payload;
-      setSearchResults(apiLoads.map(mapApiLoadToDisplay));
-      setSuccess(true);
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
-    } catch (err: any) {
-      console.error("Error fetching 123Loadboard search results:", err);
-      setError(err.response?.data?.error || err.message || "Error fetching results");
-    } finally {
-      setLoading(false);
-    }
-  }, [searchFormData, token, mapApiLoadToDisplay]);
+  // const handle123Search = useCallback(async () => {
+  //   setError(null);
+  //   setSuccess(false);
+  //   const authToken = getCookie("lb_access_token") || token || localStorage.getItem("lb_access_token");
+  //   if (!authToken) {
+  //     setError("Authorization token missing — please click Authorize/Connect first.");
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   try {
+  //     const resp = await axios.post(`${API_BASE}/api/123Loads/search`, searchFormData, {
+  //       headers: {
+  //         Authorization: `Bearer ${authToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     let apiLoads: any[] = [];
+  //     const d = resp.data;
+  //     if (Array.isArray(d)) apiLoads = d;
+  //     else if (Array.isArray(d.loads)) apiLoads = d.loads;
+  //     else if (Array.isArray(d.data)) apiLoads = d.data;
+  //     else if (Array.isArray(d.results)) apiLoads = d.results;
+  //     else if (Array.isArray(d.payload)) apiLoads = d.payload;
+  //     setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+  //     setSuccess(true);
+  //     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 150);
+  //   } catch (err: any) {
+  //     console.error("Error fetching 123Loadboard search results:", err);
+  //     setError(err.response?.data?.error || err.message || "Error fetching results");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [searchFormData, token, mapApiLoadToDisplay]);
 
   // Removed the auto-trigger for handle123Search; users will now submit manually.
   // We keep only the initial load and auth logic above.
@@ -4617,7 +4617,7 @@ const AvailableTable: React.FC = () => {
       {/* Drivers */}
       <section className={styles["at-section"]}>
         <h2>👨‍✈️ Drivers</h2>
-        <button className="btn btn-primary mb-2" onClick={fetchDrivers}>Fetch Drivers</button>
+        {/* <button className="btn btn-primary mb-2" onClick={fetchDrivers}>Fetch Drivers</button> */}
         <Table data={driverList} title="All Drivers" isUser showCompanyLink={false} />
         <Table data={userDrivers} title="Your Drivers" isUser showCompanyLink={false} />
         <form className="mt-3" onSubmit={handleSubmitDriver}>
@@ -4639,7 +4639,7 @@ const AvailableTable: React.FC = () => {
       {/* Loads */}
       <section className={styles["at-section"]}>
         <h2>📦 Loads</h2>
-        <button className="btn btn-primary mb-2" onClick={fetchLoads}>Fetch Loads</button>
+        {/* <button className="btn btn-primary mb-2" onClick={fetchLoads}>Fetch Loads</button> */}
         <Table data={loads} title="All Loads" isUser={false} showCompanyLink />
         <Table data={userLoads} title="Your Loads" isUser={false} showCompanyLink />
         <form className="mt-3" onSubmit={handleSubmitLoad}>
@@ -4661,8 +4661,8 @@ const AvailableTable: React.FC = () => {
       {/* 123Loadboard */}
       <section className={styles["at-section"]} ref={resultsRef}>
         <h2>🔍 123Loadboard Search</h2>
-        <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}>
-          {/* <div className="row g-3">
+        {/* <form className="mb-4" onSubmit={(e) => { e.preventDefault(); handle123Search(); }}> */}
+        {/* <div className="row g-3">
             <div className="col-md-2">
               <input type="text" className="form-control" placeholder="Origin City" name="originCity" value={searchFormData.originCity} onChange={handleInputChange} />
             </div>
@@ -4698,30 +4698,30 @@ const AvailableTable: React.FC = () => {
             </div>
           </div> */}
 
-          {/* <div className="mt-3 d-flex gap-2">
+        {/* <div className="mt-3 d-flex gap-2">
             <button type="submit" className="btn btn-primary">Search 123Loadboard</button>
             <button type="button" className="btn btn-success" onClick={handleAuthorizeNavigation}>Authorize / Connect</button>
           </div> */}
 
-          {/* 123Loadboard Manual Fetch */}
-          {/* <h2>🔍 123Loadboard Search Testing</h2> */}
+        {/* 123Loadboard Manual Fetch */}
+        {/* <h2>🔍 123Loadboard Search Testing</h2> */}
 
-          <div className="d-flex gap-2 mb-3">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
+        <div className="d-flex gap-2 mb-3">
+          <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
+            Connect / Authorize
+          </button>
 
-            <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
-              Connect / Authorize
-            </button>
-            {/* <button
+          <button type="button" className="btn btn-outline-secondary" onClick={handleAutoFill}>Auto-Fill</button>
+          {/* <button
               className="btn btn-outline-success"
               onClick={fetchLoadboardData}
               disabled={loading}
             >
               {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
             </button> */}
-          </div>
+        </div>
 
-          {/* form fields here
+        {/* form fields here
           <div className="mt-3">
             <button
               className="btn btn-success"
@@ -4732,10 +4732,10 @@ const AvailableTable: React.FC = () => {
             </button>
           </div> */}
 
-          {/* {error && <div className="alert alert-danger mt-3">{error}</div>}
+        {/* {error && <div className="alert alert-danger mt-3">{error}</div>}
           {success && <div className="alert alert-success mt-3">✅ Results Loaded</div>} */}
 
-        </form>
+        {/* </form> */}
 
         {/* <h1>Testing Only</h1> */}
         {/* <form onSubmit={handleSubmit}>
