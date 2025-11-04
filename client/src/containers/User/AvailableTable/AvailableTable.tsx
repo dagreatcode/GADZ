@@ -4301,7 +4301,7 @@ const AvailableTable: React.FC = () => {
 
     fetchLoads();
     fetchDrivers();
-  }, [fetchLoads, fetchDrivers]);
+  }, [fetchLoads, token, fetchDrivers]); // TODO: Check this token placement if something strange is going on.
 
   //TODO: This Works on auto fill...
   // // Handle 123Loadboard OAuth redirect
