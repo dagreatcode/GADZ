@@ -242,7 +242,7 @@ const AvailableTable: React.FC = () => {
       const payload = { code, ...searchFormData };
 
       const response = await axios.post(
-        `${API_BASE}/auth/callMeBack`,
+        `${API_BASE}/api/123Loads/callMeBack`,
         payload,
         { withCredentials: true }
       );
