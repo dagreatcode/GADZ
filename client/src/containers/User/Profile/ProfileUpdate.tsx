@@ -1,16 +1,10 @@
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
-// import Button from "react-bootstrap/Button";
-// import Col from "react-bootstrap/Col";
-// import Form from "react-bootstrap/Form";
-// import Row from "react-bootstrap/Row";
-// import Alert from "react-bootstrap/Alert";
-// import Card from "react-bootstrap/Card";
-// import Spinner from "react-bootstrap/Spinner";
 // import { Link } from "react-router-dom";
+// import styles from "./ProfileUpdate.module.css";
 
-// type User = {
-//   id: string;
+// interface User {
+//   id?: string;
 //   email: string;
 //   password?: string;
 //   description: string;
@@ -23,926 +17,21 @@
 //   phoneNumber: string;
 //   driversLicense: string;
 //   comments: string;
-//   qrCode?: string; // ✅ added QR support
-// };
+//   qrCode?: string;
+//   qrPNG?: string;
+// }
 
 // const ServerPort =
 //   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
 
-// // ✅ Replace these with your actual Cloudinary credentials
-// // const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/<your-cloud-name>/image/upload`;
-// // const CLOUDINARY_UPLOAD_PRESET = "<your-upload-preset>";
-// const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`;
-// const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
-
 // const ProfileUpdate: React.FC = () => {
 //   const userId = localStorage.getItem("userId");
 //   const [error, setError] = useState<string | null>(null);
-//   const [loading, setLoading] = useState<boolean>(false);
 //   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [imagePreview, setImagePreview] = useState<string | null>(null);
-//   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // ✅ QR code state
-
-//   const [formData, setFormData] = useState<User>({
-//     id: "",
-//     email: "",
-//     password: "",
-//     description: "",
-//     userType: "",
-//     experienceLevel: "",
-//     location: "",
-//     availableFrom: "",
-//     newPassword: "",
-//     profileImage: "",
-//     phoneNumber: "",
-//     driversLicense: "",
-//     comments: "",
-//     qrCode: "",
-//   });
-
-//   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-//   // ✅ Load user profile
-//   useEffect(() => {
-//     const fetchUserData = async () => {
-//       setLoading(true);
-//       const token = localStorage.getItem("token");
-//       if (!token) {
-//         setError("No token found. Please log in.");
-//         setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-
-//         if (response.status === 200) {
-//           const userData = response.data;
-//           const availableFromDate =
-//             typeof userData.availableFrom === "string"
-//               ? userData.availableFrom.split("T")[0]
-//               : "";
-
-//           setFormData({
-//             ...userData,
-//             availableFrom: availableFromDate,
-//             password: "",
-//             newPassword: "",
-//           });
-
-//           setImagePreview(userData.profileImage || null);
-//           setQrCodeImage(userData.qrCode || null);
-//         }
-//       } catch (err) {
-//         handleApiError(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) fetchUserData();
-//   }, [userId]);
-
-//   // ✅ Upload image to Cloudinary
-//   const handleImageUpload = async (file: File) => {
-//     setLoading(true);
-//     try {
-//       const data = new FormData();
-//       data.append("file", file);
-//       data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET!);
-
-//       const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
-//       const imageUrl = res.data.secure_url;
-
-//       setFormData({ ...formData, profileImage: imageUrl });
-//       setImagePreview(imageUrl);
-//     } catch (err) {
-//       console.error("Upload error:", err);
-//       setError("Image upload failed. Please try again.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // ✅ Validate before sending update
-//   const validateForm = () => {
-//     const errors: any = {};
-//     if (!formData.email) errors.email = "Email is required";
-//     else if (!/\S+@\S+\.\S+/.test(formData.email))
-//       errors.email = "Invalid email format";
-//     if (!formData.description) errors.description = "Description is required";
-//     if (!formData.userType) errors.userType = "User Type is required";
-//     if (!formData.experienceLevel)
-//       errors.experienceLevel = "Experience Level is required";
-//     if (!formData.location) errors.location = "Location is required";
-//     if (!formData.availableFrom)
-//       errors.availableFrom = "Available From date is required";
-//     if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
-//     if (!formData.driversLicense)
-//       errors.driversLicense = "Drivers License is required";
-//     if (!formData.comments) errors.comments = "Comments are required";
-//     setFormErrors(errors);
-//     return Object.keys(errors).length === 0;
-//   };
-
-//   // ✅ Submit update to backend
-//   const handleUserUpdate = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     if (!validateForm()) return;
-
-//     setIsSubmitting(true);
-//     setLoading(true);
-//     setError(null);
-//     setSuccessMessage(null);
-
-//     const token = localStorage.getItem("token");
-
-//     // Remove password if not updating it
-//     const updatedData: Partial<User> = { ...formData };
-//     if (!formData.newPassword) delete updatedData.password;
-
-//     try {
-//       const response = await axios.put(
-//         `${ServerPort}/api/user/update/${userId}`,
-//         updatedData,
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       // if (response.status === 200) {
-//       //   setSuccessMessage("✅ Profile updated successfully!");
-//       //   setQrCodeImage(response.data.qrCode || qrCodeImage); // ✅ refresh QR code if regenerated
-//       //   setFormData({ ...formData, newPassword: "" });
-//       // }
-//       if (response.status === 200) {
-//         const updatedUser = response.data.user; // ✅ this comes from backend
-
-//         // ✅ Update state with fresh user data
-//         setFormData({
-//           ...updatedUser,
-//           password: "",
-//           newPassword: "",
-//         });
-
-//         // ✅ Update any images or QR codes returned
-//         setImagePreview(updatedUser.profileImage || imagePreview);
-//         setQrCodeImage(updatedUser.qrCode || qrCodeImage);
-
-//         // ✅ Show success message
-//         setSuccessMessage("✅ Profile updated successfully!");
-//       }
-
-//     } catch (err) {
-//       handleApiError(err);
-//     } finally {
-//       setLoading(false);
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   // ✅ Handle API errors
-//   const handleApiError = (error: any) => {
-//     if (axios.isAxiosError(error)) {
-//       setError(error.response?.data?.message || error.message);
-//     } else {
-//       setError("An unknown error occurred");
-//     }
-//   };
-
-//   return (
-//     <Card className="p-4 shadow-lg rounded-lg">
-//       <h2 className="mb-4 text-center">Update Your Profile</h2>
-//       {loading && <Spinner animation="border" className="d-block mx-auto mb-3" />}
-//       {error && <Alert variant="danger">{error}</Alert>}
-//       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-
-//       <Form onSubmit={handleUserUpdate}>
-//         {/* Profile Image Upload */}
-//         <div className="mb-4 text-center">
-//           <img
-//             src={
-//               imagePreview ||
-//               "https://via.placeholder.com/150?text=Upload+Profile+Image"
-//             }
-//             alt="Profile"
-//             style={{
-//               width: 120,
-//               height: 120,
-//               borderRadius: "50%",
-//               objectFit: "cover",
-//               border: "2px solid #ddd",
-//             }}
-//           />
-//           <Form.Control
-//             type="file"
-//             accept="image/*"
-//             className="mt-2"
-//             onChange={(e) => {
-//               const target = e.target as HTMLInputElement;
-//               if (target.files?.[0]) {
-//                 handleImageUpload(target.files[0]);
-//               }
-//             }}
-//           />
-//         </div>
-
-//         {/* ✅ QR Code Section */}
-//         {qrCodeImage && (
-//           <div className="mb-4 text-center">
-//             <h5>Your QR Code</h5>
-//             <img
-//               src={qrCodeImage}
-//               alt="QR Code"
-//               style={{ width: 150, height: 150 }}
-//             />
-//           </div>
-//         )}
-
-//         {/* Email + Description */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="email">
-//             <Form.Label>Email</Form.Label>
-//             <Form.Control
-//               type="email"
-//               value={formData.email}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, email: e.target.value })
-//               }
-//               isInvalid={!!formErrors.email}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.email}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="description">
-//             <Form.Label>Description</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.description}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, description: e.target.value })
-//               }
-//               isInvalid={!!formErrors.description}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.description}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         {/* User Type + Experience */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="userType">
-//             <Form.Label>User Type</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.userType}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, userType: e.target.value })
-//               }
-//               isInvalid={!!formErrors.userType}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.userType}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="experienceLevel">
-//             <Form.Label>Experience Level</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.experienceLevel}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, experienceLevel: e.target.value })
-//               }
-//               isInvalid={!!formErrors.experienceLevel}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.experienceLevel}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         {/* Location + Available From */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="location">
-//             <Form.Label>Location</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.location}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, location: e.target.value })
-//               }
-//               isInvalid={!!formErrors.location}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.location}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="availableFrom">
-//             <Form.Label>Available From</Form.Label>
-//             <Form.Control
-//               type="date"
-//               value={formData.availableFrom}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, availableFrom: e.target.value })
-//               }
-//               isInvalid={!!formErrors.availableFrom}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.availableFrom}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         {/* Phone + License */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="phoneNumber">
-//             <Form.Label>Phone Number</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.phoneNumber}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, phoneNumber: e.target.value })
-//               }
-//               isInvalid={!!formErrors.phoneNumber}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.phoneNumber}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="driversLicense">
-//             <Form.Label>Driver’s License</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.driversLicense}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, driversLicense: e.target.value })
-//               }
-//               isInvalid={!!formErrors.driversLicense}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.driversLicense}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         {/* Comments */}
-//         <Form.Group className="mb-3" controlId="comments">
-//           <Form.Label>Comments</Form.Label>
-//           <Form.Control
-//             as="textarea"
-//             rows={3}
-//             value={formData.comments}
-//             onChange={(e) =>
-//               setFormData({ ...formData, comments: e.target.value })
-//             }
-//             isInvalid={!!formErrors.comments}
-//           />
-//           <Form.Control.Feedback type="invalid">
-//             {formErrors.comments}
-//           </Form.Control.Feedback>
-//         </Form.Group>
-
-//         {/* Password Update */}
-//         <Form.Group className="mb-4" controlId="newPassword">
-//           <Form.Label>New Password</Form.Label>
-//           <Form.Control
-//             type="password"
-//             value={formData.newPassword}
-//             onChange={(e) =>
-//               setFormData({ ...formData, newPassword: e.target.value })
-//             }
-//           />
-//         </Form.Group>
-
-//         {/* Buttons */}
-//         <div className="d-flex justify-content-between">
-//           <Button
-//             type="submit"
-//             disabled={isSubmitting || loading}
-//             variant="primary"
-//           >
-//             {isSubmitting ? "Updating..." : "Update Profile"}
-//           </Button>
-//           <Link to="/user">
-//             <Button variant="outline-secondary">Cancel</Button>
-//           </Link>
-//         </div>
-//       </Form>
-//     </Card>
-//   );
-// };
-
-// export default ProfileUpdate;
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import Button from "react-bootstrap/Button";
-// import Col from "react-bootstrap/Col";
-// import Form from "react-bootstrap/Form";
-// import Row from "react-bootstrap/Row";
-// import Alert from "react-bootstrap/Alert";
-// import Card from "react-bootstrap/Card";
-// import Spinner from "react-bootstrap/Spinner";
-// import { Link } from "react-router-dom";
-
-// type User = {
-//   id?: string;
-//   email: string;
-//   password?: string;
-//   description: string;
-//   userType: string;
-//   experienceLevel: string;
-//   location: string;
-//   availableFrom: string;
-//   newPassword?: string;
-//   profileImage?: string | null;
-//   phoneNumber: string;
-//   driversLicense: string;
-//   comments: string;
-//   qrCode?: string | null;
-// };
-
-// const ServerPort =
-//   process.env.REACT_APP_API_URL || process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
-
-// const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-// const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
-// const CLOUDINARY_UPLOAD_URL = CLOUDINARY_CLOUD_NAME
-//   ? `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
-//   : "";
-
-// const ProfileUpdate: React.FC = () => {
-//   const userId = localStorage.getItem("userId") || "";
-//   const [error, setError] = useState<string | null>(null);
 //   const [loading, setLoading] = useState<boolean>(false);
-//   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [imagePreview, setImagePreview] = useState<string | null>(null);
 //   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-
-//   const [formData, setFormData] = useState<User>({
-//     id: userId || undefined,
-//     email: "",
-//     password: "",
-//     description: "",
-//     userType: "",
-//     experienceLevel: "",
-//     location: "",
-//     availableFrom: "",
-//     newPassword: "",
-//     profileImage: null,
-//     phoneNumber: "",
-//     driversLicense: "",
-//     comments: "",
-//     qrCode: null,
-//   });
-
-//   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-//   useEffect(() => {
-//     const fetchUserData = async () => {
-//       setLoading(true);
-//       const token = localStorage.getItem("token");
-//       if (!token) {
-//         setError("No token found. Please log in.");
-//         setLoading(false);
-//         return;
-//       }
-
-//       if (!userId) {
-//         setError("No userId found. Please log in.");
-//         setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-
-//         if (response.status === 200) {
-//           const userData = response.data?.user || response.data || {};
-//           const availableFromDate =
-//             typeof userData.availableFrom === "string"
-//               ? userData.availableFrom.split("T")[0]
-//               : "";
-
-//           setFormData((prev) => ({
-//             ...prev,
-//             ...userData,
-//             availableFrom: availableFromDate,
-//             password: "",
-//             newPassword: "",
-//           }));
-
-//           setImagePreview(userData.profileImage || null);
-//           setQrCodeImage(userData.qrCode || null);
-//         }
-//       } catch (err) {
-//         handleApiError(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) fetchUserData();
-//   }, [userId]);
-
-//   const handleImageUpload = async (file: File) => {
-//     setLoading(true);
-
-//     if (!CLOUDINARY_UPLOAD_URL || !CLOUDINARY_UPLOAD_PRESET) {
-//       setError("Cloudinary is not configured. Skipping upload.");
-//       setLoading(false);
-//       return;
-//     }
-
-//     try {
-//       const data = new FormData();
-//       data.append("file", file);
-//       data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-//       const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
-//       const imageUrl = res.data?.secure_url;
-
-//       if (imageUrl) {
-//         setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
-//         setImagePreview(imageUrl);
-//       } else {
-//         setError("Unexpected response from image upload.");
-//       }
-//     } catch (err) {
-//       console.error("Upload error:", err);
-//       setError("Image upload failed. Please try again.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const validateForm = () => {
-//     const errors: Record<string, string> = {};
-//     if (!formData.email) errors.email = "Email is required";
-//     else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email format";
-//     if (!formData.description) errors.description = "Description is required";
-//     if (!formData.userType) errors.userType = "User Type is required";
-//     if (!formData.experienceLevel) errors.experienceLevel = "Experience Level is required";
-//     if (!formData.location) errors.location = "Location is required";
-//     if (!formData.availableFrom) errors.availableFrom = "Available From date is required";
-//     if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
-//     if (!formData.driversLicense) errors.driversLicense = "Driver’s License is required";
-//     if (!formData.comments) errors.comments = "Comments are required";
-//     setFormErrors(errors);
-//     return Object.keys(errors).length === 0;
-//   };
-
-//   const handleUserUpdate = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     if (!validateForm()) return;
-
-//     setIsSubmitting(true);
-//     setLoading(true);
-//     setError(null);
-//     setSuccessMessage(null);
-
-//     const token = localStorage.getItem("token");
-
-//     if (!userId) {
-//       setError("No userId found. Please log in.");
-//       setLoading(false);
-//       setIsSubmitting(false);
-//       return;
-//     }
-
-//     const updatedData: Partial<User> = { ...formData };
-
-//     if (!formData.newPassword) delete updatedData.password;
-//     else {
-//       updatedData.password = formData.newPassword;
-//       delete updatedData.newPassword;
-//     }
-
-//     try {
-//       const response = await axios.put(
-//         `${ServerPort}/api/user/update/${userId}`,
-//         updatedData,
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       if (response.status === 200) {
-//         const updatedUser = response.data?.user || response.data || {};
-
-//         setFormData((prev) => ({
-//           ...prev,
-//           ...updatedUser,
-//           password: "",
-//           newPassword: "",
-//         }));
-
-//         setImagePreview(updatedUser.profileImage || imagePreview);
-//         setQrCodeImage(updatedUser.qrCode || qrCodeImage);
-//         setSuccessMessage("✅ Profile updated successfully!");
-//       }
-//     } catch (err) {
-//       handleApiError(err);
-//     } finally {
-//       setLoading(false);
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   const handleApiError = (error: any) => {
-//     if (axios.isAxiosError(error)) {
-//       setError(error.response?.data?.message || error.message);
-//     } else {
-//       setError("An unknown error occurred");
-//     }
-//   };
-
-//   return (
-//     <Card className="p-4 shadow-lg rounded-lg">
-//       <h2 className="mb-4 text-center">Update Your Profile</h2>
-//       {loading && <Spinner animation="border" className="d-block mx-auto mb-3" />}
-//       {error && <Alert variant="danger">{error}</Alert>}
-//       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-
-//       <Form onSubmit={handleUserUpdate}>
-//         <div className="mb-4 text-center">
-//           <img
-//             src={
-//               imagePreview ||
-//               "https://via.placeholder.com/150?text=Upload+Profile+Image"
-//             }
-//             alt="Profile"
-//             style={{
-//               width: 120,
-//               height: 120,
-//               borderRadius: "50%",
-//               objectFit: "cover",
-//               border: "2px solid #ddd",
-//             }}
-//           />
-//           <Form.Control
-//             type="file"
-//             accept="image/*"
-//             className="mt-2"
-//             onChange={(e) => {
-//               const target = e.target as HTMLInputElement;
-//               if (target.files?.[0]) {
-//                 handleImageUpload(target.files[0]);
-//               }
-//             }}
-//           />
-//         </div>
-
-//         {qrCodeImage && (
-//           <div className="mb-4 text-center">
-//             <h5>Your QR Code</h5>
-//             <img
-//               src={qrCodeImage}
-//               alt="QR Code"
-//               style={{ width: 150, height: 150 }}
-//             />
-//           </div>
-//         )}
-
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="email">
-//             <Form.Label>Email</Form.Label>
-//             <Form.Control
-//               type="email"
-//               value={formData.email ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, email: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.email}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.email}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="description">
-//             <Form.Label>Description</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.description ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, description: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.description}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.description}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="userType">
-//             <Form.Label>User Type</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.userType ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, userType: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.userType}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.userType}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="experienceLevel">
-//             <Form.Label>Experience Level</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.experienceLevel ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, experienceLevel: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.experienceLevel}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.experienceLevel}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="location">
-//             <Form.Label>Location</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.location ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, location: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.location}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.location}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="availableFrom">
-//             <Form.Label>Available From</Form.Label>
-//             <Form.Control
-//               type="date"
-//               value={formData.availableFrom ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, availableFrom: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.availableFrom}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.availableFrom}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="phoneNumber">
-//             <Form.Label>Phone Number</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.phoneNumber ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.phoneNumber}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.phoneNumber}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-
-//           <Form.Group as={Col} md="6" controlId="driversLicense">
-//             <Form.Label>Driver’s License</Form.Label>
-//             <Form.Control
-//               type="text"
-//               value={formData.driversLicense ?? ""}
-//               onChange={(e) =>
-//                 setFormData((prev) => ({ ...prev, driversLicense: e.target.value }))
-//               }
-//               isInvalid={!!formErrors.driversLicense}
-//             />
-//             <Form.Control.Feedback type="invalid">
-//               {formErrors.driversLicense}
-//             </Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
-
-//         <Form.Group className="mb-3" controlId="comments">
-//           <Form.Label>Comments</Form.Label>
-//           <Form.Control
-//             as="textarea"
-//             rows={3}
-//             value={formData.comments ?? ""}
-//             onChange={(e) =>
-//               setFormData((prev) => ({ ...prev, comments: e.target.value }))
-//             }
-//             isInvalid={!!formErrors.comments}
-//           />
-//           <Form.Control.Feedback type="invalid">
-//             {formErrors.comments}
-//           </Form.Control.Feedback>
-//         </Form.Group>
-
-//         <Form.Group className="mb-4" controlId="newPassword">
-//           <Form.Label>New Password</Form.Label>
-//           <Form.Control
-//             type="password"
-//             value={formData.newPassword ?? ""}
-//             onChange={(e) =>
-//               setFormData((prev) => ({ ...prev, newPassword: e.target.value }))
-//             }
-//           />
-//         </Form.Group>
-
-//         <div className="d-flex justify-content-between">
-//           <Button
-//             type="submit"
-//             disabled={isSubmitting || loading}
-//             variant="primary"
-//           >
-//             {isSubmitting ? "Updating..." : "Update Profile"}
-//           </Button>
-//           <Link to="/user">
-//             <Button variant="outline-secondary">Cancel</Button>
-//           </Link>
-//         </div>
-//       </Form>
-//     </Card>
-//   );
-// };
-
-// export default ProfileUpdate;
-
-// // ProfileUpdate.tsx
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import Button from "react-bootstrap/Button";
-// import Col from "react-bootstrap/Col";
-// import Form from "react-bootstrap/Form";
-// import Row from "react-bootstrap/Row";
-// import Alert from "react-bootstrap/Alert";
-// import Card from "react-bootstrap/Card";
-// import Spinner from "react-bootstrap/Spinner";
-// import { Link } from "react-router-dom";
-
-// type User = {
-//   id?: string;
-//   email: string;
-//   password?: string;
-//   description: string;
-//   userType: string;
-//   experienceLevel: string;
-//   location: string;
-//   availableFrom: string;
-//   newPassword?: string;
-//   profileImage?: string; // front state uses profileImage
-//   phoneNumber: string;
-//   driversLicense: string;
-//   comments: string;
-//   qrCode?: string; // svg url maybe
-//   qrPNG?: string; // png url maybe
-// };
-
-// const ServerPort =
-//   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
-
-// // Cloudinary config (optional)
-// const CLOUDINARY_UPLOAD_URL = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-//   ? `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`
-//   : "";
-// const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "";
-
-// const ProfileUpdate: React.FC = () => {
-//   const userId = localStorage.getItem("userId");
-//   const [error, setError] = useState<string | null>(null);
-//   const [loading, setLoading] = useState<boolean>(false);
-//   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [imagePreview, setImagePreview] = useState<string | null>(null); // shows uploaded image
-//   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null); // prefer png if available
+//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
 //   const [formData, setFormData] = useState<User>({
 //     email: "",
@@ -963,26 +52,24 @@
 
 //   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-//   // Load user profile
+//   // Fetch user data on mount
 //   useEffect(() => {
 //     const fetchUserData = async () => {
-//       setLoading(true);
-//       const token = localStorage.getItem("token");
-//       if (!token) {
-//         setError("No token found. Please log in.");
-//         setLoading(false);
-//         return;
-//       }
-
 //       try {
+//         setLoading(true);
+//         const token = localStorage.getItem("token");
+//         if (!token) {
+//           setError("No token found. Please log in.");
+//           setLoading(false);
+//           return;
+//         }
+
 //         const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 
 //         if (response.status === 200) {
 //           const userData = response.data;
-
-//           // normalize values
 //           const availableFromDate =
 //             typeof userData.availableFrom === "string"
 //               ? userData.availableFrom.split("T")[0]
@@ -990,15 +77,14 @@
 
 //           const profileImage =
 //             userData.profileImage || userData.image || userData.profileImg || "";
-
-//           const qr = userData.qrPNG || userData.qrCode || userData.qr || "";
+//           const qr = userData.qrPNG || userData.qrCode || "";
 
 //           setFormData({
 //             ...formData,
 //             ...userData,
 //             availableFrom: availableFromDate,
 //             profileImage,
-//             qrCode: userData.qrCode || userData.qr || "",
+//             qrCode: userData.qrCode || "",
 //             qrPNG: userData.qrPNG || "",
 //             password: "",
 //             newPassword: "",
@@ -1009,7 +95,7 @@
 //         } else {
 //           setError("Failed to fetch user data.");
 //         }
-//       } catch (err) {
+//       } catch (err: any) {
 //         handleApiError(err);
 //       } finally {
 //         setLoading(false);
@@ -1020,127 +106,98 @@
 //     // eslint-disable-next-line react-hooks/exhaustive-deps
 //   }, [userId]);
 
-//   // Upload image (Cloudinary direct OR fallback to backend)
-//   const handleImageUpload = async (file: File) => {
-//     setError(null);
-//     setLoading(true);
-
-//     try {
-//       // If Cloudinary env is configured, upload straight to Cloudinary
-//       if (CLOUDINARY_UPLOAD_URL && CLOUDINARY_UPLOAD_PRESET) {
-//         const data = new FormData();
-//         data.append("file", file);
-//         data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-//         const res = await axios.post(CLOUDINARY_UPLOAD_URL, data);
-//         const imageUrl = res.data.secure_url;
-
-//         setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
-//         setImagePreview(imageUrl);
-//         return;
-//       }
-
-//       // Otherwise fallback: send multipart/form-data to backend update endpoint (server must accept multipart and use multer/cloudinary)
-//       const token = localStorage.getItem("token");
-//       const form = new FormData();
-//       form.append("image", file); // backend expects "image" field (upload.single("image"))
-//       // include other fields if you want them updated at same time
-//       form.append("email", formData.email || "");
-//       // ... other fields can be appended if desired
-
-//       const resp = await axios.put(`${ServerPort}/api/user/update/${userId}`, form, {
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-
-//       // server should return updated user with image location
-//       if (resp.status === 200 && resp.data?.user) {
-//         const updatedUser = resp.data.user;
-//         const imageUrl = updatedUser.profileImage || updatedUser.image || updatedUser.profileImg;
-//         setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
-//         setImagePreview(imageUrl || null);
-//       } else {
-//         throw new Error("Upload failed (server didn't return updated user).");
-//       }
-//     } catch (err) {
-//       console.error("Upload error:", err);
-//       setError(
-//         (axios.isAxiosError(err) && err.response?.data?.message) ||
-//         (err as Error).message ||
-//         "Image upload failed. Check console."
-//       );
-//     } finally {
-//       setLoading(false);
+//   // Error helper
+//   const handleApiError = (error: any) => {
+//     if (axios.isAxiosError(error)) {
+//       setError(error.response?.data?.message || error.message);
+//     } else {
+//       setError("An unknown error occurred.");
 //     }
 //   };
 
-//   // Validate before sending update
+//   // Validate form before sending
 //   const validateForm = () => {
 //     const errors: Record<string, string> = {};
 //     if (!formData.email) errors.email = "Email is required";
-//     else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email format";
 //     if (!formData.description) errors.description = "Description is required";
-//     if (!formData.userType) errors.userType = "User Type is required";
-//     if (!formData.experienceLevel) errors.experienceLevel = "Experience Level is required";
+//     if (!formData.userType) errors.userType = "User type is required";
+//     if (!formData.experienceLevel)
+//       errors.experienceLevel = "Experience level is required";
 //     if (!formData.location) errors.location = "Location is required";
-//     if (!formData.availableFrom) errors.availableFrom = "Available From date is required";
-//     if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
-//     if (!formData.driversLicense) errors.driversLicense = "Drivers License is required";
+//     if (!formData.availableFrom) errors.availableFrom = "Available from is required";
+//     if (!formData.phoneNumber) errors.phoneNumber = "Phone number is required";
+//     if (!formData.driversLicense)
+//       errors.driversLicense = "Driver’s license is required";
 //     if (!formData.comments) errors.comments = "Comments are required";
 //     setFormErrors(errors);
 //     return Object.keys(errors).length === 0;
 //   };
 
-//   // Submit update to backend (JSON). If you uploaded an image directly to Cloudinary earlier, profileImage will be present.
-//   const handleUserUpdate = async (e: React.FormEvent) => {
+//   // Handle file change
+//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (file) {
+//       setSelectedFile(file);
+//       setImagePreview(URL.createObjectURL(file));
+//     }
+//   };
+
+//   // Handle form submit (multipart/form-data)
+//   const handleSubmit = async (e: React.FormEvent) => {
 //     e.preventDefault();
 //     setError(null);
 //     setSuccessMessage(null);
 
 //     if (!validateForm()) return;
 
-//     setIsSubmitting(true);
-//     setLoading(true);
+//     const token = localStorage.getItem("token");
+//     if (!token) {
+//       setError("No token found. Please log in.");
+//       return;
+//     }
 
 //     try {
-//       const token = localStorage.getItem("token");
+//       setLoading(true);
+//       const updateForm = new FormData();
 
-//       // clone and prepare payload
-//       const payload: Record<string, any> = { ...formData };
+//       // Append all form fields
+//       Object.entries(formData).forEach(([key, value]) => {
+//         if (value !== null && value !== undefined) {
+//           updateForm.append(key, value.toString());
+//         }
+//       });
 
-//       // if user didn't set new password, remove password
-//       if (!payload.newPassword) delete payload.password;
-//       else {
-//         // send new password as "newPassword" or password depending on server expectation
-//         payload.newPassword = payload.newPassword;
+//       // Append file if selected
+//       if (selectedFile) {
+//         updateForm.append("profileImage", selectedFile);
 //       }
 
-//       // server expects JSON by this route
-//       const response = await axios.put(`${ServerPort}/api/user/update/${userId}`, payload, {
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
+//       const response = await axios.put(
+//         `${ServerPort}/api/user/update/${userId}`,
+//         updateForm,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
+//       );
 
 //       if (response.status === 200 && response.data?.user) {
 //         const updatedUser = response.data.user;
+//         const profileImage =
+//           updatedUser.profileImage || updatedUser.image || updatedUser.profileImg;
+//         const qr = updatedUser.qrPNG || updatedUser.qrCode || "";
 
-//         // prefer backend returned profileImage or image
-//         const profileImage = updatedUser.profileImage || updatedUser.image || updatedUser.profileImg || formData.profileImage;
-//         const qr = updatedUser.qrPNG || updatedUser.qrCode || updatedUser.qr || formData.qrCode || formData.qrPNG;
-
-//         setFormData((prev) => ({
-//           ...prev,
+//         setFormData({
+//           ...formData,
 //           ...updatedUser,
 //           profileImage,
-//           qrCode: updatedUser.qrCode || prev.qrCode || "",
-//           qrPNG: updatedUser.qrPNG || prev.qrPNG || "",
+//           qrCode: updatedUser.qrCode || "",
+//           qrPNG: updatedUser.qrPNG || "",
 //           password: "",
 //           newPassword: "",
-//         }));
+//         });
 
 //         setImagePreview(profileImage || null);
 //         setQrCodeImage(qr || null);
@@ -1148,551 +205,623 @@
 //       } else {
 //         setError("Update failed — unexpected server response.");
 //       }
-//     } catch (err) {
+//     } catch (err: any) {
 //       handleApiError(err);
 //     } finally {
 //       setLoading(false);
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   // const handleUserUpdate = async (e) => {
-//   //   e.preventDefault();
-//   //   const token = localStorage.getItem("token");
-//   //   const formDataToSend = new FormData();
-
-//   //   Object.entries(formData).forEach(([key, value]) => {
-//   //     if (value !== null && value !== undefined && value !== "") {
-//   //       formDataToSend.append(key, value);
-//   //     }
-//   //   });
-
-//   //   if (selectedFile) {
-//   //     formDataToSend.append("profileImage", selectedFile);
-//   //   }
-
-//   //   try {
-//   //     const response = await axios.put(
-//   //       `${ServerPort}/api/user/update/${userId}`,
-//   //       formDataToSend,
-//   //       {
-//   //         headers: {
-//   //           Authorization: `Bearer ${token}`,
-//   //           "Content-Type": "multipart/form-data",
-//   //         },
-//   //       }
-//   //     );
-
-//   //     if (response.status === 200) {
-//   //       setFormData({
-//   //         ...response.data.user,
-//   //         password: "",
-//   //         newPassword: "",
-//   //       });
-//   //       setImagePreview(response.data.user.profileImage);
-//   //       setQrCodeImage(response.data.user.qrCode);
-//   //       setSuccessMessage("✅ Profile updated successfully!");
-//   //     }
-//   //   } catch (err) {
-//   //     handleApiError(err);
-//   //   }
-//   // };
-
-//   // API error helper
-//   const handleApiError = (error: any) => {
-//     if (axios.isAxiosError(error)) {
-//       setError(error.response?.data?.message || error.response?.data || error.message);
-//     } else {
-//       setError("An unknown error occurred");
 //     }
 //   };
 
 //   return (
-//     <Card className="p-4 shadow-lg rounded-lg">
-//       <h2 className="mb-4 text-center">Update Your Profile</h2>
+//     <div className={styles["profile-container"]}>
+//       <h2>Update Your Profile</h2>
 
-//       {loading && <Spinner animation="border" className="d-block mx-auto mb-3" />}
-//       {error && <Alert variant="danger">{error}</Alert>}
-//       {successMessage && <Alert variant="success">{successMessage}</Alert>}
+//       {loading && <p>Loading...</p>}
+//       {error && <p className={styles["error-text"]}>{error}</p>}
+//       {successMessage && <p className={styles["success-text"]}>{successMessage}</p>}
 
-//       <Form onSubmit={handleUserUpdate}>
-//         {/* Profile image preview / upload */}
-//         <div className="mb-4 text-center">
+//       <form
+//         onSubmit={handleSubmit}
+//         encType="multipart/form-data"
+//         className={styles["profile-form"]}
+//       >
+//         {/* Profile Image */}
+//         <div className={styles["image-section"]}>
 //           <img
 //             src={
 //               imagePreview ||
 //               formData.profileImage ||
-//               "https://via.placeholder.com/150?text=Upload+Profile+Image"
+//               "https://via.placeholder.com/150?text=Upload+Profile"
 //             }
 //             alt="Profile"
-//             style={{
-//               width: 120,
-//               height: 120,
-//               borderRadius: "50%",
-//               objectFit: "cover",
-//               border: "2px solid #ddd",
-//             }}
+//             className={styles["profile-image"]}
 //           />
-
-//           {/* file input */}
-//           <Form.Control
+//           <input
 //             type="file"
 //             accept="image/*"
-//             className="mt-2"
-//             onChange={(e) => {
-//               const target = e.target as HTMLInputElement;
-//               if (target.files?.[0]) {
-//                 handleImageUpload(target.files[0]);
-//               }
-//             }}
+//             onChange={handleFileChange}
+//             className={styles["file-input"]}
 //           />
-//           <div className="small text-muted mt-1">
-//             {CLOUDINARY_UPLOAD_URL ? "Uploading directly to Cloudinary" : "Uploading via your backend"}
-//           </div>
 //         </div>
 
 //         {/* QR Code */}
 //         {qrCodeImage && (
-//           <div className="mb-4 text-center">
-//             <h5>Your QR Code</h5>
-//             <img src={qrCodeImage} alt="QR Code" style={{ width: 150, height: 150 }} />
+//           <div className={styles["qr-section"]}>
+//             <h4>Your QR Code</h4>
+//             <img src={qrCodeImage} alt="QR Code" className={styles["qr-image"]} />
 //           </div>
 //         )}
 
-//         {/* Email + Description */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="email">
-//             <Form.Label>Email</Form.Label>
-//             <Form.Control type="email" value={formData.email || ""} onChange={(e) => setFormData({ ...formData, email: e.target.value })} isInvalid={!!formErrors.email} />
-//             <Form.Control.Feedback type="invalid">{formErrors.email}</Form.Control.Feedback>
-//           </Form.Group>
+//         {/* Email */}
+//         <label>Email</label>
+//         <input
+//           type="email"
+//           value={formData.email}
+//           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+//         />
+//         {formErrors.email && <small className={styles["error"]}>{formErrors.email}</small>}
 
-//           <Form.Group as={Col} md="6" controlId="description">
-//             <Form.Label>Description</Form.Label>
-//             <Form.Control type="text" value={formData.description || ""} onChange={(e) => setFormData({ ...formData, description: e.target.value })} isInvalid={!!formErrors.description} />
-//             <Form.Control.Feedback type="invalid">{formErrors.description}</Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
+//         {/* Description */}
+//         <label>Description</label>
+//         <input
+//           type="text"
+//           value={formData.description}
+//           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+//         />
 
-//         {/* User Type + Experience */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="userType">
-//             <Form.Label>User Type</Form.Label>
-//             <Form.Control type="text" value={formData.userType || ""} onChange={(e) => setFormData({ ...formData, userType: e.target.value })} isInvalid={!!formErrors.userType} />
-//             <Form.Control.Feedback type="invalid">{formErrors.userType}</Form.Control.Feedback>
-//           </Form.Group>
+//         {/* User Type */}
+//         <label>User Type</label>
+//         <input
+//           type="text"
+//           value={formData.userType}
+//           onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
+//         />
 
-//           <Form.Group as={Col} md="6" controlId="experienceLevel">
-//             <Form.Label>Experience Level</Form.Label>
-//             <Form.Control type="text" value={formData.experienceLevel || ""} onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })} isInvalid={!!formErrors.experienceLevel} />
-//             <Form.Control.Feedback type="invalid">{formErrors.experienceLevel}</Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
+//         {/* Experience */}
+//         <label>Experience Level</label>
+//         <input
+//           type="text"
+//           value={formData.experienceLevel}
+//           onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+//         />
 
-//         {/* Location + Available From */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="location">
-//             <Form.Label>Location</Form.Label>
-//             <Form.Control type="text" value={formData.location || ""} onChange={(e) => setFormData({ ...formData, location: e.target.value })} isInvalid={!!formErrors.location} />
-//             <Form.Control.Feedback type="invalid">{formErrors.location}</Form.Control.Feedback>
-//           </Form.Group>
+//         {/* Location */}
+//         <label>Location</label>
+//         <input
+//           type="text"
+//           value={formData.location}
+//           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+//         />
 
-//           <Form.Group as={Col} md="6" controlId="availableFrom">
-//             <Form.Label>Available From</Form.Label>
-//             <Form.Control type="date" value={formData.availableFrom || ""} onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })} isInvalid={!!formErrors.availableFrom} />
-//             <Form.Control.Feedback type="invalid">{formErrors.availableFrom}</Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
+//         {/* Available From */}
+//         <label>Available From</label>
+//         <input
+//           type="date"
+//           value={formData.availableFrom}
+//           onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+//         />
 
-//         {/* Phone + License */}
-//         <Row className="mb-3">
-//           <Form.Group as={Col} md="6" controlId="phoneNumber">
-//             <Form.Label>Phone Number</Form.Label>
-//             <Form.Control type="text" value={formData.phoneNumber || ""} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} isInvalid={!!formErrors.phoneNumber} />
-//             <Form.Control.Feedback type="invalid">{formErrors.phoneNumber}</Form.Control.Feedback>
-//           </Form.Group>
+//         {/* Phone Number */}
+//         <label>Phone Number</label>
+//         <input
+//           type="text"
+//           value={formData.phoneNumber}
+//           onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+//         />
 
-//           <Form.Group as={Col} md="6" controlId="driversLicense">
-//             <Form.Label>Driver’s License</Form.Label>
-//             <Form.Control type="text" value={formData.driversLicense || ""} onChange={(e) => setFormData({ ...formData, driversLicense: e.target.value })} isInvalid={!!formErrors.driversLicense} />
-//             <Form.Control.Feedback type="invalid">{formErrors.driversLicense}</Form.Control.Feedback>
-//           </Form.Group>
-//         </Row>
+//         {/* Driver’s License */}
+//         <label>Driver’s License</label>
+//         <input
+//           type="text"
+//           value={formData.driversLicense}
+//           onChange={(e) => setFormData({ ...formData, driversLicense: e.target.value })}
+//         />
 
 //         {/* Comments */}
-//         <Form.Group className="mb-3" controlId="comments">
-//           <Form.Label>Comments</Form.Label>
-//           <Form.Control as="textarea" rows={3} value={formData.comments || ""} onChange={(e) => setFormData({ ...formData, comments: e.target.value })} isInvalid={!!formErrors.comments} />
-//           <Form.Control.Feedback type="invalid">{formErrors.comments}</Form.Control.Feedback>
-//         </Form.Group>
+//         <label>Comments</label>
+//         <textarea
+//           rows={3}
+//           value={formData.comments}
+//           onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+//         ></textarea>
 
 //         {/* New Password */}
-//         <Form.Group className="mb-4" controlId="newPassword">
-//           <Form.Label>New Password</Form.Label>
-//           <Form.Control type="password" value={formData.newPassword || ""} onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })} />
-//         </Form.Group>
+//         <label>New Password</label>
+//         <input
+//           type="password"
+//           value={formData.newPassword}
+//           onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+//         />
 
-//         <div className="d-flex justify-content-between">
-//           <Button type="submit" disabled={isSubmitting || loading} variant="primary">
-//             {isSubmitting ? "Updating..." : "Update Profile"}
-//           </Button>
-//           <Link to="/user">
-//             <Button variant="outline-secondary">Cancel</Button>
+//         {/* Buttons */}
+//         <div className={styles["button-row"]}>
+//           <button type="submit" disabled={loading}>
+//             {loading ? "Updating..." : "Update Profile"}
+//           </button>
+//           <Link to="/user" className={styles["cancel-link"]}>
+//             Cancel
 //           </Link>
 //         </div>
-//       </Form>
-//     </Card>
+//       </form>
+//     </div>
 //   );
 // };
 
 // export default ProfileUpdate;
 
-// ProfileUpdate.tsx
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { Link } from "react-router-dom";
+// import styles from "./ProfileUpdate.module.css";
+
+// const ServerPort =
+//   process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
+
+// interface User {
+//   email: string;
+//   description: string;
+//   userType: string;
+//   experienceLevel: string;
+//   location: string;
+//   availableFrom: string;
+//   phoneNumber: string;
+//   driversLicense: string;
+//   comments: string;
+//   profileImage?: string;
+//   qrPNG?: string;
+//   qrCode?: string;
+//   newPassword?: string;
+// }
+
+// const ProfileUpdate: React.FC = () => {
+//   const userId = localStorage.getItem("userId");
+
+//   const [formData, setFormData] = useState<User>({
+//     email: "",
+//     description: "",
+//     userType: "",
+//     experienceLevel: "",
+//     location: "",
+//     availableFrom: "",
+//     phoneNumber: "",
+//     driversLicense: "",
+//     comments: "",
+//   });
+
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [success, setSuccess] = useState<string | null>(null);
+
+//   // IMAGES
+//   const [imagePreview, setImagePreview] = useState<string | null>(null);
+//   const [qrPreview, setQrPreview] = useState<string | null>(null);
+//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+//   // Fetch user data
+//   useEffect(() => {
+//     const loadUser = async () => {
+//       try {
+//         setLoading(true);
+//         const token = localStorage.getItem("token");
+
+//         const res = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
+
+//         if (res.status === 200) {
+//           const u = res.data;
+
+//           const availableDate =
+//             typeof u.availableFrom === "string"
+//               ? u.availableFrom.split("T")[0]
+//               : "";
+
+//           const profileImg =
+//             u.profileImage || u.profileImg || u.image || null;
+
+//           const qr = u.qrPNG || u.qrCode || null;
+
+//           setFormData({
+//             email: u.email || "",
+//             description: u.description || "",
+//             userType: u.userType || "",
+//             experienceLevel: u.experienceLevel || "",
+//             location: u.location || "",
+//             availableFrom: availableDate || "",
+//             phoneNumber: u.phoneNumber || "",
+//             driversLicense: u.driversLicense || "",
+//             comments: u.comments || "",
+//             profileImage: profileImg || "",
+//             qrPNG: u.qrPNG || "",
+//             qrCode: u.qrCode || "",
+//           });
+
+//           setImagePreview(profileImg);
+//           setQrPreview(qr);
+//         }
+//       } catch (err: any) {
+//         setError(err.response?.data?.message || "Failed to load user.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     if (userId) loadUser();
+//   }, [userId]);
+
+//   // Handle file select
+//   const handleFileChange = (e: any) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     setSelectedFile(file);
+//     setImagePreview(URL.createObjectURL(file));
+//   };
+
+//   // Submit
+//   const handleSubmit = async (e: any) => {
+//     e.preventDefault();
+//     setError(null);
+//     setSuccess(null);
+
+//     const token = localStorage.getItem("token");
+//     if (!token) return setError("Not logged in.");
+
+//     try {
+//       setLoading(true);
+
+//       const fd = new FormData();
+
+//       Object.entries(formData).forEach(([key, value]) => {
+//         if (value !== undefined && value !== null) {
+//           fd.append(key, value.toString());
+//         }
+//       });
+
+//       if (selectedFile) {
+//         fd.append("profileImage", selectedFile);
+//       }
+
+//       const res = await axios.put(
+//         `${ServerPort}/api/user/update/${userId}`,
+//         fd,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
+//       );
+
+//       if (res.status === 200) {
+//         const updated = res.data.user;
+
+//         const profileImg =
+//           updated.profileImage || updated.profileImg || updated.image;
+
+//         const qrUpdated = updated.qrPNG || updated.qrCode;
+
+//         setFormData({
+//           ...formData,
+//           profileImage: profileImg,
+//           qrPNG: updated.qrPNG,
+//           qrCode: updated.qrCode,
+//           newPassword: "",
+//         });
+
+//         setImagePreview(profileImg || null);
+//         setQrPreview(qrUpdated || null);
+
+//         setSuccess("Profile updated successfully!");
+//       }
+//     } catch (err: any) {
+//       setError(err.response?.data?.message || "Update failed.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className={styles["profile-container"]}>
+//       <h2>Update Your Profile</h2>
+
+//       {error && <p className={styles.error}>{error}</p>}
+//       {success && <p className={styles.success}>{success}</p>}
+
+//       <form onSubmit={handleSubmit} encType="multipart/form-data" className={styles["profile-form"]}>
+        
+//         {/* IMAGE UPLOAD */}
+//         <div className={styles["image-section"]}>
+//           <img
+//             src={
+//               imagePreview ||
+//               formData.profileImage ||
+//               "https://via.placeholder.com/150?text=Upload"
+//             }
+//             alt="Profile"
+//             className={styles["profile-image"]}
+//           />
+
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             className={styles["file-input"]}
+//           />
+//         </div>
+
+//         {/* QR */}
+//         {qrPreview && (
+//           <div className={styles["qr-section"]}>
+//             <h4>Your QR Code</h4>
+//             <img src={qrPreview} className={styles["qr-image"]} alt="QR Code" />
+//           </div>
+//         )}
+
+//         {/* FORM FIELDS */}
+//         <label>Email</label>
+//         <input
+//           value={formData.email}
+//           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+//         />
+
+//         <label>Description</label>
+//         <input
+//           value={formData.description}
+//           onChange={(e) =>
+//             setFormData({ ...formData, description: e.target.value })
+//           }
+//         />
+
+//         <label>User Type</label>
+//         <input
+//           value={formData.userType}
+//           onChange={(e) =>
+//             setFormData({ ...formData, userType: e.target.value })
+//           }
+//         />
+
+//         <label>Experience Level</label>
+//         <input
+//           value={formData.experienceLevel}
+//           onChange={(e) =>
+//             setFormData({ ...formData, experienceLevel: e.target.value })
+//           }
+//         />
+
+//         <label>Location</label>
+//         <input
+//           value={formData.location}
+//           onChange={(e) =>
+//             setFormData({ ...formData, location: e.target.value })
+//           }
+//         />
+
+//         <label>Available From</label>
+//         <input
+//           type="date"
+//           value={formData.availableFrom}
+//           onChange={(e) =>
+//             setFormData({ ...formData, availableFrom: e.target.value })
+//           }
+//         />
+
+//         <label>Phone Number</label>
+//         <input
+//           value={formData.phoneNumber}
+//           onChange={(e) =>
+//             setFormData({ ...formData, phoneNumber: e.target.value })
+//           }
+//         />
+
+//         <label>Driver’s License</label>
+//         <input
+//           value={formData.driversLicense}
+//           onChange={(e) =>
+//             setFormData({ ...formData, driversLicense: e.target.value })
+//           }
+//         />
+
+//         <label>Comments</label>
+//         <textarea
+//           value={formData.comments}
+//           onChange={(e) =>
+//             setFormData({ ...formData, comments: e.target.value })
+//           }
+//         ></textarea>
+
+//         <label>New Password</label>
+//         <input
+//           type="password"
+//           value={formData.newPassword || ""}
+//           onChange={(e) =>
+//             setFormData({ ...formData, newPassword: e.target.value })
+//           }
+//         />
+
+//         <div className={styles["button-row"]}>
+//           <button type="submit" disabled={loading}>
+//             {loading ? "Updating..." : "Update Profile"}
+//           </button>
+
+//           <Link to="/user" className={styles["cancel-link"]}>
+//             Cancel
+//           </Link>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default ProfileUpdate;
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import styles from "./ProfileUpdate.module.css";
 
-interface User {
-  id?: string;
+interface UserProfile {
+  fullName: string;
+  companyName: string;
   email: string;
-  password?: string;
-  description: string;
-  userType: string;
-  experienceLevel: string;
-  location: string;
-  availableFrom: string;
-  newPassword?: string;
+  phone: string;
+  bio: string;
   profileImage?: string;
-  phoneNumber: string;
-  driversLicense: string;
-  comments: string;
   qrCode?: string;
-  qrPNG?: string;
 }
 
-const ServerPort =
-  process.env.REACT_APP_SOCKET_IO_CLIENT_PORT || "http://localhost:3001";
-
 const ProfileUpdate: React.FC = () => {
-  const userId = localStorage.getItem("userId");
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const { id } = useParams();
+  const [data, setData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadingImg, setUploadingImg] = useState(false);
 
-  const [formData, setFormData] = useState<User>({
-    email: "",
-    password: "",
-    description: "",
-    userType: "",
-    experienceLevel: "",
-    location: "",
-    availableFrom: "",
-    newPassword: "",
-    profileImage: "",
-    phoneNumber: "",
-    driversLicense: "",
-    comments: "",
-    qrCode: "",
-    qrPNG: "",
-  });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  // Fetch user data on mount
+  // Fetch user data
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No token found. Please log in.");
-          setLoading(false);
-          return;
-        }
-
-        const response = await axios.get(`${ServerPort}/api/user/view/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.status === 200) {
-          const userData = response.data;
-          const availableFromDate =
-            typeof userData.availableFrom === "string"
-              ? userData.availableFrom.split("T")[0]
-              : "";
-
-          const profileImage =
-            userData.profileImage || userData.image || userData.profileImg || "";
-          const qr = userData.qrPNG || userData.qrCode || "";
-
-          setFormData({
-            ...formData,
-            ...userData,
-            availableFrom: availableFromDate,
-            profileImage,
-            qrCode: userData.qrCode || "",
-            qrPNG: userData.qrPNG || "",
-            password: "",
-            newPassword: "",
-          });
-
-          setImagePreview(profileImage || null);
-          setQrCodeImage(qr || null);
-        } else {
-          setError("Failed to fetch user data.");
-        }
-      } catch (err: any) {
-        handleApiError(err);
-      } finally {
+    axios
+      .get(`/api/users/${id}`)
+      .then((res) => {
+        setData(res.data);
+        setImagePreview(res.data.profileImage || null);
         setLoading(false);
-      }
-    };
+      })
+      .catch(() => {
+        setError("Failed to load profile");
+        setLoading(false);
+      });
+  }, [id]);
 
-    if (userId) fetchUserData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
-
-  // Error helper
-  const handleApiError = (error: any) => {
-    if (axios.isAxiosError(error)) {
-      setError(error.response?.data?.message || error.message);
-    } else {
-      setError("An unknown error occurred.");
-    }
-  };
-
-  // Validate form before sending
-  const validateForm = () => {
-    const errors: Record<string, string> = {};
-    if (!formData.email) errors.email = "Email is required";
-    if (!formData.description) errors.description = "Description is required";
-    if (!formData.userType) errors.userType = "User type is required";
-    if (!formData.experienceLevel)
-      errors.experienceLevel = "Experience level is required";
-    if (!formData.location) errors.location = "Location is required";
-    if (!formData.availableFrom) errors.availableFrom = "Available from is required";
-    if (!formData.phoneNumber) errors.phoneNumber = "Phone number is required";
-    if (!formData.driversLicense)
-      errors.driversLicense = "Driver’s license is required";
-    if (!formData.comments) errors.comments = "Comments are required";
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  // Handle file change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Cloudinary Upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+    if (!file) return;
 
-  // Handle form submit (multipart/form-data)
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccessMessage(null);
+    setUploadingImg(true);
 
-    if (!validateForm()) return;
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No token found. Please log in.");
-      return;
-    }
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // REPLACE
 
     try {
-      setLoading(true);
-      const updateForm = new FormData();
-
-      // Append all form fields
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          updateForm.append(key, value.toString());
-        }
-      });
-
-      // Append file if selected
-      if (selectedFile) {
-        updateForm.append("profileImage", selectedFile);
-      }
-
-      const response = await axios.put(
-        `${ServerPort}/api/user/update/${userId}`,
-        updateForm,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      const cloudRes = await axios.post(
+        `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`,
+        formData
       );
 
-      if (response.status === 200 && response.data?.user) {
-        const updatedUser = response.data.user;
-        const profileImage =
-          updatedUser.profileImage || updatedUser.image || updatedUser.profileImg;
-        const qr = updatedUser.qrPNG || updatedUser.qrCode || "";
+      const imageUrl = cloudRes.data.secure_url;
 
-        setFormData({
-          ...formData,
-          ...updatedUser,
-          profileImage,
-          qrCode: updatedUser.qrCode || "",
-          qrPNG: updatedUser.qrPNG || "",
-          password: "",
-          newPassword: "",
-        });
-
-        setImagePreview(profileImage || null);
-        setQrCodeImage(qr || null);
-        setSuccessMessage("✅ Profile updated successfully!");
-      } else {
-        setError("Update failed — unexpected server response.");
-      }
-    } catch (err: any) {
-      handleApiError(err);
+      setData((prev) => (prev ? { ...prev, profileImage: imageUrl } : null));
+      setImagePreview(imageUrl);
+    } catch (err) {
+      setError("Image upload failed");
     } finally {
-      setLoading(false);
+      setUploadingImg(false);
     }
   };
 
+  const handleSave = async () => {
+    if (!data) return;
+
+    try {
+      await axios.put(`/api/users/${id}`, data);
+      setMessage("Profile updated successfully!");
+    } catch {
+      setError("Save failed");
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+
   return (
-    <div className={styles["profile-container"]}>
-      <h2>Update Your Profile</h2>
+    <div className={styles.card}>
+      <h2 className={styles.title}>Update Profile</h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className={styles["error-text"]}>{error}</p>}
-      {successMessage && <p className={styles["success-text"]}>{successMessage}</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {message && <p className={styles.success}>{message}</p>}
 
-      <form
-        onSubmit={handleSubmit}
-        encType="multipart/form-data"
-        className={styles["profile-form"]}
-      >
-        {/* Profile Image */}
-        <div className={styles["image-section"]}>
-          <img
-            src={
-              imagePreview ||
-              formData.profileImage ||
-              "https://via.placeholder.com/150?text=Upload+Profile"
-            }
-            alt="Profile"
-            className={styles["profile-image"]}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className={styles["file-input"]}
-          />
-        </div>
+      {/* Profile Image */}
+      <div className={styles.imageWrapper}>
+        <img
+          src={imagePreview || "/default-profile.png"}
+          alt="Profile"
+          className={styles.profileImage}
+        />
 
-        {/* QR Code */}
-        {qrCodeImage && (
-          <div className={styles["qr-section"]}>
-            <h4>Your QR Code</h4>
-            <img src={qrCodeImage} alt="QR Code" className={styles["qr-image"]} />
-          </div>
-        )}
+        <label className={styles.uploadBtn}>
+          {uploadingImg ? "Uploading..." : "Change Photo"}
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
+        </label>
+      </div>
 
-        {/* Email */}
+      {/* Form */}
+      <div className={styles.form}>
+        <label>Full Name</label>
+        <input
+          value={data?.fullName || ""}
+          onChange={(e) =>
+            setData((prev) => prev && { ...prev, fullName: e.target.value })
+          }
+        />
+
+        <label>Company</label>
+        <input
+          value={data?.companyName || ""}
+          onChange={(e) =>
+            setData((prev) => prev && { ...prev, companyName: e.target.value })
+          }
+        />
+
         <label>Email</label>
         <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={data?.email || ""}
+          onChange={(e) =>
+            setData((prev) => prev && { ...prev, email: e.target.value })
+          }
         />
-        {formErrors.email && <small className={styles["error"]}>{formErrors.email}</small>}
 
-        {/* Description */}
-        <label>Description</label>
+        <label>Phone</label>
         <input
-          type="text"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          value={data?.phone || ""}
+          onChange={(e) =>
+            setData((prev) => prev && { ...prev, phone: e.target.value })
+          }
         />
 
-        {/* User Type */}
-        <label>User Type</label>
-        <input
-          type="text"
-          value={formData.userType}
-          onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-        />
-
-        {/* Experience */}
-        <label>Experience Level</label>
-        <input
-          type="text"
-          value={formData.experienceLevel}
-          onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-        />
-
-        {/* Location */}
-        <label>Location</label>
-        <input
-          type="text"
-          value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-        />
-
-        {/* Available From */}
-        <label>Available From</label>
-        <input
-          type="date"
-          value={formData.availableFrom}
-          onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
-        />
-
-        {/* Phone Number */}
-        <label>Phone Number</label>
-        <input
-          type="text"
-          value={formData.phoneNumber}
-          onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-        />
-
-        {/* Driver’s License */}
-        <label>Driver’s License</label>
-        <input
-          type="text"
-          value={formData.driversLicense}
-          onChange={(e) => setFormData({ ...formData, driversLicense: e.target.value })}
-        />
-
-        {/* Comments */}
-        <label>Comments</label>
+        <label>Bio</label>
         <textarea
-          rows={3}
-          value={formData.comments}
-          onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+          rows={4}
+          value={data?.bio || ""}
+          onChange={(e) =>
+            setData((prev) => prev && { ...prev, bio: e.target.value })
+          }
         ></textarea>
+      </div>
 
-        {/* New Password */}
-        <label>New Password</label>
-        <input
-          type="password"
-          value={formData.newPassword}
-          onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-        />
+      {/* QR Code */}
+      <div className={styles.qrSection}>
+        <h3>Your QR Code</h3>
+        {data?.qrCode ? (
+          <img src={data.qrCode} className={styles.qrImage} />
+        ) : (
+          <p>No QR code found.</p>
+        )}
+      </div>
 
-        {/* Buttons */}
-        <div className={styles["button-row"]}>
-          <button type="submit" disabled={loading}>
-            {loading ? "Updating..." : "Update Profile"}
-          </button>
-          <Link to="/user" className={styles["cancel-link"]}>
-            Cancel
-          </Link>
-        </div>
-      </form>
+      {/* Buttons */}
+      <div className={styles.buttonRow}>
+        <button onClick={handleSave} className={styles.saveBtn}>
+          Save Changes
+        </button>
+
+        <Link to={`/UserProfile/${id}`} className={styles.cancelLink}>
+          Cancel
+        </Link>
+      </div>
     </div>
   );
 };
