@@ -66,7 +66,7 @@ router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
     }
 
     // 3️⃣ Handle image upload (optional)
-    let imageUrl = user.image; // keep previous image by default
+    let imageUrl = user.profileImage; // keep previous image by default
 
     if (req.file) {
       try {
@@ -86,7 +86,7 @@ router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
       }
     }
 
-    updateData.image = imageUrl;
+    updateData.profileImage = imageUrl;
 
     // 4️⃣ Update the user
     const [updatedRows] = await db.User.update(updateData, {
