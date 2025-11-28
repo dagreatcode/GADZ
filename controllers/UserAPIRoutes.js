@@ -48,67 +48,108 @@ router.get("/view/:id", (req, res) => {
     });
 });
 
-router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
-  try {
-    // 1️⃣ Fetch the user
-    const user = await db.User.findByPk(req.params.id);
-    if (!user) {
-      return res.status(404).send({ success: false, message: "User not found" });
-    }
+// router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
+//   try {
+//     // 1️⃣ Fetch the user
+//     const user = await db.User.findByPk(req.params.id);
+//     if (!user) {
+//       return res.status(404).send({ success: false, message: "User not found" });
+//     }
 
-    // 2️⃣ Handle password update
+//     // 2️⃣ Handle password update
+//     const updateData = { ...req.body };
+
+//     if (updateData.newPassword) {
+//       const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+//       updateData.password = hashedPassword;
+//       delete updateData.newPassword;
+//     }
+
+//     // 3️⃣ Handle image upload (optional)
+//     let imageUrl = user.profileImage; // keep previous image by default
+
+//     if (req.file) {
+//       try {
+//         const result = await cloudinary.uploader.upload(req.file.path, {
+//           folder: "users",
+//           public_id: `user_${user.id}_${Date.now()}`,
+//           transformation: [{ width: 500, height: 500, crop: "fill" }],
+//         });
+
+//         imageUrl = result.secure_url;
+//       } catch (err) {
+//         console.error("Cloudinary Upload Error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           message: "Image upload failed",
+//         });
+//       }
+//     }
+
+//     updateData.profileImage = imageUrl;
+
+//     // 4️⃣ Update the user
+//     const [updatedRows] = await db.User.update(updateData, {
+//       where: { id: req.params.id },
+//     });
+
+//     if (updatedRows === 0) {
+//       return res.status(404).send({ success: false, message: "No updates made" });
+//     }
+
+//     // 5️⃣ Fetch updated user
+//     const updatedUser = await db.User.findByPk(req.params.id);
+
+//     res.status(200).send({
+//       success: true,
+//       message: "User updated successfully",
+//       user: updatedUser,
+//     });
+
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).send({ success: false, message: "Internal Server Error" });
+//   }
+// });
+router.put("/update/:id", async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
     const updateData = { ...req.body };
 
+    // Handle new password
     if (updateData.newPassword) {
-      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
-      updateData.password = hashedPassword;
+      const hashed = await bcrypt.hash(updateData.newPassword, 10);
+      updateData.password = hashed;
       delete updateData.newPassword;
     }
 
-    // 3️⃣ Handle image upload (optional)
-    let imageUrl = user.profileImage; // keep previous image by default
-
-    if (req.file) {
+    // Handle profile image upload to Cloudinary
+    if (updateData.profileImage) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
+        const result = await cloudinary.uploader.upload(updateData.profileImage, {
           folder: "users",
           public_id: `user_${user.id}_${Date.now()}`,
           transformation: [{ width: 500, height: 500, crop: "fill" }],
         });
-
-        imageUrl = result.secure_url;
+        updateData.profileImage = result.secure_url;
       } catch (err) {
-        console.error("Cloudinary Upload Error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Image upload failed",
-        });
+        console.error("Cloudinary upload failed:", err);
+        return res.status(500).json({ success: false, message: "Image upload failed" });
       }
     }
 
-    updateData.profileImage = imageUrl;
+    // Update user
+    const [updatedRows] = await db.User.update(updateData, { where: { id: req.params.id } });
+    if (updatedRows === 0) return res.status(404).json({ success: false, message: "No updates made" });
 
-    // 4️⃣ Update the user
-    const [updatedRows] = await db.User.update(updateData, {
-      where: { id: req.params.id },
-    });
-
-    if (updatedRows === 0) {
-      return res.status(404).send({ success: false, message: "No updates made" });
-    }
-
-    // 5️⃣ Fetch updated user
     const updatedUser = await db.User.findByPk(req.params.id);
+    res.status(200).json({ success: true, message: "User updated", user: updatedUser });
 
-    res.status(200).send({
-      success: true,
-      message: "User updated successfully",
-      user: updatedUser,
-    });
-
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).send({ success: false, message: "Internal Server Error" });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 
