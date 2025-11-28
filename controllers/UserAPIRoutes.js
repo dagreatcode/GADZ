@@ -48,54 +48,117 @@ router.get("/view/:id", (req, res) => {
     });
 });
 
-router.put("/update/:id", async (req, res) => {
-  // console.log("Updating user...");
+// router.put("/update/:id", async (req, res) => {
+//   // console.log("Updating user...");
 
+//   try {
+//     // console.log("Request Body:", req.body);
+
+//     // Fetch the user using findByPk
+//     const user = await db.User.findByPk(req.params.id);
+
+//     if (!user) {
+//       // console.log("User not found");
+//       return res
+//         .status(404)
+//         .send({ success: false, message: "User not found" });
+//     }
+
+//     // Prepare the update data
+//     const updateData = { ...req.body };
+
+//     // Check if a new password has been provided
+//     if (updateData.newPassword) {
+//       // Hash the new password
+//       const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+//       updateData.password = hashedPassword; // Set the hashed password
+//       delete updateData.newPassword; // Remove newPassword from the update data
+//     }
+
+//     // Update the user
+//     const [updatedRows] = await db.User.update(updateData, {
+//       where: { id: req.params.id },
+//     });
+
+//     if (updatedRows === 0) {
+//       // console.log("No rows updated");
+//       return res
+//         .status(404)
+//         .send({ success: false, message: "No updates made" });
+//     }
+
+//     // Fetch the updated user to return
+//     const updatedUser = await db.User.findByPk(req.params.id);
+
+//     // console.log(`User with ID ${req.params.id} updated successfully.`);
+//     res.status(200).send({
+//       success: true,
+//       message: "User updated successfully",
+//       user: updatedUser, // Return updated user data
+//     });
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).send({ success: false, message: "Internal Server Error" });
+//   }
+// });
+router.put("/update/:id", upload.single("image"), async (req, res) => {
   try {
-    // console.log("Request Body:", req.body);
-
-    // Fetch the user using findByPk
+    // 1️⃣ Fetch the user
     const user = await db.User.findByPk(req.params.id);
-
     if (!user) {
-      // console.log("User not found");
-      return res
-        .status(404)
-        .send({ success: false, message: "User not found" });
+      return res.status(404).send({ success: false, message: "User not found" });
     }
 
-    // Prepare the update data
+    // 2️⃣ Handle password update
     const updateData = { ...req.body };
 
-    // Check if a new password has been provided
     if (updateData.newPassword) {
-      // Hash the new password
       const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
-      updateData.password = hashedPassword; // Set the hashed password
-      delete updateData.newPassword; // Remove newPassword from the update data
+      updateData.password = hashedPassword;
+      delete updateData.newPassword;
     }
 
-    // Update the user
+    // 3️⃣ Handle image upload (optional)
+    let imageUrl = user.image; // keep previous image by default
+
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "users",
+          public_id: `user_${user.id}_${Date.now()}`,
+          transformation: [{ width: 500, height: 500, crop: "fill" }],
+        });
+
+        imageUrl = result.secure_url;
+      } catch (err) {
+        console.error("Cloudinary Upload Error:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Image upload failed",
+        });
+      }
+    }
+
+    updateData.image = imageUrl;
+
+    // 4️⃣ Update the user
     const [updatedRows] = await db.User.update(updateData, {
       where: { id: req.params.id },
     });
 
     if (updatedRows === 0) {
-      // console.log("No rows updated");
-      return res
-        .status(404)
-        .send({ success: false, message: "No updates made" });
+      return res.status(404).send({ success: false, message: "No updates made" });
     }
 
-    // Fetch the updated user to return
+    // 5️⃣ Fetch updated user
     const updatedUser = await db.User.findByPk(req.params.id);
 
-    // console.log(`User with ID ${req.params.id} updated successfully.`);
     res.status(200).send({
       success: true,
       message: "User updated successfully",
-      user: updatedUser, // Return updated user data
+      user: updatedUser,
     });
+
   } catch (error) {
     console.error("Error updating user:", error);
     res.status(500).send({ success: false, message: "Internal Server Error" });
