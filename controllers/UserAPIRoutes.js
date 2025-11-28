@@ -64,15 +64,15 @@ router.put("/update/:id", async (req, res) => {
         .send({ success: false, message: "User not found" });
     }
 
-    // Extract newPassword separately and keep the rest of the update fields
-    const { newPassword, ...rest } = req.body;
-    const updateData = { ...rest };
+    // Prepare the update data
+    const updateData = { ...req.body };
 
     // Check if a new password has been provided
-    if (newPassword) {
+    if (updateData.newPassword) {
       // Hash the new password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
       updateData.password = hashedPassword; // Set the hashed password
+      delete updateData.newPassword; // Remove newPassword from the update data
     }
 
     // Update the user
@@ -282,73 +282,6 @@ router.post("/login", (req, res) => {
 //     res.status(500).send({ success: false, message: "Internal Server Error" });
 //   }
 // });
-// router.put("/user/update/:userId", upload.single("image"), async (req, res) => {
-//   try {
-//     const { newPassword } = req.body;
-
-//     // 1️⃣ Fetch user
-//     const user = await db.User.findByPk(req.params.userId);
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     // 2️⃣ Handle password change
-//     if (newPassword) {
-//       const hashedPassword = await bcrypt.hash(newPassword, 10);
-//       req.body.password = hashedPassword;
-//       delete req.body.newPassword;
-//     }
-
-//     // 3️⃣ Handle image upload if provided
-//     let imageUrl = user.image; // Keep old image if none uploaded
-//     if (req.file) {
-//       try {
-//         const result = await cloudinary.uploader.upload(req.file.path, {
-//           folder: "users",
-//           public_id: `user_${user.id}_${Date.now()}`,
-//           transformation: [{ width: 500, height: 500, crop: "fill" }],
-//         });
-//         imageUrl = result.secure_url;
-//       } catch (uploadErr) {
-//         console.error("Cloudinary upload failed:", uploadErr);
-//         return res.status(500).json({
-//           success: false,
-//           message: "Image upload failed",
-//         });
-//       }
-//     }
-
-//     // 4️⃣ Prepare update data
-//     const updateData = { ...req.body, image: imageUrl };
-
-//     // 5️⃣ Update user
-//     const [updatedRows] = await db.User.update(updateData, {
-//       where: { id: req.params.userId },
-//     });
-
-//     if (updatedRows === 0) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "No updates made" });
-//     }
-
-//     // 6️⃣ Fetch updated user
-//     const updatedUser = await db.User.findByPk(req.params.userId);
-
-//     res.status(200).json({
-//       success: true,
-//       message: "User updated successfully",
-//       user: updatedUser,
-//     });
-//   } catch (error) {
-//     console.error("Error updating user:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// });
-
 router.put("/user/update/:userId", upload.single("image"), async (req, res) => {
   try {
     const { newPassword } = req.body;
