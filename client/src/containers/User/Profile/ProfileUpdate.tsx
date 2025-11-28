@@ -1381,7 +1381,6 @@ const ProfileUpdate: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Load user profile
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
@@ -1419,7 +1418,6 @@ const ProfileUpdate: React.FC = () => {
     if (userId) fetchUserData();
   }, [userId]);
 
-  // Handle file input change and convert to preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     if (file) {
@@ -1430,15 +1428,13 @@ const ProfileUpdate: React.FC = () => {
     }
   };
 
-  // Convert image file to base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (err) => reject(err);
     });
-  };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -1466,7 +1462,6 @@ const ProfileUpdate: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // Submit handler
   const handleUserUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -1483,10 +1478,8 @@ const ProfileUpdate: React.FC = () => {
 
       const payload: any = { ...formData };
 
-      // Remove password field if no new password
       if (!formData.newPassword) delete payload.password;
 
-      // Convert selected file to base64
       if (selectedFile) {
         payload.profileImage = await fileToBase64(selectedFile);
       }
@@ -1548,7 +1541,7 @@ const ProfileUpdate: React.FC = () => {
           </div>
         </div>
 
-        {/* Form Fields */}
+        {/* ALL FORM FIELDS */}
         <Row className="mb-3">
           <Form.Group as={Col} md="6" controlId="email">
             <Form.Label>Email</Form.Label>
@@ -1573,10 +1566,107 @@ const ProfileUpdate: React.FC = () => {
           </Form.Group>
         </Row>
 
-        {/* Add other fields similarly... */}
-        <Button type="submit" disabled={isSubmitting} variant="primary">
-          {isSubmitting ? "Updating..." : "Update Profile"}
-        </Button>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="userType">
+            <Form.Label>User Type</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.userType}
+              isInvalid={!!formErrors.userType}
+              onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.userType}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group as={Col} md="6" controlId="experienceLevel">
+            <Form.Label>Experience Level</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.experienceLevel}
+              isInvalid={!!formErrors.experienceLevel}
+              onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.experienceLevel}</Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="location">
+            <Form.Label>Location</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.location}
+              isInvalid={!!formErrors.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.location}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group as={Col} md="6" controlId="availableFrom">
+            <Form.Label>Available From</Form.Label>
+            <Form.Control
+              type="date"
+              value={formData.availableFrom}
+              isInvalid={!!formErrors.availableFrom}
+              onChange={(e) => setFormData({ ...formData, availableFrom: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.availableFrom}</Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+
+        <Row className="mb-3">
+          <Form.Group as={Col} md="6" controlId="phoneNumber">
+            <Form.Label>Phone Number</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.phoneNumber}
+              isInvalid={!!formErrors.phoneNumber}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.phoneNumber}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group as={Col} md="6" controlId="driversLicense">
+            <Form.Label>Driver’s License</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.driversLicense}
+              isInvalid={!!formErrors.driversLicense}
+              onChange={(e) => setFormData({ ...formData, driversLicense: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">{formErrors.driversLicense}</Form.Control.Feedback>
+          </Form.Group>
+        </Row>
+
+        <Form.Group className="mb-3" controlId="comments">
+          <Form.Label>Comments</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            value={formData.comments}
+            isInvalid={!!formErrors.comments}
+            onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+          />
+          <Form.Control.Feedback type="invalid">{formErrors.comments}</Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-4" controlId="newPassword">
+          <Form.Label>New Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={formData.newPassword}
+            onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+          />
+        </Form.Group>
+
+        <div className="d-flex justify-content-between">
+          <Button type="submit" disabled={isSubmitting} variant="primary">
+            {isSubmitting ? "Updating..." : "Update Profile"}
+          </Button>
+          <Link to="/user">
+            <Button variant="outline-secondary">Cancel</Button>
+          </Link>
+        </div>
       </Form>
     </Card>
   );
