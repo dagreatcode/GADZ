@@ -101,7 +101,7 @@ router.get("/view/:id", (req, res) => {
 //     res.status(500).send({ success: false, message: "Internal Server Error" });
 //   }
 // });
-router.put("/update/:id", upload.single("image"), async (req, res) => {
+router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
   try {
     // 1️⃣ Fetch the user
     const user = await db.User.findByPk(req.params.id);
