@@ -48,67 +48,127 @@ router.get("/view/:id", (req, res) => {
     });
 });
 
+// router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
+//   try {
+//     // 1️⃣ Fetch the user
+//     const user = await db.User.findByPk(req.params.id);
+//     if (!user) {
+//       return res.status(404).send({ success: false, message: "User not found" });
+//     }
+
+//     // 2️⃣ Handle password update
+//     const updateData = { ...req.body };
+
+//     if (updateData.newPassword) {
+//       const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+//       updateData.password = hashedPassword;
+//       delete updateData.newPassword;
+//     }
+
+//     // 3️⃣ Handle image upload (optional)
+//     let imageUrl = user.profileImage; // keep previous image by default
+
+//     if (req.file) {
+//       try {
+//         const result = await cloudinary.uploader.upload(req.file.path, {
+//           folder: "users",
+//           public_id: `user_${user.id}_${Date.now()}`,
+//           transformation: [{ width: 500, height: 500, crop: "fill" }],
+//         });
+
+//         imageUrl = result.secure_url;
+//       } catch (err) {
+//         console.error("Cloudinary Upload Error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           message: "Image upload failed",
+//         });
+//       }
+//     }
+
+//     updateData.profileImage = imageUrl;
+
+//     // 4️⃣ Update the user
+//     const [updatedRows] = await db.User.update(updateData, {
+//       where: { id: req.params.id },
+//     });
+
+//     if (updatedRows === 0) {
+//       return res.status(404).send({ success: false, message: "No updates made" });
+//     }
+
+//     // 5️⃣ Fetch updated user
+//     const updatedUser = await db.User.findByPk(req.params.id);
+
+//     res.status(200).send({
+//       success: true,
+//       message: "User updated successfully",
+//       user: updatedUser,
+//     });
+
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).send({ success: false, message: "Internal Server Error" });
+//   }
+// });
 router.put("/update/:id", upload.single("profileImage"), async (req, res) => {
   try {
-    // 1️⃣ Fetch the user
     const user = await db.User.findByPk(req.params.id);
     if (!user) {
-      return res.status(404).send({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // 2️⃣ Handle password update
-    const updateData = { ...req.body };
+    let cloudinaryImageUrl = user.profileImage; // keep old image if none uploaded
 
-    if (updateData.newPassword) {
-      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
-      updateData.password = hashedPassword;
-      delete updateData.newPassword;
-    }
-
-    // 3️⃣ Handle image upload (optional)
-    let imageUrl = user.profileImage; // keep previous image by default
-
+    // 1️⃣ If frontend uploaded an image file, upload it to Cloudinary FIRST
     if (req.file) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: "users",
-          public_id: `user_${user.id}_${Date.now()}`,
-          transformation: [{ width: 500, height: 500, crop: "fill" }],
-        });
-
-        imageUrl = result.secure_url;
+        const uploadResult = await cloudinary.uploader.upload(req.file.path);
+        cloudinaryImageUrl = uploadResult.secure_url;
       } catch (err) {
         console.error("Cloudinary Upload Error:", err);
         return res.status(500).json({
           success: false,
           message: "Image upload failed",
+          error: err,
         });
       }
     }
 
-    updateData.profileImage = imageUrl;
+    // 2️⃣ Build update object (don’t overwrite fields that weren’t sent)
+    const updateData = {
+      email: req.body.email ?? user.email,
+      description: req.body.description ?? user.description,
+      userType: req.body.userType ?? user.userType,
+      experienceLevel: req.body.experienceLevel ?? user.experienceLevel,
+      location: req.body.location ?? user.location,
+      availableFrom: req.body.availableFrom ?? user.availableFrom,
+      phoneNumber: req.body.phoneNumber ?? user.phoneNumber,
+      driversLicense: req.body.driversLicense ?? user.driversLicense,
+      comments: req.body.comments ?? user.comments,
+      profileImage: cloudinaryImageUrl, //  ⬅️ ALWAYS FINAL IMAGE HERE
+    };
 
-    // 4️⃣ Update the user
-    const [updatedRows] = await db.User.update(updateData, {
-      where: { id: req.params.id },
-    });
-
-    if (updatedRows === 0) {
-      return res.status(404).send({ success: false, message: "No updates made" });
+    // 3️⃣ Handle password update
+    if (req.body.newPassword) {
+      const bcrypt = require("bcryptjs");
+      const hashed = await bcrypt.hash(req.body.newPassword, 10);
+      updateData.password = hashed;
     }
 
-    // 5️⃣ Fetch updated user
-    const updatedUser = await db.User.findByPk(req.params.id);
+    // 4️⃣ Update DB
+    await user.update(updateData);
 
-    res.status(200).send({
+    return res.status(200).json({
       success: true,
-      message: "User updated successfully",
-      user: updatedUser,
+      message: "Profile updated successfully",
+      user,
+      image: cloudinaryImageUrl,
     });
 
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).send({ success: false, message: "Internal Server Error" });
+  } catch (err) {
+    console.error("Profile Update Error:", err);
+    return res.status(500).json({ success: false, error: err });
   }
 });
 
