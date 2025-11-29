@@ -83,3 +83,26 @@
   padding: 50px;
   color: #ff4d4f;
 }
+
+.qr-section {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.qr-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.qr-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  padding: 10px;
+  background: #fff;
+}
