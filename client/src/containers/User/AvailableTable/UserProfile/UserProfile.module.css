@@ -1,74 +1,86 @@
 /* UserProfile.module.css */
-
 .userProfileContainer {
-  font-family: Arial, sans-serif;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: auto;
   padding: 20px;
+  font-family: Arial, sans-serif;
   color: #333;
 }
 
-.contentWrapper {
+.profileHeader {
   display: flex;
-  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  align-items: center;
   gap: 20px;
-}
-
-.loadsSection, .profileSection, .driversSection {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  flex: 1;
-  min-width: 280px; /* Minimum width to improve responsiveness */
-}
-
-.loadsSection {
-  max-width: 400px;
-}
-
-.loadItem, .driverItem {
-  background-color: #fff;
-  padding: 12px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.loadLink, .buttonLink {
-  color: #2980b9;
-  text-decoration: none;
-}
-
-.loadLink:hover, .buttonLink:hover {
-  text-decoration: underline;
-}
-
-.profileSection {
-  flex: 2;
+  margin-bottom: 30px;
 }
 
 .profileImage {
   width: 150px;
-  height: auto;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2980b9;
+}
+
+.profileName h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #2980b9;
+}
+
+.profileName p {
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+.userInfoSection {
+  margin-bottom: 30px;
+}
+
+.infoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.infoCard {
+  background: #f5f5f5;
+  padding: 12px 15px;
   border-radius: 8px;
-  margin-bottom: 10px;
+  flex: 1 1 200px;
+  min-width: 180px;
 }
 
-.button {
-  padding: 10px 20px;
-  background-color: #2980b9;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-  margin: 5px 0;
-  display: inline-block;
+.sectionsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.button:hover {
-  background-color: #1a66a0;
+.loadsSection, .driversSection {
+  flex: 1;
+  min-width: 280px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.loadItem, .driverItem {
+  background: #fff;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.loadLink {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.loadLink:hover {
+  text-decoration: underline;
 }
 
 .buttonContainer {
@@ -79,6 +91,21 @@
   justify-content: center;
 }
 
+.button {
+  padding: 10px 20px;
+  background: #2980b9;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+
+.button:hover {
+  background: #1a66a0;
+}
+
 .loading,
 .error {
   text-align: center;
@@ -87,10 +114,15 @@
 }
 
 @media (max-width: 768px) {
-  .contentWrapper {
-    flex-direction: column; /* Stack sections vertically on smaller screens */
+  .profileHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
-  .buttonContainer {
-    flex-direction: column; /* Stack buttons vertically */
+  .sectionsWrapper {
+    flex-direction: column;
+  }
+  .infoGrid {
+    flex-direction: column;
   }
 }
