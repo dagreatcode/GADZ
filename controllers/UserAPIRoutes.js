@@ -110,46 +110,130 @@ router.get("/view/:id", (req, res) => {
 //     console.error("Error updating user:", error);
 //     res.status(500).send({ success: false, message: "Internal Server Error" });
 //   }
+// // });
+// router.put("/update/:id", async (req, res) => {
+//   try {
+//     const user = await db.User.findByPk(req.params.id);
+//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+//     const updateData = { ...req.body };
+
+//     // Handle new password
+//     if (updateData.newPassword) {
+//       const hashed = await bcrypt.hash(updateData.newPassword, 10);
+//       updateData.password = hashed;
+//       delete updateData.newPassword;
+//     }
+
+//     // Handle profile image upload to Cloudinary
+//     if (updateData.profileImage) {
+//       try {
+//         // Normalize profileImage input:
+//         // - if it's already a data URI (starts with "data:"), use it as-is
+//         // - if it's a remote URL (starts with http/https), use it as-is
+//         // - otherwise assume it's a raw base64 string and prefix with a JPEG data URI header
+//         let uploadSource = updateData.profileImage;
+//         if (typeof uploadSource === "string") {
+//           const trimmed = uploadSource.trim();
+//           if (!/^data:/.test(trimmed) && !/^https?:\/\//i.test(trimmed)) {
+//             // treat as raw base64
+//             uploadSource = `data:image/jpeg;base64,${trimmed}`;
+//           } else {
+//             uploadSource = trimmed;
+//           }
+//         } else {
+//           // If not a string, avoid passing invalid input to Cloudinary
+//           throw new Error("Invalid profileImage format");
+//         }
+
+//         const result = await cloudinary.uploader.upload(uploadSource, {
+//           folder: "users",
+//           public_id: `user_${user.id}_${Date.now()}`,
+//           transformation: [{ width: 500, height: 500, crop: "fill" }],
+//         });
+//         updateData.profileImage = result.secure_url;
+//       } catch (err) {
+//         console.error("Cloudinary upload failed:", err);
+//         return res.status(400).json({ success: false, message: "Image upload failed", error: err.message });
+//       }
+//     }
+
+//     // Update user
+//     const [updatedRows] = await db.User.update(updateData, { where: { id: req.params.id } });
+//     if (updatedRows === 0) return res.status(404).json({ success: false, message: "No updates made" });
+
+//     const updatedUser = await db.User.findByPk(req.params.id);
+//     res.status(200).json({ success: true, message: "User updated", user: updatedUser });
+
+//   } catch (err) {
+//     console.error("Error updating user:", err);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
 // });
 router.put("/update/:id", async (req, res) => {
   try {
+    // 1️⃣ Find user
     const user = await db.User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
-    const updateData = { ...req.body };
+    let updateData = { ...req.body };
 
-    // Handle new password
+    // 2️⃣ Handle password update
     if (updateData.newPassword) {
-      const hashed = await bcrypt.hash(updateData.newPassword, 10);
-      updateData.password = hashed;
+      const hashedPassword = await bcrypt.hash(updateData.newPassword, 10);
+      updateData.password = hashedPassword;
       delete updateData.newPassword;
     }
 
-    // Handle profile image upload to Cloudinary
+    // 3️⃣ Cloudinary image upload (base64)
     if (updateData.profileImage) {
       try {
-        const result = await cloudinary.uploader.upload(updateData.profileImage, {
+        let imageBase64 = updateData.profileImage.trim();
+
+        // If it's raw base64, add data URI prefix
+        if (!imageBase64.startsWith("data:") && !imageBase64.startsWith("http")) {
+          imageBase64 = `data:image/jpeg;base64,${imageBase64}`;
+        }
+
+        const uploadResult = await cloudinary.uploader.upload(imageBase64, {
           folder: "users",
           public_id: `user_${user.id}_${Date.now()}`,
           transformation: [{ width: 500, height: 500, crop: "fill" }],
         });
-        updateData.profileImage = result.secure_url;
+
+        updateData.profileImage = uploadResult.secure_url;
       } catch (err) {
-        console.error("Cloudinary upload failed:", err);
-        return res.status(500).json({ success: false, message: "Image upload failed" });
+        console.error("Cloudinary Upload Error:", err);
+        return res.status(400).json({
+          success: false,
+          message: "Image upload failed",
+        });
       }
     }
 
-    // Update user
-    const [updatedRows] = await db.User.update(updateData, { where: { id: req.params.id } });
-    if (updatedRows === 0) return res.status(404).json({ success: false, message: "No updates made" });
+    // 4️⃣ Update user
+    await db.User.update(updateData, { where: { id: req.params.id } });
 
+    // 5️⃣ Fetch updated user
     const updatedUser = await db.User.findByPk(req.params.id);
-    res.status(200).json({ success: true, message: "User updated", user: updatedUser });
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser,
+    });
 
   } catch (err) {
-    console.error("Error updating user:", err);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Update Error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 });
 
