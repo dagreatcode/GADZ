@@ -571,6 +571,10 @@ interface UserData {
   email: string;
   phoneNumber?: string;
   address?: string;
+  qrCode?: string;
+  qrCodeId?: string;
+  qrData?: string;
+  qrPNG?: string;
   loadStatus?: string;
   availableFrom?: string;
   userType?: string;
@@ -622,6 +626,10 @@ const Dash: React.FC = () => {
     email,
     phoneNumber,
     address,
+      qrCode,
+  qrCodeId,
+  qrData,
+  qrPNG,
     loadStatus,
     availableFrom,
     userType,
@@ -675,11 +683,22 @@ const Dash: React.FC = () => {
             <strong>Address:</strong> {address || "Not provided"}
           </div>
           <div className="info-card">
+            <strong>QR Code:</strong> {qrCode || "N/A"}
+          </div>
+          <div className="info-card">
+            <strong>QR Code ID:</strong> {qrCodeId || "N/A"}
+          </div>
+          <div className="info-card">
+            <strong>QR Data:</strong> {qrData || "N/A"}
+          </div>
+          <div className="info-card">
+            <strong>QR PNG:</strong> {qrPNG || "N/A"}
+          </div>
+          <div className="info-card">
             <strong>Status:</strong> {loadStatus || "N/A"}
           </div>
           <div className="info-card">
-            <strong>Customer Since:</strong>{" "}
-            {availableFrom ? new Date(availableFrom).toLocaleDateString() : "N/A"}
+            <strong>Customer Since:</strong> {availableFrom ? new Date(availableFrom).toLocaleDateString() : "N/A"}
           </div>
           <div className="info-card">
             <strong>Type of Owner:</strong> {userType || "N/A"}
