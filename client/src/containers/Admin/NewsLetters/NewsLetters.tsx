@@ -150,36 +150,38 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
-import styles from "./NewsLetters.module.css";
 import axios from "axios";
+import styles from "./NewsLetters.module.css";
 
 interface Newsletter {
   id: number;
   subject: string;
   description: string;
   authorId: number;
-  archived: string;
-  important: string;
+  archived?: boolean;
+  important?: boolean;
 }
 
-function NewsLetters() {
+const NewsLetters: React.FC = () => {
+  const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
+  const [loading, setLoading] = useState(true); // Loading state for fetch
+  const [error, setError] = useState(""); // Error messages
+
   const [showModal, setShowModal] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
-  const [loading, setLoading] = useState(false); // For loading spinner
-  const [error, setError] = useState(""); // Error messages
-  const [submitting, setSubmitting] = useState(false); // Form submit spinner
+  const [submitting, setSubmitting] = useState(false); // Loading for form submit
 
   // Fetch newsletters
   useEffect(() => {
     const fetchNewsletters = async () => {
       setLoading(true);
+      setError("");
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`
         );
-        setNewsletters(response.data);
+        setNewsletters(response.data || []);
       } catch (err) {
         console.error(err);
         setError("Failed to load newsletters.");
@@ -187,12 +189,21 @@ function NewsLetters() {
         setLoading(false);
       }
     };
+
     fetchNewsletters();
   }, []);
 
-  const handleModalClose = () => setShowModal(false);
-  const handleModalShow = () => setShowModal(true);
+  // Modal handlers
+  const openModal = () => setShowModal(true);
+  const closeModal = () => {
+    if (!submitting) {
+      setShowModal(false);
+      setSubject("");
+      setDescription("");
+    }
+  };
 
+  // Form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -203,14 +214,12 @@ function NewsLetters() {
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`,
         { subject, description, authorId: 1 }
       );
-
+      // Refresh newsletter list
       const response = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`
       );
-      setNewsletters(response.data);
-      setShowModal(false);
-      setSubject("");
-      setDescription("");
+      setNewsletters(response.data || []);
+      closeModal();
     } catch (err) {
       console.error(err);
       setError("Failed to create newsletter.");
@@ -229,13 +238,13 @@ function NewsLetters() {
       </div>
 
       <div className={styles.createButtonWrapper}>
-        <Button variant="primary" onClick={handleModalShow}>
+        <Button variant="primary" onClick={openModal}>
           Create New Newsletter
         </Button>
       </div>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={handleModalClose} centered>
+      <Modal show={showModal} onHide={closeModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Create a Newsletter</Modal.Title>
         </Modal.Header>
@@ -266,7 +275,7 @@ function NewsLetters() {
             </Form.Group>
 
             <div className="mt-4 d-flex justify-content-end gap-2">
-              <Button variant="secondary" onClick={handleModalClose} disabled={submitting}>
+              <Button variant="secondary" onClick={closeModal} disabled={submitting}>
                 Close
               </Button>
               <Button variant="primary" type="submit" disabled={submitting}>
@@ -287,8 +296,7 @@ function NewsLetters() {
       <div className={styles.listWrapper}>
         {loading ? (
           <div className={styles.spinner}>
-            <Spinner animation="border" />
-            <span>Loading newsletters...</span>
+            <Spinner animation="border" /> Loading newsletters...
           </div>
         ) : newsletters.length === 0 ? (
           <p>No newsletters found.</p>
@@ -301,6 +309,8 @@ function NewsLetters() {
                 <p>
                   <strong>Author:</strong> Admin
                 </p>
+                {n.archived && <span className={styles.badgeArchived}>Archived</span>}
+                {n.important && <span className={styles.badgeImportant}>Important</span>}
               </div>
             ))}
           </div>
@@ -308,6 +318,6 @@ function NewsLetters() {
       </div>
     </div>
   );
-}
+};
 
 export default NewsLetters;
