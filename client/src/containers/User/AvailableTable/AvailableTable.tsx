@@ -4604,6 +4604,56 @@ const AvailableTable: React.FC = () => {
     }
   };
 
+  const fetchLoadboardData = useCallback(
+    async () => {
+      if (!code) {
+        setError("Missing authorization code — please connect your account first.");
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const resp = await axios.get(`${API_BASE}/auth/callback/`, {
+          params: { code },
+        });
+
+        // Save token from cookie if server sets it
+        const cookieToken = getCookie("lb_access_token");
+        if (cookieToken) {
+          localStorage.setItem("lb_access_token", cookieToken);
+          setToken(cookieToken);
+        }
+
+        let apiLoads: any[] = [];
+        const d = resp.data;
+
+        if (Array.isArray(d)) apiLoads = d;
+        else if (Array.isArray(d.loads)) apiLoads = d.loads;
+        else if (Array.isArray(d.data)) apiLoads = d.data;
+        else if (Array.isArray(d.results)) apiLoads = d.results;
+        else if (Array.isArray(d.payload)) apiLoads = d.payload;
+
+        if (apiLoads.length > 0) {
+          setSearchResults(apiLoads.map(mapApiLoadToDisplay));
+          setSuccess(true);
+
+          // Scroll into view after results load
+          setTimeout(() => {
+            resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 150);
+        }
+      } catch (err) {
+        console.error("Error fetching 123Loadboard data:", err);
+        setError("Failed to fetch 123Loadboard data. Please reauthorize or try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [code, mapApiLoadToDisplay]
+  );
+
   // ---------- Render ----------
   return (
     <div className={styles["at-container"]}>
@@ -4816,7 +4866,7 @@ const AvailableTable: React.FC = () => {
             >
               {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
             </button> */}
-            <button
+            {/* <button
               className="btn btn-outline-success d-flex align-items-center gap-2"
               type="submit"
               disabled={loading}
@@ -4833,7 +4883,23 @@ const AvailableTable: React.FC = () => {
               ) : (
                 "Fetch 123Loadboard Data"
               )}
+            </button> */}
+            <button
+              className="btn btn-outline-success d-flex align-items-center gap-2"
+              type="button"
+              onClick={fetchLoadboardData}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" />
+                  Fetching...
+                </>
+              ) : (
+                "Fetch 123Loadboard Data"
+              )}
             </button>
+
 
           </div>
         </form>
