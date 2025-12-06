@@ -435,9 +435,403 @@
 
 // export default UserProfile;
 
+// // src/pages/UserProfile.tsx
+// import React, { useEffect, useState } from "react";
+// import { useParams, Link, useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import { Button, Spinner, Alert, Form, Row, Col } from "react-bootstrap";
+
+// type UserModel = {
+//   id?: number;
+//   email?: string;
+//   password?: string;
+//   qrCode?: string;
+//   qrCodeId?: string;
+//   qrData?: any;
+//   qrPNG?: string;
+//   description?: string;
+//   profileImage?: string;
+//   userType?: string;
+//   preferredLoadType?: string;
+//   experienceLevel?: string;
+//   availableFrom?: string | Date | null;
+//   location?: string;
+//   admin?: boolean;
+//   developer?: boolean;
+//   archived?: boolean;
+//   contractor?: string | boolean;
+//   company?: string;
+//   loadReferences?: string;
+//   drivers?: string;
+//   entrepreneur?: string | boolean;
+//   subscribed?: boolean;
+//   address?: string;
+//   phoneNumber?: string;
+//   driversLicense?: string;
+//   comments?: string;
+//   rating?: number;
+//   loadDetails?: any;
+//   paymentTerms?: string;
+//   loadStatus?: string;
+//   driverID?: string;
+//   driverExperience?: string;
+//   driverAvailability?: string | Date | null;
+//   driverRating?: number;
+//   companyID?: string;
+//   companyProfile?: any;
+//   partnershipStatus?: string;
+//   sessionId?: string;
+//   createdAt?: string;
+//   updatedAt?: string;
+// };
+
+// const UserProfile: React.FC = () => {
+//   const { id } = useParams<{ id: string }>();
+//   const navigate = useNavigate();
+
+//   const [user, setUser] = useState<UserModel | null>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [saving, setSaving] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [success, setSuccess] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     if (!id) return;
+//     (async () => {
+//       setLoading(true);
+//       try {
+//         const res = await axios.get(`/api/admin/users/${id}`, {
+//           // add auth header if needed:
+//           // headers: { Authorization: `Bearer ${token}` }
+//         });
+//         setUser(res.data.data);
+//         setError(null);
+//       } catch (err: any) {
+//         console.error(err);
+//         setError(err?.response?.data?.message || "Failed to fetch user data");
+//       } finally {
+//         setLoading(false);
+//       }
+//     })();
+//   }, [id]);
+
+//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+//     if (!user) return;
+//     const name = e.target.name;
+//     let value: any = (e.target as HTMLInputElement).value;
+
+//     // handle checkbox separately
+//     if ((e.target as HTMLInputElement).type === "checkbox") {
+//       value = (e.target as HTMLInputElement).checked;
+//     }
+
+//     setUser({ ...user, [name]: value });
+//   };
+
+//   const handleJSONChange = (field: string, value: string) => {
+//     if (!user) return;
+//     try {
+//       const parsed = JSON.parse(value);
+//       setUser({ ...user, [field]: parsed });
+//     } catch {
+//       // store as string when invalid JSON — the backend tries to parse if needed
+//       setUser({ ...user, [field]: value });
+//     }
+//   };
+
+//   const handleSave = async (e?: React.FormEvent) => {
+//     if (e) e.preventDefault();
+//     if (!user || !id) return;
+//     setSaving(true);
+//     setSuccess(null);
+//     setError(null);
+
+//     // build payload; exclude createdAt/updatedAt
+//     const payload: any = { ...user };
+//     delete payload.createdAt;
+//     delete payload.updatedAt;
+//     delete payload.id;
+
+//     // If password is empty or undefined, remove it so it won't be overwritten
+//     if (!payload.password) {
+//       delete payload.password;
+//     }
+
+//     try {
+//       const res = await axios.put(`/api/admin/users/${id}`, payload, {
+//         // headers: { Authorization: `Bearer ${token}` }
+//       });
+//       setSuccess("Saved successfully");
+//       // update local user with returned data
+//       setUser(res.data.data || user);
+//     } catch (err: any) {
+//       console.error("Save error:", err);
+//       setError(err?.response?.data?.message || "Failed to save user");
+//     } finally {
+//       setSaving(false);
+//       // auto clear success after a short delay
+//       setTimeout(() => setSuccess(null), 3000);
+//     }
+//   };
+
+//   const handleArchive = async () => {
+//     if (!id) return;
+//     try {
+//       await axios.put(`/api/admin/users/${id}/archive`);
+//       setUser(prev => prev ? { ...prev, archived: true } : prev);
+//       setSuccess("User archived");
+//       setTimeout(() => setSuccess(null), 2500);
+//     } catch (err: any) {
+//       console.error(err);
+//       setError("Failed to archive user");
+//     }
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="d-flex justify-content-center align-items-center" style={{ padding: 40 }}>
+//         <Spinner animation="border" /> <span className="ms-2">Loading user...</span>
+//       </div>
+//     );
+//   }
+
+//   if (!user) {
+//     return <Alert variant="warning">User not found</Alert>;
+//   }
+
+//   return (
+//     <div style={{ maxWidth: 1100, margin: "0 auto", padding: 16 }}>
+//       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+//         <h2>Admin — Edit User</h2>
+//         <div>
+//           <Button variant="secondary" className="me-2" onClick={() => navigate(-1)}>
+//             Back
+//           </Button>
+//           <Button variant={user.archived ? "outline-warning" : "warning"} onClick={handleArchive}>Archive</Button>
+//         </div>
+//       </div>
+
+//       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+//       {success && <Alert variant="success" className="mt-3">{success}</Alert>}
+
+//       <Form onSubmit={handleSave} style={{ marginTop: 12 }}>
+//         <section style={cardStyle}>
+//           <h5>Account</h5>
+//           <Row className="g-2">
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Email</Form.Label>
+//                 <Form.Control name="email" type="email" value={user.email || ""} onChange={handleChange} required />
+//               </Form.Group>
+//             </Col>
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>User Type</Form.Label>
+//                 <Form.Control name="userType" value={user.userType || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+
+//           <Row className="g-2">
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Password (leave blank to keep existing)</Form.Label>
+//                 <Form.Control name="password" type="password" value={user.password || ""} onChange={handleChange} placeholder="New password" />
+//               </Form.Group>
+//             </Col>
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Profile Image (URL)</Form.Label>
+//                 <Form.Control name="profileImage" value={user.profileImage || ""} onChange={handleChange} placeholder="https://..." />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+//         </section>
+
+//         <section style={cardStyle}>
+//           <h5>Contact & Location</h5>
+//           <Row className="g-2">
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Phone</Form.Label>
+//                 <Form.Control name="phoneNumber" value={user.phoneNumber || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+
+//             <Col md={8}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Address</Form.Label>
+//                 <Form.Control name="address" value={user.address || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+
+//           <Row className="g-2">
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>City</Form.Label>
+//                 <Form.Control name="location" value={user.location || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Available From</Form.Label>
+//                 <Form.Control name="availableFrom" type="date" value={user.availableFrom ? new Date(user.availableFrom).toISOString().slice(0,10) : ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Drivers License</Form.Label>
+//                 <Form.Control name="driversLicense" value={user.driversLicense || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+//         </section>
+
+//         <section style={cardStyle}>
+//           <h5>Company & Role</h5>
+//           <Row className="g-2">
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Company</Form.Label>
+//                 <Form.Control name="company" value={user.company || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//             <Col md={6}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Company ID</Form.Label>
+//                 <Form.Control name="companyID" value={user.companyID || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+
+//           <Row className="g-2">
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Payment Terms</Form.Label>
+//                 <Form.Control name="paymentTerms" value={user.paymentTerms || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Preferred Load Type</Form.Label>
+//                 <Form.Control name="preferredLoadType" value={user.preferredLoadType || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//             <Col md={4}>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>Experience Level</Form.Label>
+//                 <Form.Control name="experienceLevel" value={user.experienceLevel || ""} onChange={handleChange} />
+//               </Form.Group>
+//             </Col>
+//           </Row>
+//         </section>
+
+//         <section style={cardStyle}>
+//           <h5>Permissions & Flags</h5>
+//           <Row>
+//             <Col md={3}>
+//               <Form.Check
+//                 type="checkbox"
+//                 label="Admin"
+//                 name="admin"
+//                 checked={!!user.admin}
+//                 onChange={handleChange}
+//               />
+//             </Col>
+//             <Col md={3}>
+//               <Form.Check
+//                 type="checkbox"
+//                 label="Developer"
+//                 name="developer"
+//                 checked={!!user.developer}
+//                 onChange={handleChange}
+//               />
+//             </Col>
+//             <Col md={3}>
+//               <Form.Check
+//                 type="checkbox"
+//                 label="Subscribed"
+//                 name="subscribed"
+//                 checked={!!user.subscribed}
+//                 onChange={handleChange}
+//               />
+//             </Col>
+//             <Col md={3}>
+//               <Form.Check
+//                 type="checkbox"
+//                 label="Archived"
+//                 name="archived"
+//                 checked={!!user.archived}
+//                 onChange={handleChange}
+//               />
+//             </Col>
+//           </Row>
+//         </section>
+
+//         <section style={cardStyle}>
+//           <h5>Freeform / JSON Fields (edit carefully)</h5>
+//           <Form.Group className="mb-2">
+//             <Form.Label>QR Data (JSON)</Form.Label>
+//             <Form.Control
+//               as="textarea"
+//               rows={3}
+//               defaultValue={typeof user.qrData === "object" ? JSON.stringify(user.qrData, null, 2) : user.qrData || ""}
+//               onBlur={(e) => handleJSONChange("qrData", e.target.value)}
+//             />
+//           </Form.Group>
+
+//           <Form.Group className="mb-2">
+//             <Form.Label>Load Details (JSON)</Form.Label>
+//             <Form.Control
+//               as="textarea"
+//               rows={3}
+//               defaultValue={typeof user.loadDetails === "object" ? JSON.stringify(user.loadDetails, null, 2) : user.loadDetails || ""}
+//               onBlur={(e) => handleJSONChange("loadDetails", e.target.value)}
+//             />
+//           </Form.Group>
+
+//           <Form.Group className="mb-2">
+//             <Form.Label>Company Profile (JSON)</Form.Label>
+//             <Form.Control
+//               as="textarea"
+//               rows={3}
+//               defaultValue={typeof user.companyProfile === "object" ? JSON.stringify(user.companyProfile, null, 2) : user.companyProfile || ""}
+//               onBlur={(e) => handleJSONChange("companyProfile", e.target.value)}
+//             />
+//           </Form.Group>
+//         </section>
+
+//         <div className="d-flex gap-2" style={{ marginTop: 12 }}>
+//           <Button type="submit" variant="primary" disabled={saving}>
+//             {saving ? (<><Spinner animation="border" size="sm" /> Saving...</>) : "Save"}
+//           </Button>
+
+//           <Button variant="outline-secondary" onClick={() => navigate(-1)}>Cancel</Button>
+//         </div>
+
+//         <div style={{ marginTop: 18 }}>
+//           <small className="text-muted">Last updated: {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "—"}</small>
+//         </div>
+//       </Form>
+//     </div>
+//   );
+// };
+
+// const cardStyle: React.CSSProperties = {
+//   background: "#fff",
+//   border: "1px solid #e9ecef",
+//   padding: 12,
+//   borderRadius: 8,
+//   marginBottom: 12,
+//   boxShadow: "0 1px 4px rgba(16,24,32,0.04)",
+// };
+
+// export default UserProfile;
+
 // src/pages/UserProfile.tsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button, Spinner, Alert, Form, Row, Col } from "react-bootstrap";
 
@@ -445,43 +839,25 @@ type UserModel = {
   id?: number;
   email?: string;
   password?: string;
-  qrCode?: string;
-  qrCodeId?: string;
-  qrData?: any;
-  qrPNG?: string;
-  description?: string;
-  profileImage?: string;
   userType?: string;
+  profileImage?: string;
+  phoneNumber?: string;
+  address?: string;
+  location?: string;
+  availableFrom?: string;
+  driversLicense?: string;
+  company?: string;
+  companyID?: string;
+  paymentTerms?: string;
   preferredLoadType?: string;
   experienceLevel?: string;
-  availableFrom?: string | Date | null;
-  location?: string;
   admin?: boolean;
   developer?: boolean;
-  archived?: boolean;
-  contractor?: string | boolean;
-  company?: string;
-  loadReferences?: string;
-  drivers?: string;
-  entrepreneur?: string | boolean;
   subscribed?: boolean;
-  address?: string;
-  phoneNumber?: string;
-  driversLicense?: string;
-  comments?: string;
-  rating?: number;
+  archived?: boolean;
+  qrData?: any;
   loadDetails?: any;
-  paymentTerms?: string;
-  loadStatus?: string;
-  driverID?: string;
-  driverExperience?: string;
-  driverAvailability?: string | Date | null;
-  driverRating?: number;
-  companyID?: string;
   companyProfile?: any;
-  partnershipStatus?: string;
-  sessionId?: string;
-  createdAt?: string;
   updatedAt?: string;
 };
 
@@ -497,14 +873,11 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    (async () => {
+    const fetchUser = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/admin/users/${id}`, {
-          // add auth header if needed:
-          // headers: { Authorization: `Bearer ${token}` }
-        });
-        setUser(res.data.data);
+        const res = await axios.get(`/api/admin/users/${id}`);
+        setUser(res.data.data || null);
         setError(null);
       } catch (err: any) {
         console.error(err);
@@ -512,319 +885,87 @@ const UserProfile: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    })();
+    };
+    fetchUser();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     if (!user) return;
-    const name = e.target.name;
-    let value: any = (e.target as HTMLInputElement).value;
-
-    // handle checkbox separately
-    if ((e.target as HTMLInputElement).type === "checkbox") {
-      value = (e.target as HTMLInputElement).checked;
-    }
-
-    setUser({ ...user, [name]: value });
+    const { name, type, value, checked } = e.target as HTMLInputElement;
+    setUser({ ...user, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleJSONChange = (field: string, value: string) => {
     if (!user) return;
     try {
-      const parsed = JSON.parse(value);
-      setUser({ ...user, [field]: parsed });
+      setUser({ ...user, [field]: JSON.parse(value) });
     } catch {
-      // store as string when invalid JSON — the backend tries to parse if needed
       setUser({ ...user, [field]: value });
     }
   };
 
   const handleSave = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    e?.preventDefault();
     if (!user || !id) return;
-    setSaving(true);
-    setSuccess(null);
-    setError(null);
 
-    // build payload; exclude createdAt/updatedAt
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+
     const payload: any = { ...user };
+    delete payload.id;
     delete payload.createdAt;
     delete payload.updatedAt;
-    delete payload.id;
-
-    // If password is empty or undefined, remove it so it won't be overwritten
-    if (!payload.password) {
-      delete payload.password;
-    }
+    if (!payload.password) delete payload.password;
 
     try {
-      const res = await axios.put(`/api/admin/users/${id}`, payload, {
-        // headers: { Authorization: `Bearer ${token}` }
-      });
-      setSuccess("Saved successfully");
-      // update local user with returned data
+      const res = await axios.put(`/api/admin/users/${id}`, payload);
       setUser(res.data.data || user);
+      setSuccess("Saved successfully");
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      console.error("Save error:", err);
+      console.error(err);
       setError(err?.response?.data?.message || "Failed to save user");
     } finally {
       setSaving(false);
-      // auto clear success after a short delay
-      setTimeout(() => setSuccess(null), 3000);
     }
   };
 
-  const handleArchive = async () => {
-    if (!id) return;
-    try {
-      await axios.put(`/api/admin/users/${id}/archive`);
-      setUser(prev => prev ? { ...prev, archived: true } : prev);
-      setSuccess("User archived");
-      setTimeout(() => setSuccess(null), 2500);
-    } catch (err: any) {
-      console.error(err);
-      setError("Failed to archive user");
-    }
-  };
+  if (loading) return <Spinner animation="border" className="mt-5" />;
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ padding: 40 }}>
-        <Spinner animation="border" /> <span className="ms-2">Loading user...</span>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Alert variant="warning">User not found</Alert>;
-  }
+  if (!user) return <Alert variant="warning">User not found</Alert>;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2>Admin — Edit User</h2>
-        <div>
-          <Button variant="secondary" className="me-2" onClick={() => navigate(-1)}>
-            Back
-          </Button>
-          <Button variant={user.archived ? "outline-warning" : "warning"} onClick={handleArchive}>Archive</Button>
-        </div>
-      </div>
+      <h2>Admin — Edit User</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
 
-      {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      {success && <Alert variant="success" className="mt-3">{success}</Alert>}
+      <Form onSubmit={handleSave}>
+        <Row className="g-2">
+          <Col md={6}>
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control name="email" value={user.email || ""} onChange={handleChange} type="email" />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group>
+              <Form.Label>Password</Form.Label>
+              <Form.Control name="password" value={user.password || ""} onChange={handleChange} type="password" placeholder="Leave blank to keep" />
+            </Form.Group>
+          </Col>
+        </Row>
 
-      <Form onSubmit={handleSave} style={{ marginTop: 12 }}>
-        <section style={cardStyle}>
-          <h5>Account</h5>
-          <Row className="g-2">
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>Email</Form.Label>
-                <Form.Control name="email" type="email" value={user.email || ""} onChange={handleChange} required />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>User Type</Form.Label>
-                <Form.Control name="userType" value={user.userType || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="g-2">
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>Password (leave blank to keep existing)</Form.Label>
-                <Form.Control name="password" type="password" value={user.password || ""} onChange={handleChange} placeholder="New password" />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>Profile Image (URL)</Form.Label>
-                <Form.Control name="profileImage" value={user.profileImage || ""} onChange={handleChange} placeholder="https://..." />
-              </Form.Group>
-            </Col>
-          </Row>
-        </section>
-
-        <section style={cardStyle}>
-          <h5>Contact & Location</h5>
-          <Row className="g-2">
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Phone</Form.Label>
-                <Form.Control name="phoneNumber" value={user.phoneNumber || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-
-            <Col md={8}>
-              <Form.Group className="mb-2">
-                <Form.Label>Address</Form.Label>
-                <Form.Control name="address" value={user.address || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="g-2">
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>City</Form.Label>
-                <Form.Control name="location" value={user.location || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Available From</Form.Label>
-                <Form.Control name="availableFrom" type="date" value={user.availableFrom ? new Date(user.availableFrom).toISOString().slice(0,10) : ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Drivers License</Form.Label>
-                <Form.Control name="driversLicense" value={user.driversLicense || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-        </section>
-
-        <section style={cardStyle}>
-          <h5>Company & Role</h5>
-          <Row className="g-2">
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>Company</Form.Label>
-                <Form.Control name="company" value={user.company || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-2">
-                <Form.Label>Company ID</Form.Label>
-                <Form.Control name="companyID" value={user.companyID || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="g-2">
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Payment Terms</Form.Label>
-                <Form.Control name="paymentTerms" value={user.paymentTerms || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Preferred Load Type</Form.Label>
-                <Form.Control name="preferredLoadType" value={user.preferredLoadType || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-2">
-                <Form.Label>Experience Level</Form.Label>
-                <Form.Control name="experienceLevel" value={user.experienceLevel || ""} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-        </section>
-
-        <section style={cardStyle}>
-          <h5>Permissions & Flags</h5>
-          <Row>
-            <Col md={3}>
-              <Form.Check
-                type="checkbox"
-                label="Admin"
-                name="admin"
-                checked={!!user.admin}
-                onChange={handleChange}
-              />
-            </Col>
-            <Col md={3}>
-              <Form.Check
-                type="checkbox"
-                label="Developer"
-                name="developer"
-                checked={!!user.developer}
-                onChange={handleChange}
-              />
-            </Col>
-            <Col md={3}>
-              <Form.Check
-                type="checkbox"
-                label="Subscribed"
-                name="subscribed"
-                checked={!!user.subscribed}
-                onChange={handleChange}
-              />
-            </Col>
-            <Col md={3}>
-              <Form.Check
-                type="checkbox"
-                label="Archived"
-                name="archived"
-                checked={!!user.archived}
-                onChange={handleChange}
-              />
-            </Col>
-          </Row>
-        </section>
-
-        <section style={cardStyle}>
-          <h5>Freeform / JSON Fields (edit carefully)</h5>
-          <Form.Group className="mb-2">
-            <Form.Label>QR Data (JSON)</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              defaultValue={typeof user.qrData === "object" ? JSON.stringify(user.qrData, null, 2) : user.qrData || ""}
-              onBlur={(e) => handleJSONChange("qrData", e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-2">
-            <Form.Label>Load Details (JSON)</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              defaultValue={typeof user.loadDetails === "object" ? JSON.stringify(user.loadDetails, null, 2) : user.loadDetails || ""}
-              onBlur={(e) => handleJSONChange("loadDetails", e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-2">
-            <Form.Label>Company Profile (JSON)</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              defaultValue={typeof user.companyProfile === "object" ? JSON.stringify(user.companyProfile, null, 2) : user.companyProfile || ""}
-              onBlur={(e) => handleJSONChange("companyProfile", e.target.value)}
-            />
-          </Form.Group>
-        </section>
-
-        <div className="d-flex gap-2" style={{ marginTop: 12 }}>
-          <Button type="submit" variant="primary" disabled={saving}>
-            {saving ? (<><Spinner animation="border" size="sm" /> Saving...</>) : "Save"}
-          </Button>
-
-          <Button variant="outline-secondary" onClick={() => navigate(-1)}>Cancel</Button>
-        </div>
-
-        <div style={{ marginTop: 18 }}>
-          <small className="text-muted">Last updated: {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "—"}</small>
-        </div>
+        <Button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+        <Button variant="secondary" onClick={() => navigate(-1)} className="ms-2">Cancel</Button>
       </Form>
     </div>
   );
-};
-
-const cardStyle: React.CSSProperties = {
-  background: "#fff",
-  border: "1px solid #e9ecef",
-  padding: 12,
-  borderRadius: 8,
-  marginBottom: 12,
-  boxShadow: "0 1px 4px rgba(16,24,32,0.04)",
 };
 
 export default UserProfile;
