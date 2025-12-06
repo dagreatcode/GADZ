@@ -68,8 +68,199 @@
 
 // export default AllUsers
 
+// import React, { useEffect, useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import "./AllUsers.css";
+
+// interface User {
+//   _id: string;
+//   email: string;
+//   password?: string;
+//   description?: string;
+//   archived?: boolean;
+//   admin?: boolean;
+//   developer?: boolean;
+// }
+
+// const ITEMS_PER_PAGE = 10;
+
+// const AllUsers: React.FC = () => {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [search, setSearch] = useState("");
+//   const [archivedFilter, setArchivedFilter] = useState("all");
+//   const [page, setPage] = useState(1);
+//   const navigate = useNavigate();
+
+//   // Fetch users
+//   const fetchUsers = async () => {
+//     try {
+//       const { data } = await axios.get("/api/user/view");
+//       setUsers(data);
+//     } catch (error) {
+//       console.error("Error fetching users:", error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchUsers();
+//   }, []);
+
+//   // Filtered users
+//   const filteredUsers = users.filter((user) => {
+//     const matchesSearch =
+//       user.email?.toLowerCase().includes(search.toLowerCase()) ||
+//       user.description?.toLowerCase().includes(search.toLowerCase());
+//     const matchesArchived =
+//       archivedFilter === "all" ||
+//       (archivedFilter === "archived" && user.archived) ||
+//       (archivedFilter === "active" && !user.archived);
+//     return matchesSearch && matchesArchived;
+//   });
+
+//   // Pagination
+//   const startIndex = (page - 1) * ITEMS_PER_PAGE;
+//   const pageUsers = filteredUsers.slice(
+//     startIndex,
+//     startIndex + ITEMS_PER_PAGE
+//   );
+//   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+
+//   // Archive toggle
+//   const toggleArchive = async (id: string, current: boolean) => {
+//     try {
+//       await axios.put(`/api/user/archive/${id}`, { archived: !current });
+//       setUsers((prev) =>
+//         prev.map((u) => (u._id === id ? { ...u, archived: !current } : u))
+//       );
+//     } catch (error) {
+//       console.error("Error updating archive:", error);
+//     }
+//   };
+
+//   return (
+//     <div className="users-wrapper">
+//       <div className="header-row">
+//         <h2>All Users</h2>
+//       </div>
+
+//       {/* Search + Filter */}
+//       <div className="filters">
+//         <input
+//           type="text"
+//           placeholder="Search by email or description..."
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//         />
+//         <select
+//           value={archivedFilter}
+//           onChange={(e) => setArchivedFilter(e.target.value)}
+//         >
+//           <option value="all">All Users</option>
+//           <option value="active">Active</option>
+//           <option value="archived">Archived</option>
+//         </select>
+//       </div>
+
+//       {/* Scrollable table */}
+//       <div className="table-scroll">
+//         <table className="users-table">
+//           <thead>
+//             <tr>
+//               <th>Email (click to edit)</th>
+//               <th>Password</th>
+//               <th>Description</th>
+//               <th>Archived</th>
+//               <th>Admin</th>
+//               <th>Developer</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {pageUsers.length > 0 ? (
+//               pageUsers.map((user) => (
+//                 <tr key={user._id}>
+//                   <td>
+//                     <Link to={`/AdminUserProfile/${user._id}`} className="email-link">
+//                       {user.email}
+//                     </Link>
+//                   </td>
+//                   <td>{user.password || "—"}</td>
+//                   <td className="wrap">{user.description || "—"}</td>
+//                   <td>
+//                     <span
+//                       className={`badge ${user.archived ? "archived" : "active"}`}
+//                     >
+//                       {user.archived ? "Archived" : "Active"}
+//                     </span>
+//                   </td>
+//                   <td>
+//                     <span className={`badge ${user.admin ? "yes" : "no"}`}>
+//                       {user.admin ? "Yes" : "No"}
+//                     </span>
+//                   </td>
+//                   <td>
+//                     <span className={`badge ${user.developer ? "yes" : "no"}`}>
+//                       {user.developer ? "Yes" : "No"}
+//                     </span>
+//                   </td>
+//                   <td>
+//                     <button
+//                       className="archive-btn"
+//                       onClick={() => toggleArchive(user._id, !!user.archived)}
+//                     >
+//                       {user.archived ? "Unarchive" : "Archive"}
+//                     </button>
+//                     &nbsp;
+//                     <Link
+//                       to={`/AdminUserProfile/${user._id}`}
+//                       className="edit-btn"
+//                     >
+//                       Edit
+//                     </Link>
+//                   </td>
+//                 </tr>
+//               ))
+//             ) : (
+//               <tr>
+//                 <td colSpan={7} className="center">
+//                   No users found
+//                 </td>
+//               </tr>
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       {/* Pagination */}
+//       {totalPages > 1 && (
+//         <div className="pagination">
+//           <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+//             Prev
+//           </button>
+//           <span>
+//             Page {page} of {totalPages}
+//           </span>
+//           <button
+//             disabled={page === totalPages}
+//             onClick={() => setPage(page + 1)}
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
+
+//       <Link to="/Admin" className="home-link">
+//         Back Home
+//       </Link>
+//     </div>
+//   );
+// };
+
+// export default AllUsers;
+
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./AllUsers.css";
 
@@ -90,7 +281,6 @@ const AllUsers: React.FC = () => {
   const [search, setSearch] = useState("");
   const [archivedFilter, setArchivedFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const navigate = useNavigate();
 
   // Fetch users
   const fetchUsers = async () => {
@@ -106,7 +296,7 @@ const AllUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
-  // Filtered users
+  // Filter users
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.email?.toLowerCase().includes(search.toLowerCase()) ||
@@ -126,7 +316,7 @@ const AllUsers: React.FC = () => {
   );
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
 
-  // Archive toggle
+  // Toggle archive status
   const toggleArchive = async (id: string, current: boolean) => {
     try {
       await axios.put(`/api/user/archive/${id}`, { archived: !current });
@@ -140,9 +330,7 @@ const AllUsers: React.FC = () => {
 
   return (
     <div className="users-wrapper">
-      <div className="header-row">
-        <h2>All Users</h2>
-      </div>
+      <h2 className="header-row">All Users</h2>
 
       {/* Search + Filter */}
       <div className="filters">
@@ -177,11 +365,14 @@ const AllUsers: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {pageUsers.length > 0 ? (
+            {pageUsers.length ? (
               pageUsers.map((user) => (
                 <tr key={user._id}>
                   <td>
-                    <Link to={`/AdminUserProfile/${user._id}`} className="email-link">
+                    <Link
+                      to={`/AdminUserProfile/${user._id}`}
+                      className="email-link"
+                    >
                       {user.email}
                     </Link>
                   </td>
@@ -189,7 +380,9 @@ const AllUsers: React.FC = () => {
                   <td className="wrap">{user.description || "—"}</td>
                   <td>
                     <span
-                      className={`badge ${user.archived ? "archived" : "active"}`}
+                      className={`badge ${
+                        user.archived ? "archived" : "active"
+                      }`}
                     >
                       {user.archived ? "Archived" : "Active"}
                     </span>
@@ -207,7 +400,9 @@ const AllUsers: React.FC = () => {
                   <td>
                     <button
                       className="archive-btn"
-                      onClick={() => toggleArchive(user._id, !!user.archived)}
+                      onClick={() =>
+                        toggleArchive(user._id, !!user.archived)
+                      }
                     >
                       {user.archived ? "Unarchive" : "Archive"}
                     </button>
@@ -235,7 +430,10 @@ const AllUsers: React.FC = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination">
-          <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
             Prev
           </button>
           <span>
