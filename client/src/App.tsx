@@ -95,7 +95,7 @@ function App() {
         <Route path="/NewsLetters" element={<NewsLetters />} />
         <Route path="/Agreements" element={<Agreements />} />
         <Route path="/AdminAllUsers" element={<AdminAllUsers />} />
-        <Route path="/AdminUserProfile" element={<AdminUserProfile />} />
+        <Route path="/AdminUserProfile/:id" element={<AdminUserProfile />} />
         <Route path="/B2BMessages" element={<B2BMessages />} />
         <Route path="/Dash" element={<Dash />} />
         <Route path="/PrintOut" element={<PrintOut />} />
