@@ -1,95 +1,54 @@
-.wrapper {
+.container {
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Arial", sans-serif;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 
 .homeLink {
-  color: #007bff;
   text-decoration: none;
-  margin-top: 10px;
-  font-weight: 500;
+  color: #007bff;
 }
 
 .homeLink:hover {
   text-decoration: underline;
 }
 
-.createButtonWrapper {
-  margin-bottom: 20px;
+.modalButton {
+  margin-bottom: 1.5rem;
 }
 
-.spinner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.1rem;
-  justify-content: center;
-  margin-top: 20px;
+.newsletterList {
+  margin-top: 2rem;
 }
 
-.newsletterGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+.newsletterTable {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.newsletterCard {
+.newsletterTable th,
+.newsletterTable td {
   border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  background-color: #fff;
-  position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 0.75rem;
+  text-align: left;
 }
 
-.newsletterCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.newsletterTable th {
+  background-color: #f4f4f4;
 }
 
-.newsletterCard h3 {
-  margin-bottom: 10px;
-  color: #333;
+.newsletterTable tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.newsletterCard p {
-  margin: 5px 0;
-  color: #555;
-}
-
-.cardActions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.badgeArchived,
-.badgeImportant {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  color: #fff;
-  margin-left: 5px;
-}
-
-.badgeArchived {
-  background-color: #6c757d;
-}
-
-.badgeImportant {
-  background-color: #dc3545;
+.newsletterTable tr:hover {
+  background-color: #e9ecef;
 }

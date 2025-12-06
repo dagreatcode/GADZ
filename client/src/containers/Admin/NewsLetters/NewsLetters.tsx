@@ -147,6 +147,224 @@
 
 // export default NewsLetters;
 
+// import React, { useState, useEffect } from "react";
+// import { Link } from "react-router-dom";
+// import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
+// import axios from "axios";
+// import styles from "./NewsLetters.module.css";
+
+// interface Newsletter {
+//   id: number;
+//   subject: string;
+//   description: string;
+//   authorId: number;
+//   archived: boolean;
+//   important: boolean;
+// }
+
+// const NewsLetters: React.FC = () => {
+//   const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   const [showModal, setShowModal] = useState(false);
+//   const [subject, setSubject] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [submitting, setSubmitting] = useState(false);
+
+//   // Fetch newsletters
+//   const fetchNewsletters = async () => {
+//     setLoading(true);
+//     setError("");
+//     try {
+//       const response = await axios.get(
+//         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`
+//       );
+//       setNewsletters(response.data || []);
+//     } catch (err) {
+//       console.error(err);
+//       setError("Failed to load newsletters.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchNewsletters();
+//   }, []);
+
+//   // Modal handlers
+//   const openModal = () => setShowModal(true);
+//   const closeModal = () => {
+//     if (!submitting) {
+//       setShowModal(false);
+//       setSubject("");
+//       setDescription("");
+//     }
+//   };
+
+//   // Create newsletter
+//   const handleFormSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setSubmitting(true);
+//     setError("");
+
+//     try {
+//       await axios.post(
+//         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`,
+//         { subject, description, authorId: 1 }
+//       );
+//       await fetchNewsletters();
+//       closeModal();
+//     } catch (err) {
+//       console.error(err);
+//       setError("Failed to create newsletter.");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   // Archive/unarchive newsletter
+//   const toggleArchive = async (id: number, current: boolean) => {
+//     try {
+//       await axios.put(
+//         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/archive/${id}`,
+//         { archived: !current }
+//       );
+//       setNewsletters((prev) =>
+//         prev.map((n) =>
+//           n.id === id ? { ...n, archived: !current } : n
+//         )
+//       );
+//     } catch (err) {
+//       console.error(err);
+//       setError("Failed to update newsletter.");
+//     }
+//   };
+
+//   // Delete newsletter
+//   const handleDelete = async (id: number) => {
+//     if (!window.confirm("Are you sure you want to delete this newsletter?")) return;
+//     try {
+//       await axios.delete(
+//         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay/${id}`
+//       );
+//       setNewsletters((prev) => prev.filter((n) => n.id !== id));
+//     } catch (err) {
+//       console.error(err);
+//       setError("Failed to delete newsletter.");
+//     }
+//   };
+
+//   return (
+//     <div className={styles.wrapper}>
+//       <div className={styles.header}>
+//         <h1>Newsletters</h1>
+//         <Link to="/Admin" className={styles.homeLink}>
+//           Back Home
+//         </Link>
+//       </div>
+
+//       <div className={styles.createButtonWrapper}>
+//         <Button variant="primary" onClick={openModal}>
+//           Create New Newsletter
+//         </Button>
+//       </div>
+
+//       {error && <Alert variant="danger">{error}</Alert>}
+
+//       {/* Loading */}
+//       {loading ? (
+//         <div className={styles.spinner}>
+//           <Spinner animation="border" /> Loading newsletters...
+//         </div>
+//       ) : (
+//         <div className={styles.newsletterGrid}>
+//           {newsletters.length === 0 ? (
+//             <p>No newsletters found.</p>
+//           ) : (
+//             newsletters.map((n) => (
+//               <div key={n.id} className={styles.newsletterCard}>
+//                 <h3>{n.subject}</h3>
+//                 <p>{n.description}</p>
+//                 <p><strong>Author:</strong> Admin</p>
+//                 <div className={styles.cardActions}>
+//                   <Button
+//                     variant={n.archived ? "success" : "warning"}
+//                     size="sm"
+//                     onClick={() => toggleArchive(n.id, n.archived)}
+//                   >
+//                     {n.archived ? "Unarchive" : "Archive"}
+//                   </Button>
+//                   <Button
+//                     variant="danger"
+//                     size="sm"
+//                     onClick={() => handleDelete(n.id)}
+//                   >
+//                     Delete
+//                   </Button>
+//                 </div>
+//                 {n.archived && <span className={styles.badgeArchived}>Archived</span>}
+//                 {n.important && <span className={styles.badgeImportant}>Important</span>}
+//               </div>
+//             ))
+//           )}
+//         </div>
+//       )}
+
+//       {/* Modal */}
+//       <Modal show={showModal} onHide={closeModal} centered>
+//         <Modal.Header closeButton>
+//           <Modal.Title>Create a Newsletter</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           <Form onSubmit={handleFormSubmit}>
+//             <Form.Group controlId="subject">
+//               <Form.Label>Subject</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 placeholder="Enter subject"
+//                 value={subject}
+//                 onChange={(e) => setSubject(e.target.value)}
+//                 required
+//               />
+//             </Form.Group>
+
+//             <Form.Group controlId="description" className="mt-3">
+//               <Form.Label>Description</Form.Label>
+//               <Form.Control
+//                 as="textarea"
+//                 rows={4}
+//                 placeholder="Enter description"
+//                 value={description}
+//                 onChange={(e) => setDescription(e.target.value)}
+//                 required
+//               />
+//             </Form.Group>
+
+//             <div className="mt-4 d-flex justify-content-end gap-2">
+//               <Button variant="secondary" onClick={closeModal} disabled={submitting}>
+//                 Close
+//               </Button>
+//               <Button variant="primary" type="submit" disabled={submitting}>
+//                 {submitting ? (
+//                   <>
+//                     <Spinner animation="border" size="sm" /> Creating...
+//                   </>
+//                 ) : (
+//                   "Create"
+//                 )}
+//               </Button>
+//             </div>
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default NewsLetters;
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
@@ -164,28 +382,22 @@ interface Newsletter {
 
 const NewsLetters: React.FC = () => {
   const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  // Fetch newsletters
+  // Fetch all newsletters
   const fetchNewsletters = async () => {
-    setLoading(true);
-    setError("");
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`
       );
-      setNewsletters(response.data || []);
+      setNewsletters(response.data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching newsletters:", err);
       setError("Failed to load newsletters.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -193,17 +405,13 @@ const NewsLetters: React.FC = () => {
     fetchNewsletters();
   }, []);
 
-  // Modal handlers
-  const openModal = () => setShowModal(true);
-  const closeModal = () => {
-    if (!submitting) {
-      setShowModal(false);
-      setSubject("");
-      setDescription("");
-    }
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSubject("");
+    setDescription("");
+    setError("");
   };
 
-  // Create newsletter
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -214,35 +422,35 @@ const NewsLetters: React.FC = () => {
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/pay`,
         { subject, description, authorId: 1 }
       );
-      await fetchNewsletters();
-      closeModal();
+      setShowModal(false); // Close modal immediately
+      setSubject("");
+      setDescription("");
+      await fetchNewsletters(); // Refresh newsletter list
     } catch (err) {
       console.error(err);
-      setError("Failed to create newsletter.");
+      setError("Failed to create newsletter. Check console for details.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Archive/unarchive newsletter
-  const toggleArchive = async (id: number, current: boolean) => {
+  const handleArchiveToggle = async (id: number, archived: boolean) => {
     try {
       await axios.put(
         `${process.env.REACT_APP_SOCKET_IO_CLIENT_PORT}/api/newsletter/archive/${id}`,
-        { archived: !current }
+        { archived: !archived }
       );
       setNewsletters((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, archived: !current } : n
+          n.id === id ? { ...n, archived: !archived } : n
         )
       );
     } catch (err) {
       console.error(err);
-      setError("Failed to update newsletter.");
+      setError("Failed to update archive status.");
     }
   };
 
-  // Delete newsletter
   const handleDelete = async (id: number) => {
     if (!window.confirm("Are you sure you want to delete this newsletter?")) return;
     try {
@@ -257,69 +465,30 @@ const NewsLetters: React.FC = () => {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.container}>
       <div className={styles.header}>
         <h1>Newsletters</h1>
         <Link to="/Admin" className={styles.homeLink}>
-          Back Home
+          Back to Admin
         </Link>
-      </div>
-
-      <div className={styles.createButtonWrapper}>
-        <Button variant="primary" onClick={openModal}>
-          Create New Newsletter
-        </Button>
       </div>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {/* Loading */}
-      {loading ? (
-        <div className={styles.spinner}>
-          <Spinner animation="border" /> Loading newsletters...
-        </div>
-      ) : (
-        <div className={styles.newsletterGrid}>
-          {newsletters.length === 0 ? (
-            <p>No newsletters found.</p>
-          ) : (
-            newsletters.map((n) => (
-              <div key={n.id} className={styles.newsletterCard}>
-                <h3>{n.subject}</h3>
-                <p>{n.description}</p>
-                <p><strong>Author:</strong> Admin</p>
-                <div className={styles.cardActions}>
-                  <Button
-                    variant={n.archived ? "success" : "warning"}
-                    size="sm"
-                    onClick={() => toggleArchive(n.id, n.archived)}
-                  >
-                    {n.archived ? "Unarchive" : "Archive"}
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(n.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-                {n.archived && <span className={styles.badgeArchived}>Archived</span>}
-                {n.important && <span className={styles.badgeImportant}>Important</span>}
-              </div>
-            ))
-          )}
-        </div>
-      )}
+      <div className={styles.modalButton}>
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          Create New Newsletter
+        </Button>
+      </div>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={closeModal} centered>
+      <Modal show={showModal} onHide={handleModalClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Create a Newsletter</Modal.Title>
+          <Modal.Title>Create Newsletter</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleFormSubmit}>
-            <Form.Group controlId="subject">
+            <Form.Group className="mb-3" controlId="subject">
               <Form.Label>Subject</Form.Label>
               <Form.Control
                 type="text"
@@ -330,7 +499,7 @@ const NewsLetters: React.FC = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="description" className="mt-3">
+            <Form.Group className="mb-3" controlId="description">
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
@@ -342,23 +511,69 @@ const NewsLetters: React.FC = () => {
               />
             </Form.Group>
 
-            <div className="mt-4 d-flex justify-content-end gap-2">
-              <Button variant="secondary" onClick={closeModal} disabled={submitting}>
+            <div className="d-flex justify-content-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={handleModalClose}
+                disabled={submitting}
+              >
                 Close
               </Button>
               <Button variant="primary" type="submit" disabled={submitting}>
-                {submitting ? (
-                  <>
-                    <Spinner animation="border" size="sm" /> Creating...
-                  </>
-                ) : (
-                  "Create"
-                )}
+                {submitting ? <Spinner animation="border" size="sm" /> : "Create"}
               </Button>
             </div>
           </Form>
         </Modal.Body>
       </Modal>
+
+      {/* Newsletter List */}
+      <div className={styles.newsletterList}>
+        {newsletters.length === 0 ? (
+          <p>No newsletters found.</p>
+        ) : (
+          <table className={styles.newsletterTable}>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Author</th>
+                <th>Archived</th>
+                <th>Important</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {newsletters.map((n) => (
+                <tr key={n.id}>
+                  <td>{n.subject}</td>
+                  <td>{n.description}</td>
+                  <td>Admin</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      variant={n.archived ? "warning" : "success"}
+                      onClick={() => handleArchiveToggle(n.id, n.archived)}
+                    >
+                      {n.archived ? "Archived" : "Active"}
+                    </Button>
+                  </td>
+                  <td>{n.important ? "Yes" : "No"}</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => handleDelete(n.id)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };
