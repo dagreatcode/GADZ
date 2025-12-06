@@ -1,83 +1,78 @@
-/* .tickets-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.ticket-section {
-  margin-bottom: 40px;
-}
-
-h1 {
-  color: #333;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-th,
-td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ccc;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-td {
-  background-color: #fff;
-}
-
-td a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-td a:hover {
-  text-decoration: underline;
-}
-
-.link-home {
-  display: block;
-  margin-top: 20px;
-  text-align: center;
-  color: #007bff;
-} */
-
+/* Wrapper */
 .tickets-wrapper {
   padding: 20px;
+  transition: 0.3s ease;
 }
 
-.tickets-title {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+/* Dark mode */
+.tickets-wrapper.dark {
+  background: #1e1e1e;
+  color: white;
 }
 
-/* Search Bar */
-.search-container {
-  text-align: center;
-  margin-bottom: 20px;
+.tickets-wrapper.dark table {
+  color: white;
 }
 
-.search-container input {
-  width: 90%;
-  max-width: 400px;
-  padding: 10px 12px;
-  border-radius: 8px;
+.tickets-wrapper.dark th {
+  background: #333;
+}
+
+.tickets-wrapper.dark td {
+  background: #222;
+}
+
+/* Header */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Dark mode button */
+.dark-toggle {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.filters input,
+.filters select {
+  padding: 8px;
+  border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-/* Table */
-.table-container {
+/* Export Button */
+.export-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  opacity: 0.85;
+}
+
+/* Table Scroll Wrapper */
+.table-scroll {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Table */
 .tickets-table {
   width: 100%;
   border-collapse: collapse;
@@ -89,29 +84,57 @@ td a:hover {
   border: 1px solid #ddd;
 }
 
-.tickets-table th {
-  background-color: #f8f8f8;
-  text-align: left;
+.wrap {
+  word-wrap: break-word;
+  max-width: 250px;
 }
 
+/* Status Badges */
+.badge {
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.badge.open {
+  background: #4caf50;
+  color: white;
+}
+
+.badge.closed {
+  background: #616161;
+  color: white;
+}
+
+.badge.in-progress {
+  background: #ff9800;
+  color: white;
+}
+
+.badge.archived {
+  background: #b71c1c;
+  color: white;
+}
+
+/* Archive Button */
 .archive-btn {
-  background: #c62828;
+  background: #d32f2f;
   color: white;
   border: none;
   padding: 6px 10px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
 .archive-btn:hover {
-  background: #b71c1c;
+  opacity: 0.85;
 }
 
 /* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
   margin-top: 20px;
   gap: 15px;
 }
@@ -127,34 +150,24 @@ td a:hover {
 
 .pagination button:disabled {
   opacity: 0.5;
-  cursor: default;
 }
 
-/* Home link */
+/* Home Link */
 .home-link {
   display: block;
-  margin-top: 30px;
   text-align: center;
+  margin-top: 25px;
   color: #007bff;
   text-decoration: none;
 }
 
-.home-link:hover {
-  text-decoration: underline;
-}
-
-/* Mobile Responsive */
+/* MOBILE */
 @media (max-width: 600px) {
-  .tickets-table th,
-  .tickets-table td {
-    padding: 6px;
+  .filters {
+    flex-direction: column;
   }
 
-  .search-container input {
-    width: 95%;
-  }
-
-  .pagination span {
-    font-size: 14px;
+  .wrap {
+    max-width: 140px;
   }
 }
