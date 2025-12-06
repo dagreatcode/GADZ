@@ -229,6 +229,275 @@
 
 // export default UserProfile;
 
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate, Link } from "react-router-dom";
+// import axios from "axios";
+// import Button from "react-bootstrap/Button";
+
+// interface User {
+//   email: string;
+//   password?: string;
+//   description?: string;
+// }
+
+// const UserProfile: React.FC = () => {
+//   const { id } = useParams<{ id: string }>();
+//   const navigate = useNavigate();
+//   const [user, setUser] = useState<User>({ email: "", password: "", description: "" });
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [success, setSuccess] = useState(false);
+
+//   // Fetch user by ID
+//   const fetchUser = async () => {
+//     try {
+//       const { data } = await axios.get(`/api/user/${id}`);
+//       setUser(data);
+//     } catch (err) {
+//       setError("Failed to fetch user.");
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchUser();
+//   }, [id]);
+
+//   // Handle input changes
+//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+//     const { name, value } = e.target;
+//     setUser((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Handle form submit
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     try {
+//       await axios.put(`/api/user/update/${id}`, {
+//         email: user.email,
+//         password: user.password,
+//         description: user.description,
+//       });
+//       setSuccess(true);
+//       setTimeout(() => navigate("/AllUsers"), 1000);
+//     } catch (err) {
+//       setError("Failed to update user.");
+//       console.error(err);
+//     }
+//   };
+
+//   if (loading) return <p>Loading user data...</p>;
+
+//   return (
+//     <div className="container" style={{ maxWidth: 600, marginTop: 40 }}>
+//       <h2>Update User</h2>
+//       {error && <p style={{ color: "red" }}>{error}</p>}
+//       {success && <p style={{ color: "green" }}>User updated successfully!</p>}
+
+//       <form onSubmit={handleSubmit}>
+//         <div className="form-group">
+//           <label>Email</label>
+//           <input
+//             type="email"
+//             name="email"
+//             className="form-control"
+//             value={user.email}
+//             onChange={handleChange}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label>Password</label>
+//           <input
+//             type="password"
+//             name="password"
+//             className="form-control"
+//             value={user.password}
+//             onChange={handleChange}
+//             placeholder="Enter new password"
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label>Description</label>
+//           <textarea
+//             name="description"
+//             className="form-control"
+//             value={user.description}
+//             onChange={handleChange}
+//             rows={3}
+//           />
+//         </div>
+
+//         <Button type="submit" className="btn btn-primary">
+//           Update User
+//         </Button>
+//       </form>
+
+//       <Link to="/AllUsers" style={{ display: "block", marginTop: 20 }}>
+//         Back to All Users
+//       </Link>
+//     </div>
+//   );
+// };
+
+// export default UserProfile;
+
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate, Link } from "react-router-dom";
+// import axios from "axios";
+// import Button from "react-bootstrap/Button";
+
+// interface User {
+//   email: string;
+//   password?: string;
+//   description?: string;
+//   admin?: boolean;
+//   developer?: boolean;
+//   archived?: boolean;
+// }
+
+// const UserProfile: React.FC = () => {
+//   const { id } = useParams<{ id: string }>();
+//   const navigate = useNavigate();
+//   const [user, setUser] = useState<User>({
+//     email: "",
+//     password: "",
+//     description: "",
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [success, setSuccess] = useState(false);
+
+//   // Fetch user by ID
+//   const fetchUser = async () => {
+//     try {
+//       const { data } = await axios.get(`/api/user/${id}`);
+//       setUser(data);
+//     } catch (err) {
+//       setError("Failed to fetch user.");
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchUser();
+//   }, [id]);
+
+//   // Handle input changes
+//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+//     const { name, value } = e.target;
+//     setUser((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Handle form submit
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     try {
+//       await axios.put(`/api/user/update/${id}`, user);
+//       setSuccess(true);
+//       setTimeout(() => navigate("/AllUsers"), 1000);
+//     } catch (err) {
+//       setError("Failed to update user.");
+//       console.error(err);
+//     }
+//   };
+
+//   if (loading) return <p>Loading user data...</p>;
+
+//   return (
+//     <div style={{ maxWidth: 600, margin: "40px auto" }}>
+//       <h2>Update User</h2>
+//       {error && <p style={{ color: "red" }}>{error}</p>}
+//       {success && <p style={{ color: "green" }}>User updated successfully!</p>}
+
+//       <form onSubmit={handleSubmit}>
+//         <div className="form-group">
+//           <label>Email</label>
+//           <input
+//             type="email"
+//             name="email"
+//             className="form-control"
+//             value={user.email}
+//             onChange={handleChange}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label>Password</label>
+//           <input
+//             type="password"
+//             name="password"
+//             className="form-control"
+//             value={user.password}
+//             onChange={handleChange}
+//             placeholder="Enter new password"
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label>Description</label>
+//           <textarea
+//             name="description"
+//             className="form-control"
+//             value={user.description}
+//             onChange={handleChange}
+//             rows={3}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label>
+//             <input
+//               type="checkbox"
+//               name="admin"
+//               checked={!!user.admin}
+//               onChange={(e) => setUser({ ...user, admin: e.target.checked })}
+//             />
+//             Admin
+//           </label>
+//           &nbsp;&nbsp;
+//           <label>
+//             <input
+//               type="checkbox"
+//               name="developer"
+//               checked={!!user.developer}
+//               onChange={(e) => setUser({ ...user, developer: e.target.checked })}
+//             />
+//             Developer
+//           </label>
+//           &nbsp;&nbsp;
+//           <label>
+//             <input
+//               type="checkbox"
+//               name="archived"
+//               checked={!!user.archived}
+//               onChange={(e) => setUser({ ...user, archived: e.target.checked })}
+//             />
+//             Archived
+//           </label>
+//         </div>
+
+//         <Button type="submit" className="btn btn-primary">
+//           Update User
+//         </Button>
+//       </form>
+
+//       <Link to="/AllUsers" style={{ display: "block", marginTop: 20 }}>
+//         Back to All Users
+//       </Link>
+//     </div>
+//   );
+// };
+
+// export default UserProfile;
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -238,24 +507,29 @@ interface User {
   email: string;
   password?: string;
   description?: string;
+  admin?: boolean;
+  developer?: boolean;
+  archived?: boolean;
 }
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>({ email: "", password: "", description: "" });
+  const [user, setUser] = useState<User>({
+    email: "",
+    password: "",
+    description: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Fetch user by ID
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(`/api/user/${id}`);
       setUser(data);
     } catch (err) {
       setError("Failed to fetch user.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -265,33 +539,26 @@ const UserProfile: React.FC = () => {
     fetchUser();
   }, [id]);
 
-  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/user/update/${id}`, {
-        email: user.email,
-        password: user.password,
-        description: user.description,
-      });
+      await axios.put(`/api/user/update/${id}`, user);
       setSuccess(true);
       setTimeout(() => navigate("/AllUsers"), 1000);
-    } catch (err) {
+    } catch {
       setError("Failed to update user.");
-      console.error(err);
     }
   };
 
-  if (loading) return <p>Loading user data...</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="container" style={{ maxWidth: 600, marginTop: 40 }}>
+    <div style={{ maxWidth: 600, margin: "40px auto" }}>
       <h2>Update User</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>User updated successfully!</p>}
@@ -308,7 +575,6 @@ const UserProfile: React.FC = () => {
             required
           />
         </div>
-
         <div className="form-group">
           <label>Password</label>
           <input
@@ -320,7 +586,6 @@ const UserProfile: React.FC = () => {
             placeholder="Enter new password"
           />
         </div>
-
         <div className="form-group">
           <label>Description</label>
           <textarea
@@ -331,7 +596,38 @@ const UserProfile: React.FC = () => {
             rows={3}
           />
         </div>
-
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={!!user.admin}
+              onChange={(e) => setUser({ ...user, admin: e.target.checked })}
+            />
+            Admin
+          </label>
+          &nbsp;&nbsp;
+          <label>
+            <input
+              type="checkbox"
+              checked={!!user.developer}
+              onChange={(e) =>
+                setUser({ ...user, developer: e.target.checked })
+              }
+            />
+            Developer
+          </label>
+          &nbsp;&nbsp;
+          <label>
+            <input
+              type="checkbox"
+              checked={!!user.archived}
+              onChange={(e) =>
+                setUser({ ...user, archived: e.target.checked })
+              }
+            />
+            Archived
+          </label>
+        </div>
         <Button type="submit" className="btn btn-primary">
           Update User
         </Button>
