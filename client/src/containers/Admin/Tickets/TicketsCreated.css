@@ -1,4 +1,4 @@
-.tickets-header {
+/* .tickets-header {
   text-align: center;
   margin-bottom: 20px;
 }
@@ -46,4 +46,115 @@ td a:hover {
   margin-top: 20px;
   text-align: center;
   color: #007bff;
+} */
+
+.tickets-wrapper {
+  padding: 20px;
+}
+
+.tickets-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Search Bar */
+.search-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  width: 90%;
+  max-width: 400px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Table */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tickets-table th,
+.tickets-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.tickets-table th {
+  background-color: #f8f8f8;
+  text-align: left;
+}
+
+.archive-btn {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.archive-btn:hover {
+  background: #b71c1c;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Home link */
+.home-link {
+  display: block;
+  margin-top: 30px;
+  text-align: center;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .tickets-table th,
+  .tickets-table td {
+    padding: 6px;
+  }
+
+  .search-container input {
+    width: 95%;
+  }
+
+  .pagination span {
+    font-size: 14px;
+  }
 }
