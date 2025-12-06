@@ -4808,14 +4808,33 @@ const AvailableTable: React.FC = () => {
             <button className="btn btn-outline-primary" onClick={handleAuthorizeNavigation}>
               Connect / Authorize
             </button> */}
-            <button
+            {/* <button
               className="btn btn-outline-success"
               type="submit"
               // onClick={fetchLoadboardData}
               disabled={loading}
             >
               {loading ? "Fetching..." : "Fetch 123Loadboard Data"}
+            </button> */}
+            <button
+              className="btn btn-outline-success d-flex align-items-center gap-2"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Fetching...
+                </>
+              ) : (
+                "Fetch 123Loadboard Data"
+              )}
             </button>
+
           </div>
         </form>
         {loading && <p>Loading search results...</p>}
