@@ -1,46 +1,67 @@
-/* NewsLetters.module.css */
+.wrapper {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+}
 
-.modalButton {
-    margin-top: 1.5rem;
-  }
-  
-  .modalTitle {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .modalContent {
-    padding: 1rem;
-  }
-  
-  .formGroup {
-    margin-bottom: 1rem;
-  }
-  
-  .formLabel {
-    font-size: 1.1rem;
-    font-weight: 500;
-  }
-  
-  .formInput {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border-radius: 4px;
-  }
-  
-  .formTextArea {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    resize: vertical;
-  }
-  
-  .formActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 1rem;
-  }
-  
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.homeLink {
+  color: #007bff;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.homeLink:hover {
+  text-decoration: underline;
+}
+
+.createButtonWrapper {
+  margin-bottom: 20px;
+}
+
+.listWrapper {
+  margin-top: 20px;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  justify-content: center;
+}
+
+.newsletterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.newsletterCard {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.newsletterCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.newsletterCard h3 {
+  margin-bottom: 10px;
+}
+
+.newsletterCard p {
+  margin: 5px 0;
+}
