@@ -1,24 +1,15 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: auto;
   padding: 2rem;
-  font-family: "Arial", sans-serif;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  font-family: Arial, sans-serif;
 }
 
 .homeLink {
+  display: inline-block;
+  margin-bottom: 1rem;
   text-decoration: none;
-  color: #007bff;
-}
-
-.homeLink:hover {
-  text-decoration: underline;
+  color: #0d6efd;
 }
 
 .modalButton {
@@ -29,26 +20,27 @@
   margin-top: 2rem;
 }
 
-.newsletterTable {
-  width: 100%;
-  border-collapse: collapse;
+.newsletterItems {
+  list-style: none;
+  padding: 0;
 }
 
-.newsletterTable th,
-.newsletterTable td {
+.newsletterItem {
   border: 1px solid #ddd;
-  padding: 0.75rem;
-  text-align: left;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f9f9f9;
 }
 
-.newsletterTable th {
-  background-color: #f4f4f4;
+.actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 10px;
 }
 
-.newsletterTable tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.newsletterTable tr:hover {
-  background-color: #e9ecef;
+.error {
+  color: red;
+  margin-bottom: 1rem;
+  font-weight: bold;
 }
